@@ -1,70 +1,44 @@
 #!/bin/csh -f
 
-source radmon_process.config
-
-if ( $#argv > 3 || $#argv < 3 ) then
+if ($#argv != 3) then
     echo "usage: determine_inst.csh <experiment base directory with diags> <start YYYYMMDD> <end YYYYMMDD>"
     exit 99
 endif
 
-set dir=$argv[1]
-set startdate=$argv[2]
-set enddate=$argv[3]
+set dir       = $argv[1]
+set startdate = $argv[2]
+set enddate   = $argv[3]
 
-unset argv
-setenv argv
-
-source $ESMADIR/src/g5_modules > /dev/null
-
-set curdate=$startdate
-
-set dirs=""
+set curdate = $startdate
+set dirs = ()
 
 while ( $curdate <= $enddate )
-    set year     = `echo $curdate |cut -b1-4`
-    set mon      = `echo $curdate |cut -b5-6`
-    set day      = `echo $curdate |cut -b7-8`
-    if (-d $dir/obs/Y$year/M$mon/D$day) set dirs="$dirs $dir/obs/Y$year/M$mon/D$day"
-    set curdate  = `$ESMADIR/Linux/bin/tick $curdate 000000 000000 240000 |cut -b1-8`
+    set year = `echo $curdate |cut -c1-4`
+    set mon  = `echo $curdate |cut -c5-6`
+    set day  = `echo $curdate |cut -c7-8`
+
+    set obsdir = $dir/obs/Y$year/M$mon/D$day
+    if (-d $obsdir) set dirs = ($dirs $obsdir)
+
+    set curdate  = `$ESMADIR/Linux/bin/tick $curdate`
 end
 
-set init=1
-set cinst=""
+set instList = ()
+foreach file (`find $dirs | grep ges`)
+   set base = `basename $file`
+   set inst = `echo $base | cut -d. -f2 | sed -e "s/diag_//" -e "s/_ges//"`
 
-
-foreach file (`find $dirs |grep ges`)
-    if ($init == 1) then
-        set cfile=`basename $file`
-        set dat = `echo $cfile | perl -wlne 'print "$1 $2 $3 $4" if  /^(\w+)\.diag_([\w\-]+)_ges\.(\d{8})_(\d{2})z.\w{3}/'`
-        set exp        = ${dat[1]}
-        set inst       = ${dat[2]}
-        set yyyymmdd   = ${dat[3]}
-        set hh         = ${dat[4]}
-        set yyyymmddhh = $yyyymmdd$hh
-        set cinst      = $inst
-        set init       = 0
-    else
-        set cfile=`basename $file`
-        set dat = `echo $cfile | perl -wlne 'print "$1 $2 $3 $4" if  /^(\w+)\.diag_([\w\-]+)_ges\.(\d{8})_(\d{2})z.\w{3}/'`
-        set exp        = ${dat[1]}
-        set cinst       = ${dat[2]}
-        set yyyymmdd   = ${dat[3]}
-        set hh         = ${dat[4]}
-        set yyyymmddhh = $yyyymmdd$hh
-        set listcheck = 0
-        foreach iinst ( $inst )
-            if ($cinst == $iinst) then
-                set listcheck = 1 
-            endif
-        end
-        if ($listcheck == 0) then
-           set inst = ($cinst $inst)
-        endif
-   endif
+   set found = 0
+   foreach iii ( $instList )
+       if ($iii == $inst) then
+           set found = 1
+           break
+       endif
+   end
+   if (! $found) set instList = ($instList $inst)
 end
 
-
-echo $inst | sed 's/ /\n/g'
+echo $instList | sed 's/ /\n/g'
 
 
 
