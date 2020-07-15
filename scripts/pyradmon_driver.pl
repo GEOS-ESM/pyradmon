@@ -19,6 +19,7 @@ use Getopt::Long qw(GetOptions);
 my ($bin2txt_csh, $clean, $clean_txt_csh, $debug, $esmadir, $expbase);
 my ($inquire, $label, $noprompt, $outtmp, $pid, $rcIN, $workdir);
 my ($startdate, $starttime, $enddate, $endtime);
+my ($bin2img_j, $bin2img_log, $getbins_j, $getbins_log);
 my (%rc, %xtrCR, @rcVars);
 
 # this array determines order of variables written to rcfile
@@ -55,11 +56,20 @@ my (%rc, %xtrCR, @rcVars);
 # main program
 #-------------
 {
+    my ($message);
     init();
     write_rcOUT();
 
     get_binfiles();
-    bin2img()
+    bin2img();
+
+    $message = "Ready to run pyradmon package";
+    $message = "Ready to submit sbatch jobs" if $rc{"queue_jobs"};
+    print "\n$message\n"; pause();
+
+    run_jscript($getbins_j, $getbins_log);
+    run_jscript($bin2img_j, $bin2img_log);
+
 }
 
 #=======================================================================
@@ -467,7 +477,7 @@ sub display {
 #    is complete, if $clean is truexs
 #=======================================================================
 sub get_binfiles {
-    my ($instruments, $bincopy_csh, $getbins_j, $getbins_log);
+    my ($instruments, $bincopy_csh);
 
     $instruments = "";
     $instruments = $rc{"instruments"} if $rc{"instruments"};
@@ -659,7 +669,6 @@ endif
 EOF
 ;
     close SCR;
-    run_jscript($getbins_j, $getbins_log);
 }
 
 #=======================================================================
@@ -677,7 +686,7 @@ EOF
 #    written in $workdir by $getbins_j; see sub get_binfiles()
 #=======================================================================
 sub bin2img {
-    my ($instruments, $bin2img_j, $bin2img_log, $scp_data_j, $scp_data_log);
+    my ($instruments, $scp_data_j, $scp_data_log);
 
     # scp_data_j script
     #--------------------
@@ -862,7 +871,6 @@ endif
 EOF
 ;
     close SCR;
-    run_jscript($bin2img_j, $bin2img_log);
 }
 
 #=======================================================================
