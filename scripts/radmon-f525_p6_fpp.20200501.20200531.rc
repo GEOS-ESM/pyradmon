@@ -4,7 +4,6 @@ fvroot: /discover/nobackup/jstassi/GEOSadas/5251p7/Linux
 archive: /archive/u/dao_ops/GEOS-5.25/GEOSadas-5_25
 pyradmon: /discover/nobackup/jstassi/GEOSadas/pyradmon
 
-
 workhead: /discover/nobackup/jstassi
 outdir: ${fvhome}/radmon
 
@@ -24,6 +23,6 @@ groupID: g0613
 clean: 1
 
 # list instruments separated by spaces
-# otherwise, script will use all insts found in experiment obs directory
+# otherwise, script will use insts found in experiment archive directory
 # ----------------------------------------------------------------------
 #instruments: no value set
