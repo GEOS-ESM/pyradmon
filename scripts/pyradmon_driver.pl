@@ -16,10 +16,10 @@ use Getopt::Long qw(GetOptions);
 
 # global variables
 #-----------------
-my ($bin2txt_csh, $clean, $clean_txt_csh, $debug, $esmadir, $expbase);
-my ($inquire, $label, $noprompt, $outtmp, $pid, $rcIN, $workdir);
-my ($startdate, $starttime, $enddate, $endtime);
-my ($bin2img_j, $bin2img_log, $getbins_j, $getbins_log);
+my ($bin2img_j, $bin2img_log, $bin2txt_csh, $clean, $clean_txt_csh);
+my ($debug, $enddate, $endtime, $esmadir, $expbase, $getbins_err);
+my ($getbins_j, $getbins_log, $inquire, $label, $noprompt);
+my ($outtmp, $pid, $rcIN, $startdate, $starttime, $workdir);
 my (%rc, %xtrCR, @rcVars);
 
 # this array determines order of variables written to rcfile
@@ -28,6 +28,7 @@ my (%rc, %xtrCR, @rcVars);
               fvhome
               fvroot
               archive
+              merra2flag
               pyradmon
               workhead
               outdir
@@ -36,22 +37,21 @@ my (%rc, %xtrCR, @rcVars);
               mstorage
               gsidiagsrc
               bin2txt_exec
-              bin2txt_nl
               scp_userhost
               scp_path
+              groupID
               send_plots
               queue_jobs
-              groupID
               clean
               instruments );
 
 # extra <cr>'s in output rcfile after these variables
 #----------------------------------------------------
-%xtrCR = ( "pyradmon"    => 1,
-           "outdir"      => 1,
-           "enddatetime" => 1,
-           "bin2txt_nl"  => 1,
-           "clean"       => 1 );
+%xtrCR = ( "pyradmon"      => 1,
+           "outdir"        => 1,
+           "enddatetime"   => 1,
+           "bin2txt_exec"  => 1,
+           "clean"         => 1 );
 
 # main program
 #-------------
@@ -65,7 +65,7 @@ my (%rc, %xtrCR, @rcVars);
 
     $message = "Ready to run pyradmon package";
     $message = "Ready to submit sbatch jobs" if $rc{"queue_jobs"};
-    print "\n$message\n"; pause();
+    print "\n$message\n"; pause(); print "\n";
 
     run_jscript($getbins_j, $getbins_log);
     run_jscript($bin2img_j, $bin2img_log);
@@ -77,9 +77,9 @@ my (%rc, %xtrCR, @rcVars);
 # purpose - get runtime options and parameters
 #=======================================================================
 sub init {
-    my ($archive, $bin2txt_nl, $bin2txt_x, $bindir, $expid, $fvhome, $fvroot);
-    my ($groupID, $gsidiagsrc, $help, $mstorage, $outdir, $pyradmon);
-    my ($queue_jobs, $scp_host, $scp_path, $send_plots, $workhead);
+    my ($archive, $bin2txt_x, $bindir, $expid, $fvhome, $fvroot);
+    my ($groupID, $gsidiagsrc, $help, $merra2flag, $mstorage, $outdir);
+    my ($pyradmon, $queue_jobs, $scp_host, $scp_path, $send_plots, $workhead);
     my (@inst, %opts);
 
     $inquire = 1 unless @ARGV;
@@ -87,6 +87,7 @@ sub init {
                 "fvhome=s"     => \$fvhome,
                 "fvroot=s"     => \$fvroot,
                 "archive=s"    => \$archive,
+                "merra2flag"   => \$merra2flag,
                 "pyradmon=s"   => \$pyradmon,
                 "workhead"     => \$workhead,
                 "outdir"       => \$outdir,
@@ -95,16 +96,15 @@ sub init {
                 "enddate=i"    => \$enddate,
                 "endtime=i"    => \$endtime,
                 "bin2txt_x=s"  => \$bin2txt_x,
-                "bin2txt_nl=s" => \$bin2txt_nl,
                 "mstorage=s"   => \$mstorage,
                 "gsidiagsrc=s" => \$gsidiagsrc,
                 "inst=s"       => \@inst,
                 "scp_host=s"   => \$scp_host,
                 "scp_path=s"   => \$scp_path,
-                "send_plots"   => \$send_plots,
-                "q|qjobs"      => \$queue_jobs,
                 "grpid=s"      => \$groupID,
-                "clean"        => \$clean,
+                "send_plots!"  => \$send_plots,
+                "q|qjobs!"     => \$queue_jobs,
+                "clean!"       => \$clean,
                 "i"            => \$inquire,
                 "np"           => \$noprompt,
                 "db|debug"     => \$debug,
@@ -131,19 +131,19 @@ sub init {
     $rc{"fvhome"}       = $fvhome     if $fvhome;
     $rc{"fvroot"}       = $fvroot     if $fvroot;
     $rc{"archive"}      = $archive    if $archive;
+    $rc{"merra2flag"}   = $merra2flag if $merra2flag;
     $rc{"pyradmon"}     = $pyradmon   if $pyradmon;
     $rc{"workhead"}     = $workhead   if $workhead;
     $rc{"outdir"}       = $outdir     if $outdir;
     $rc{"mstorage"}     = $mstorage   if $mstorage;
     $rc{"gsidiagsrc"}   = $gsidiagsrc if $gsidiagsrc;
     $rc{"bin2txt_exec"} = $bin2txt_x  if $bin2txt_x;
-    $rc{"bin2txt_nl"}   = $bin2txt_nl if $bin2txt_nl;
     $rc{"scp_userhost"} = $scp_host   if $scp_host;
     $rc{"scp_path"}     = $scp_path   if $scp_path;
+    $rc{"groupID"}      = $groupID    if $groupID;
     $rc{"send_plots"}   = $send_plots if defined($send_plots);
     $rc{"queue_jobs"}   = $queue_jobs if defined($queue_jobs);
-    $rc{"groupID"}      = $groupID    if $groupID;
-    $rc{"clean"}        = $clean      if $clean;
+    $rc{"clean"}        = $clean      if defined($clean);
 
     # fill in missing values
     #-----------------------
@@ -266,10 +266,14 @@ sub get_missing_rc_vals {
     $rc{"archive"} = query("Archive directory", $ENV{"ARCHIVE"})
         unless $rc{"archive"};
 
+    $rc{"merra2flag"} = query("MERRA-2 file format (1=yes, 0=no)", 0)
+        unless defined($rc{"merra2flag"});
+
     $rc{"pyradmon"} = query("pyradmon pathname", dirname($Bin))
         unless $rc{"pyradmon"};
     die "Error. Cannot find dir, $rc{pyradmon};" unless -d $rc{"pyradmon"};
     $gsidiag = "$rc{pyradmon}/gsidiag/gsidiag_bin2txt";
+    $gsidiag = "$rc{fvroot}/bin";
 
     # workhead, outdir
     #-----------------
@@ -304,16 +308,12 @@ sub get_missing_rc_vals {
         unless $endtime and $endtime =~ m/^\d{6}$/;
     die "Error. Invalid end time format: $endtime;" unless $endtime =~ m/^\d{6}$/;
 
-    # bin2txt_exec, bin2txt_nl
-    #-------------------------
+    # bin2txt_exec
+    #-------------
     $rc{"bin2txt_exec"} = query("bin2txt_exec", "$gsidiag/gsidiag_bin2txt.x")
         unless $rc{"bin2txt_exec"};
     die "Error. Cannot find file, $rc{bin2txt_exec};"
         unless -f $rc{"bin2txt_exec"};
-
-    $rc{"bin2txt_nl"} = query("bin2txt_nl", "$gsidiag/gsidiag_bin2txt.nl")
-        unless $rc{"bin2txt_nl"};
-    die "Error. Cannot find file, $rc{bin2txt_fl};" unless -f $rc{"bin2txt_nl"};
 
     # mstorage, gsidiagsrc
     #---------------------
@@ -334,13 +334,13 @@ sub get_missing_rc_vals {
         unless $rc{"scp_userhost"};
     $rc{"scp_path"} = query("scp path", $uhdir) unless $rc{"scp_path"};
     $rc{"send_plots"} = query("send plots (0=no,1=yes)", 0)
-        unless $rc{"send_plots"};
+        unless defined($rc{"send_plots"});
 
     # queue_jobs, groupID, clean
     #---------------------------
     $rc{"queue_jobs"} = 1 unless -d $rc{"archive"};
     $rc{"queue_jobs"} = query("sbatch jobs (0=no,1=yes)", 0)
-        unless $rc{"queue_jobs"};
+        unless defined($rc{"queue_jobs"});
 
     unless ($rc{"groupID"}) {
         $dflt = get_spcode();
@@ -465,28 +465,30 @@ sub display {
 # purpose - run job to retrieve bin files from archive
 #
 # notes
-# 1. This sub creates the jobscript, $getbins_j, and then executes it
-#    either with sbatch or interactively.
-# 2. $getbins_j creates and executes the script, $bincopy_csh, in $workdir.
-# 3. $getbins_j creates the script, $bin2txt_csh, in $workdir, but does not
-#    execute it, since we do not want to do computational operations on
-#    the datamove partition, which is where $getbins.j goes with sbatch.
-# 4. $getbins_j creates the script, $clean_txt_csh, in $workdir. 
-# 5. $bin2txt_csh is executed by the $bin2img_j jobscript; see sub bin2img()
-# 6. $clean_txt_csh is executed by the $bin2img_j jobscript after processing
-#    is complete, if $clean is truexs
+# 1. This sub writes $getbins_j
+# 2. This sub and $getbins_j write $bincopy_csh
+# 3. This sub and $getbins_j write $bin2txt_csh
+# 4. This sub and $getbins_j write $clean_txt_csh
+#
+# 5. $getbins_j is submitted or run from main program
+# 6. $getbins_j runs $bincopy_csh
+# 7. $bin2txt_csh is run in $bin2img_j *
+# 8. $clean_txt_csh is run in $bin2img_j *
+#
+#  * written in sub bin2img()
 #=======================================================================
 sub get_binfiles {
-    my ($instruments, $bincopy_csh);
+    my ($instruments, $ivflag, $bincopy_csh);
 
     $instruments = "";
     $instruments = $rc{"instruments"} if $rc{"instruments"};
 
+    $ivflag = "";
+    $ivflag = "-iversion 19180" if $rc{"merra2flag"} == 1;
+
     # bincopy script
     #---------------
     $bincopy_csh = "$workdir/bincopy.$label.csh";
-    unlink($bincopy_csh) if -e $bincopy_csh;
-
     open(BCP, "> $bincopy_csh") or die "Error opening file, $bincopy_csh;";
     print BCP "#!/usr/bin/env tcsh\n";
     print BCP "set echo\n";
@@ -497,27 +499,28 @@ sub get_binfiles {
     # bin2txt script
     #---------------
     $bin2txt_csh = "$workdir/bin2txt.$label.csh";
-    unlink($bin2txt_csh) if -e $bin2txt_csh;
-
     open(B2T, "> $bin2txt_csh") or die "Error opening file, $bin2txt_csh;";
     print B2T "#!/usr/bin/env tcsh\n";
     print B2T "set echo\n";
     print B2T "unalias rm\n\n";
     print B2T "set bin2txt = $rc{bin2txt_exec}\n";
+    print B2T "set flag = ( $ivflag )";
     close B2T;
     chmod 0744, $bin2txt_csh;
 
     # clean_txt script
     #-----------------
     $clean_txt_csh = "$workdir/clean_txt.$label.csh";
-    unlink($clean_txt_csh) if -e $clean_txt_csh;
-
     open(XOBS, "> $clean_txt_csh") or die "Error opening file, $clean_txt_csh;";
     print XOBS "#!/usr/bin/env tcsh\n";
     print XOBS "set echo\n";
     print XOBS "unalias rm\n\n";
     close XOBS ;
     chmod 0744, $clean_txt_csh;
+
+    # getbins error file
+    #-------------------
+    $getbins_err = "$workdir/GETBINS_ERR";
 
     # getbins jobscript
     #------------------
@@ -553,7 +556,6 @@ set enddate   = ( $rc{"enddatetime"} )
 
 set pyradmon  = $rc{"pyradmon"}
 set bin2txt   = $rc{"bin2txt_exec"}
-set bin2txtnl = $rc{"bin2txt_nl"}
 
 set mstorage   = $rc{"mstorage"}
 set gsidiagsrc = $rc{"gsidiagsrc"}
@@ -561,6 +563,16 @@ set workdir    = $workdir
 
 set ndstartdate = \$startdate[1]`echo \$startdate[2] | cut -c1-2`
 set ndenddate   = \$enddate[1]`echo \$enddate[2] | cut -c1-2`
+
+set getbins_err = $getbins_err
+
+if (! -d \$archive) then
+   unset echo
+   echo "\$getbins_err found"
+   set msg = "Error. \$archive not found in getbins job"
+   echo \$msg |& tee \$getbins_err
+   exit 1
+endif
 
 set insts = ($instruments)
 if ("\$insts" == "") then
@@ -576,7 +588,6 @@ if (! -e \$tick) then
 endif
 
 cd \$workdir
-cp \$bin2txtnl .
 
 set binfiles = ()
 set bincopy_csh = $bincopy_csh
@@ -656,11 +667,11 @@ if ("\$binfiles" != "") then
    # write bin2txt script (used in bin2img jobscript)
    #-------------------------------------------------
    foreach bfile (\$binfiles)
-      echo ""                    >> \$bin2txt_csh
-      echo "echo"                >> \$bin2txt_csh
-      echo "set bfile = \$bfile" >> \$bin2txt_csh
-      echo '\$bin2txt \$bfile'   >> \$bin2txt_csh
-      echo 'rm \$bfile'          >> \$bin2txt_csh
+      echo ""                         >> \$bin2txt_csh
+      echo "echo"                     >> \$bin2txt_csh
+      echo "set bfile = \$bfile"      >> \$bin2txt_csh
+      echo '\$bin2txt \$flag \$bfile' >> \$bin2txt_csh
+      echo 'rm \$bfile'               >> \$bin2txt_csh
    end
 
 else
@@ -676,14 +687,15 @@ EOF
 # purpose - run program to convert bin files to txt and then txt to img files
 #
 # notes
-# 1. This sub creates the jobscript, $scp_data_j, which is submitted by the
-#    $bin2img_j jobscript
-# 2. This sub creates the jobscript, $bin2img_j, and then executes it either
-#    with sbatch or interactively.
-# 3. $bin2img_j executes the script, $bin2txt_csh, which is written in $workdir
-#    by $getbins_j; see sub get_binfiles()
-# 4. $bin2img_j executes the script, $clean_txt_csh, if $clean. This script is
-#    written in $workdir by $getbins_j; see sub get_binfiles()
+# 1. This sub writes $bin2img_j
+# 2. This sub writes $scp_data_j
+#
+# 3. $bin2img_j is submitted or run from main program
+# 4. $bin2img_j runs $bin2txt_csh *
+# 5. $bin2img_j runs $clean_txt_csh *
+# 6. $bin2img_j submits $scp_data_j
+#
+#  * written in sub get_binfiles()
 #=======================================================================
 sub bin2img {
     my ($instruments, $scp_data_j, $scp_data_log);
@@ -692,6 +704,7 @@ sub bin2img {
     #--------------------
     $scp_data_j = "$rc{outdir}/$rc{expid}.scp_data.$label.j";
     $scp_data_log = "$rc{outdir}/$rc{expid}.scp_data.$label.log.txt";
+    unlink($scp_data_j) if -e $scp_data_j;
     unlink($scp_data_log) if -e $scp_data_log;
 
     open SCR, "> $scp_data_j" or die "Error opening file, $scp_data_j;";
@@ -772,6 +785,13 @@ set label           = $label
 set data_dirbase = \$expbase/\$expid
 echo \$data_dirbase
 cd \$workdir
+
+set getbins_err = $getbins_err
+if (-e \$getbins_err) then
+    echo \$getbins_err found
+    cat \$getbins_err
+    exit 1
+endif
 
 set bin2txt_csh = $bin2txt_csh
 set clean_txt_csh = $clean_txt_csh
@@ -1019,6 +1039,7 @@ options with no default value
 options with a default value
   -fvroot FVROOT        FVROOT directory of the build used to run this experiment
   -archive archive      Archive directory where expid can be found
+  -merra2flg            Reading MERRA-2 file format (i.e. iversion = 19180)
   -pyradmon pdir        Directory location of pyradmon programs
   -workhead workhead    Directory location for where to put the work directory
   -outdir outdir        Output directory location
@@ -1026,20 +1047,20 @@ options with a default value
   -enddate enddate      End date of pyradmon experiment
   -endtime endtime      End time of pyradmon experiment
   -bin2txt_x b2tx       Pathname of gsidiags_bin2txt.x program
-  -bin2txt_nl b2tnl     Pathname of gsidiags namelist file
   -mstorage mstorage    Pathname of mstorage.arc file
   -gsidiagsrc grcfile   Pathname of gsidiags.rc file
   -inst Ia,Ib,...       List of instruments to use for pyradmon experiment
   -scp_host scp_host    Userhost for scp\'ing output graphs
   -scp_path scp_path    Pathname of output directory on userhost
-  -send_plots           Send plots to userhost (1=yes, 0=no)
-  -q                    Queue bin2txt and txt2img jobs rather than running interactively
   -grpID gid            Account group ID for submitting queued jobs
-  -clean                Remove obs files from expdir after processing complete
+  -[no]send_plots       Send plots to userhost (1=yes, 0=no)
+  -[no]q                Queue bin2txt and txt2img jobs rather than running interactively
+  -[no]clean            Remove obs files from expdir after processing complete
 
 option defaults
   -fvroot       [from \$Bin/radmon_process.config file]
   -archive      [\$ARCHIVE]
+  -merra2flg    [use default iversion, i.e. not MERRA-2 file format]
   -pyradmon     [\$fvroot/bin/pyradmon]
   -workhead     [dirname(\$fvhome)]
   -outdir       [\$fvhome/radmon]
@@ -1047,15 +1068,14 @@ option defaults
   -enddate      [last day of startdate month]
   -endtime      [\"180000\"]
   -bin2txt_x    [pyradmon/gsidiag/gsidiag_bin2txt/gsidiag_bin2txt.x]
-  -bin2txt_nl   [pyradmon/gsidiag/gsidiag_bin2txt/gsidiag_bin2txt.nl]
   -mstorage     [\$fvhome/run/mstorage.arc]
   -gsidiagsrc   [\$fvroot/etc/gsidiags.rc]
   -inst         [all-insts-found-in-archive-expid-obs-dir]
   -scp_host     [\$user\@polar]
   -scp_path     [/www/html/intranet/personnel/\$user/radmon/radmon_data/]
+  -grpID gid    [groupID from getsponsor utility]
   -send_plots   [0]
   -q            [1 if \$archive is visible; otherwise 0]
-  -grpID gid    [groupID from getsponsor utility]
   -clean        [1]
 
 other options

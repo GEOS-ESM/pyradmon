@@ -1,7 +1,8 @@
 expid: f525_p6_fpp
 fvhome: /discover/nobackup/jstassi/${expid}
-fvroot: /discover/nobackup/jstassi/GEOSadas/5251p7/Linux
+fvroot: /discover/nobackup/jstassi/GEOSadas/5260p3/Linux
 archive: /archive/u/dao_ops/GEOS-5.25/GEOSadas-5_25
+merra2flag: 0
 pyradmon: /discover/nobackup/jstassi/GEOSadas/pyradmon
 
 workhead: /discover/nobackup/jstassi
@@ -12,14 +13,13 @@ enddatetime: 20200531 180000
 
 mstorage: ${fvhome}/run/mstorage.arc_
 gsidiagsrc: ${fvroot}/etc/gsidiags.rc
-bin2txt_exec: ${pyradmon}/gsidiag/gsidiag_bin2txt/gsidiag_bin2txt.x
-bin2txt_nl: ${pyradmon}/gsidiag/gsidiag_bin2txt/gsidiag_bin2txt.nl
+bin2txt_exec: ${fvroot}/bin/gsidiag_bin2txt.x
 
 scp_userhost: jstassi@polar
 scp_path: /www/html/intranet/personnel/stassi/radmon/radmon_data
+groupID: g0613
 send_plots: 1
 queue_jobs: 1
-groupID: g0613
 clean: 1
 
 # list instruments separated by spaces
