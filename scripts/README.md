@@ -3,11 +3,6 @@ Introduction
 Included here is the pyradmon_driver.pl script which runs the pyradmon package for for a time range for all or a subset of instruments.
 
 
-Prior to running the script:
----------------------------
-You must first build the gsidiag_bin2txt.x executable in the pyradmon/gsidiag/gsidiag_bin2txt directory. See the README.md file in that directory for build information.
-
-
 To run pyradmon package:
 -----------------------
 > ./pyradmon_driver.pl rcfile
