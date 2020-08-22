@@ -12,7 +12,7 @@
 # - as of right now, add something to the platform table below
   ini_set('display_errors', 'On');
 
-  $datadir = 'radmon_data/';
+  $datadir = 'radmon_data';
 #  $datadir = '../rad_mon_data/';
 
   $insttable = array(
@@ -40,8 +40,10 @@
       array("name" => "amsua_n19",    "longname" => "AMSU-A NOAA-19", "nchan" => 15,  "startch" => 6,  "dosubset" => false),
       array("name" => "amsua_metop-a","longname" => "AMSU-A METOP-A", "nchan" => 15,  "startch" => 6,  "dosubset" => false),
       array("name" => "amsua_metop-b","longname" => "AMSU-A METOP-B", "nchan" => 15,  "startch" => 6,  "dosubset" => false),
+      array("name" => "amsua_metop-c","longname" => "AMSU-A METOP-C", "nchan" => 15,  "startch" => 6,  "dosubset" => false),
       array("name" => "amsua_aqua",   "longname" => "AMSU-A Aqua",    "nchan" => 15,  "startch" => 6,  "dosubset" => false),
       array("name" => "atms_npp",     "longname" => "ATMS SNPP",      "nchan" => 22,  "startch" => 6,  "dosubset" => false),
+      array("name" => "atms_n20",     "longname" => "ATMS N20",       "nchan" => 22,  "startch" => 6,  "dosubset" => false),
       array("name" => "hirs2_tirosn", "longname" => "HIRS2 TIROS-N",  "nchan" => 19,  "startch" => 2,  "dosubset" => false),
       array("name" => "hirs2_n06",    "longname" => "HIRS2 NOAA-6",   "nchan" => 19,  "startch" => 2,  "dosubset" => false),
       array("name" => "hirs2_n07",    "longname" => "HIRS2 NOAA-7",   "nchan" => 19,  "startch" => 2,  "dosubset" => false),
@@ -59,9 +61,14 @@
       array("name" => "hirs4_metop-a","longname" => "HIRS4 METOP-A",  "nchan" => 19,  "startch" => 2,  "dosubset" => false),
       array("name" => "hirs4_metop-b","longname" => "HIRS4 METOP-B",  "nchan" => 19,  "startch" => 2,  "dosubset" => false),
       array("name" => "airs_aqua",    "longname" => "AIRS Aqua",      "nchan" => 281, "startch" => 3,  "dosubset" => false),
+      array("name" => "airscld_aqua",    "longname" => "AIRSCLD Aqua",   "nchan" => 281, "startch" => 3,  "dosubset" => false),
       array("name" => "iasi_metop-a", "longname" => "IASI METOP-A",   "nchan" => 616, "startch" => 1,  "dosubset" => false),
       array("name" => "iasi_metop-b", "longname" => "IASI METOP-B",   "nchan" => 616, "startch" => 1,  "dosubset" => false),
-      array("name" => "cris_npp",     "longname" => "CRIS SNPP",       "nchan" => 399, "startch" => 1,  "dosubset" => false),
+      array("name" => "iasicld_metop-a", "longname" => "IASICLD METOP-A","nchan" => 616, "startch" => 1,  "dosubset" => false),
+      array("name" => "iasicld_metop-b", "longname" => "IASICLD METOP-B","nchan" => 616, "startch" => 1,  "dosubset" => false),
+      array("name" => "cris_npp",     "longname" => "CRIS SNPP",      "nchan" => 399, "startch" => 1,  "dosubset" => false),
+      array("name" => "criscld_npp",  "longname" => "CRISCLD SNPP",   "nchan" => 399, "startch" => 1,  "dosubset" => false),
+      array("name" => "cris-fsr_n20", "longname" => "CRIS-FSR N20",   "nchan" => 431, "startch" => 1,  "dosubset" => false),
       array("name" => "ssmi_f08",     "longname" => "SSMI F08",       "nchan" => 7,   "startch" => 1,  "dosubset" => false),
       array("name" => "ssmi_f10",     "longname" => "SSMI F10",       "nchan" => 7,   "startch" => 1,  "dosubset" => false),
       array("name" => "ssmi_f11",     "longname" => "SSMI F11",       "nchan" => 7,   "startch" => 1,  "dosubset" => false),
@@ -79,6 +86,9 @@
       array("name" => "mhs_n19",      "longname" => "MHS NOAA-19",    "nchan" => 5,   "startch" => 1,  "dosubset" => false),
       array("name" => "mhs_metop-a",  "longname" => "MHS METOP-A",    "nchan" => 5,   "startch" => 1,  "dosubset" => false),
       array("name" => "mhs_metop-b",  "longname" => "MHS METOP-B",    "nchan" => 5,   "startch" => 1,  "dosubset" => false),
+      array("name" => "mhs_metop-c",  "longname" => "MHS METOP-C",    "nchan" => 5,   "startch" => 1,  "dosubset" => false),
+      array("name" => "sndr_g10",     "longname" => "GOES-10 SNDR",   "nchan" => 18,  "startch" => 1,  "dosubset" => false),
+      array("name" => "sndr_g12",     "longname" => "GOES-12 SNDR",   "nchan" => 18,  "startch" => 1,  "dosubset" => false),
       array("name" => "sndrd1_g11",   "longname" => "GOES-11 SNDR D1","nchan" => 18,  "startch" => 1,  "dosubset" => false),
       array("name" => "sndrd2_g11",   "longname" => "GOES-11 SNDR D2","nchan" => 18,  "startch" => 1,  "dosubset" => false),
       array("name" => "sndrd3_g11",   "longname" => "GOES-11 SNDR D3","nchan" => 18,  "startch" => 1,  "dosubset" => false),
@@ -102,6 +112,12 @@
       array("name" => "seviri_m08",   "longname" => "SEVIRI M08",     "nchan" => 8,   "startch" => 1,  "dosubset" => false),
       array("name" => "seviri_m09",   "longname" => "SEVIRI M09",     "nchan" => 8,   "startch" => 1,  "dosubset" => false),
       array("name" => "seviri_m10",   "longname" => "SEVIRI M10",     "nchan" => 8,   "startch" => 1,  "dosubset" => false),
+      array("name" => "avhrr_n15",    "longname" => "AVHRR NOAA-15",      "nchan" => 3,   "startch" => 1,  "dosubset" => false),
+      array("name" => "avhrr_n17",    "longname" => "AVHRR NOAA-17",      "nchan" => 3,   "startch" => 1,  "dosubset" => false),
+      array("name" => "avhrr_n18",       "longname" => "AVHRR NOAA-18",  "nchan" => 3,   "startch" => 1,  "dosubset" => false),
+      array("name" => "avhrr_metop-a",   "longname" => "AVHRR MetOp-A",  "nchan" => 3,   "startch" => 1,  "dosubset" => false),
+      array("name" => "avhrr_metop-b",   "longname" => "AVHRR MetOp-B",  "nchan" => 3,   "startch" => 1,  "dosubset" => false),
+      array("name" => "gmi_gpm",         "longname" => "GMI GPM",        "nchan" => 13,  "startch" => 1,  "dosubset" => false),
       )
    );
 
@@ -117,12 +133,15 @@
 
    $explist = array_map('basename',$explist);
 
+   $instin = 'NULL';
+
    if (! isset($_POST['exp'])) {
       $_POST['exp'] = $explist[0];
 
    } else {
       if ($_POST['exp'] <> $_POST['oldexp']) {
          unset($_POST['date']);
+         $instin = $_POST['inst'];
          unset($_POST['inst']);
       }
    }
@@ -148,6 +167,7 @@
    if (! is_array($instlist)) $instlist = array($instlist);
    $instlist = array_map('basename',$instlist);
 
+   if (in_array($instin, $instlist)) $_POST['inst'] = $instin;
    if (! isset($_POST['inst'])) $_POST['inst'] = $instlist[0];
    if (! in_array($_POST['inst'],$instlist)) $_POST['inst'] = $instlist[0];
    $curinst = $_POST['inst'];
@@ -298,6 +318,19 @@
                 echo "<a href=\"$img\">\n";
                 echo "<img src=\"$img\">\n" ;
                 echo "</a>\n"
+             ?>
+             <br>
+             <?php
+                $curch  = $_POST['chan'] ; 
+                $prevch = $_POST['chan'] - 1;
+                $nextch = $_POST['chan'] + 1;
+                if ($curch > 1) { 
+                   echo "<button name=\"chan\" type=\"submit\" value=\"$prevch\">Prev Channel</button>" ;
+                }
+                if ($curch < $nchan) { 
+                   echo "<button name=\"chan\" type=\"submit\" value=\"$nextch\">Next Channel</button>" ;
+                }
+#                echo "<a href=\"#\" onclick=\"this.form.chan.value = $nextch ; this.form.submit();\">Next channel</a>";
              ?>
              </center>
           </td>
