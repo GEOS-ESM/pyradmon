@@ -28,7 +28,6 @@ my (%rc, %xtrCR, @rcVars);
               fvhome
               fvroot
               archive
-              merra2flag
               pyradmon
               workhead
               outdir
@@ -37,6 +36,7 @@ my (%rc, %xtrCR, @rcVars);
               mstorage
               gsidiagsrc
               bin2txt_exec
+              bin2txt_options
               scp_userhost
               scp_path
               groupID
@@ -47,11 +47,11 @@ my (%rc, %xtrCR, @rcVars);
 
 # extra <cr>'s in output rcfile after these variables
 #----------------------------------------------------
-%xtrCR = ( "pyradmon"      => 1,
-           "outdir"        => 1,
-           "enddatetime"   => 1,
-           "bin2txt_exec"  => 1,
-           "clean"         => 1 );
+%xtrCR = ( "pyradmon"         => 1,
+           "outdir"           => 1,
+           "enddatetime"      => 1,
+           "bin2txt_options"  => 1,
+           "clean"            => 1 );
 
 # main program
 #-------------
@@ -77,9 +77,10 @@ my (%rc, %xtrCR, @rcVars);
 # purpose - get runtime options and parameters
 #=======================================================================
 sub init {
-    my ($archive, $bin2txt_x, $bindir, $expid, $fvhome, $fvroot);
-    my ($groupID, $gsidiagsrc, $help, $merra2flag, $mstorage, $outdir);
-    my ($pyradmon, $queue_jobs, $scp_host, $scp_path, $send_plots, $workhead);
+    my ($append_txt, $archive, $bin2txt_opts, $bin2txt_x, $bindir, $debugB2T);
+    my ($expid, $fvhome, $fvroot, $groupID, $gsidiagsrc, $help, $iversion);
+    my ($merra2flag, $mstorage, $nc4, $npred, $outdir, $passivebc, $pyradmon);
+    my ($queue_jobs, $scp_host, $scp_path, $send_plots, $sst_ret, $workhead);
     my (@inst, %opts);
 
     $inquire = 1 unless @ARGV;
@@ -87,7 +88,6 @@ sub init {
                 "fvhome=s"     => \$fvhome,
                 "fvroot=s"     => \$fvroot,
                 "archive=s"    => \$archive,
-                "merra2flag"   => \$merra2flag,
                 "pyradmon=s"   => \$pyradmon,
                 "workhead"     => \$workhead,
                 "outdir"       => \$outdir,
@@ -95,7 +95,6 @@ sub init {
                 "starttime=i"  => \$starttime,
                 "enddate=i"    => \$enddate,
                 "endtime=i"    => \$endtime,
-                "bin2txt_x=s"  => \$bin2txt_x,
                 "mstorage=s"   => \$mstorage,
                 "gsidiagsrc=s" => \$gsidiagsrc,
                 "inst=s"       => \@inst,
@@ -105,6 +104,17 @@ sub init {
                 "send_plots!"  => \$send_plots,
                 "q|qjobs!"     => \$queue_jobs,
                 "clean!"       => \$clean,
+
+                "bin2txt_x=s"  => \$bin2txt_x,
+                "nc4"          => \$nc4,
+                "debugB2T"     => \$debugB2T,
+                "sst_ret"      => \$sst_ret,
+                "passivebc"    => \$passivebc,
+                "npred=i"      => \$npred,
+                "iversion=i"   => \$iversion,
+                "merra2"       => \$merra2flag,
+                "append_txt"   => \$append_txt,
+
                 "i"            => \$inquire,
                 "np"           => \$noprompt,
                 "db|debug"     => \$debug,
@@ -144,6 +154,21 @@ sub init {
     $rc{"send_plots"}   = $send_plots if defined($send_plots);
     $rc{"queue_jobs"}   = $queue_jobs if defined($queue_jobs);
     $rc{"clean"}        = $clean      if defined($clean);
+
+    # bin2txt options
+    #----------------
+    if ($merra2flag) { $iversion = 19180 unless $iversion }
+    $bin2txt_opts = "";
+    $bin2txt_opts .= " -nc4"                if $nc4;
+    $bin2txt_opts .= " -debug"              if $debugB2T;
+    $bin2txt_opts .= " -sst_ret"            if $sst_ret;
+    $bin2txt_opts .= " -passivebc"          if $passivebc;
+    $bin2txt_opts .= " -npred $npred"       if $npred;
+    $bin2txt_opts .= " -npred $npred"       if $npred;
+    $bin2txt_opts .= " -iversion $iversion" if $iversion;
+    $bin2txt_opts =~ s/^\s+// if $bin2txt_opts;
+
+    $rc{"bin2txt_options"} = "$bin2txt_opts" if $bin2txt_opts;
 
     # fill in missing values
     #-----------------------
@@ -220,7 +245,7 @@ sub read_rcIN {
 sub var_subst {
     my ($string);
     $string = shift @_;
-    return unless $string;
+    return unless defined($string);
     return $string unless $string =~ m/\$/;
 
     foreach (@rcVars) {
@@ -266,13 +291,9 @@ sub get_missing_rc_vals {
     $rc{"archive"} = query("Archive directory", $ENV{"ARCHIVE"})
         unless $rc{"archive"};
 
-    $rc{"merra2flag"} = query("MERRA-2 file format (1=yes, 0=no)", 0)
-        unless defined($rc{"merra2flag"});
-
     $rc{"pyradmon"} = query("pyradmon pathname", dirname($Bin))
         unless $rc{"pyradmon"};
     die "Error. Cannot find dir, $rc{pyradmon};" unless -d $rc{"pyradmon"};
-    $gsidiag = "$rc{pyradmon}/gsidiag/gsidiag_bin2txt";
     $gsidiag = "$rc{fvroot}/bin";
 
     # workhead, outdir
@@ -314,6 +335,9 @@ sub get_missing_rc_vals {
         unless $rc{"bin2txt_exec"};
     die "Error. Cannot find file, $rc{bin2txt_exec};"
         unless -f $rc{"bin2txt_exec"};
+
+    $rc{"bin2txt_options"} = query("gsidiag_bin2txt.x options", "")
+        unless $rc{"bin2txt_options"};
 
     # mstorage, gsidiagsrc
     #---------------------
@@ -478,13 +502,13 @@ sub display {
 #  * written in sub bin2img()
 #=======================================================================
 sub get_binfiles {
-    my ($instruments, $ivflag, $bincopy_csh);
+    my ($instruments, $bin2txt_opts, $bincopy_csh);
 
     $instruments = "";
     $instruments = $rc{"instruments"} if $rc{"instruments"};
 
-    $ivflag = "";
-    $ivflag = "-iversion 19180" if $rc{"merra2flag"} == 1;
+    $bin2txt_opts = "";
+    $bin2txt_opts = "$rc{bin2txt_options}" if $rc{"bin2txt_options"};
 
     # bincopy script
     #---------------
@@ -504,7 +528,7 @@ sub get_binfiles {
     print B2T "set echo\n";
     print B2T "unalias rm\n\n";
     print B2T "set bin2txt = $rc{bin2txt_exec}\n";
-    print B2T "set flag = ( $ivflag )";
+    print B2T "set options = ( $bin2txt_opts )";
     close B2T;
     chmod 0744, $bin2txt_csh;
 
@@ -667,11 +691,11 @@ if ("\$binfiles" != "") then
    # write bin2txt script (used in bin2img jobscript)
    #-------------------------------------------------
    foreach bfile (\$binfiles)
-      echo ""                         >> \$bin2txt_csh
-      echo "echo"                     >> \$bin2txt_csh
-      echo "set bfile = \$bfile"      >> \$bin2txt_csh
-      echo '\$bin2txt \$flag \$bfile' >> \$bin2txt_csh
-      echo 'rm \$bfile'               >> \$bin2txt_csh
+      echo ""                            >> \$bin2txt_csh
+      echo "echo"                        >> \$bin2txt_csh
+      echo "set bfile = \$bfile"         >> \$bin2txt_csh
+      echo '\$bin2txt \$options \$bfile' >> \$bin2txt_csh
+      echo 'rm \$bfile'                  >> \$bin2txt_csh
    end
 
 else
@@ -977,7 +1001,7 @@ sub query {
     #------------------
     chomp($ans = <STDIN>);
     $ans =~ s/^\s*|\s*$//g;
-    unless ($ans) { $ans = $dflt if defined($dflt) }
+    unless ($ans ne "") { $ans = $dflt if defined($dflt) }
 
     return $ans;
 }
@@ -1027,26 +1051,24 @@ sub pause {
 sub usage {
     my $script = basename($0);
     print << "EOF";
-usage: $script [rcIN] [required options] [other options]
+usage: $script [rcIN] [pyradmon options] [bin2txt options] [other options] 
 where
   rcIN                  Radmon experiment input resource file
 
-options with no default value
+pyradmon options with no default value
   -expid expid          Experiment on which you are running the pyradmon programs
   -fvhome FVHOME        FVHOME directory of experiment
   -startdate startdate  Start date of pyradmon experiment
 
-options with a default value
+pyradmon options with a default value
   -fvroot FVROOT        FVROOT directory of the build used to run this experiment
   -archive archive      Archive directory where expid can be found
-  -merra2flg            Reading MERRA-2 file format (i.e. iversion = 19180)
   -pyradmon pdir        Directory location of pyradmon programs
   -workhead workhead    Directory location for where to put the work directory
   -outdir outdir        Output directory location
   -starttime starttime  Start time of pyradmon experiment
   -enddate enddate      End date of pyradmon experiment
   -endtime endtime      End time of pyradmon experiment
-  -bin2txt_x b2tx       Pathname of gsidiags_bin2txt.x program
   -mstorage mstorage    Pathname of mstorage.arc file
   -gsidiagsrc grcfile   Pathname of gsidiags.rc file
   -inst Ia,Ib,...       List of instruments to use for pyradmon experiment
@@ -1057,17 +1079,15 @@ options with a default value
   -[no]q                Queue bin2txt and txt2img jobs rather than running interactively
   -[no]clean            Remove obs files from expdir after processing complete
 
-option defaults
+pyradmon option defaults
   -fvroot       [from \$Bin/radmon_process.config file]
   -archive      [\$ARCHIVE]
-  -merra2flg    [use default iversion, i.e. not MERRA-2 file format]
   -pyradmon     [\$Bin/..]
   -workhead     [\$fvhome/..]
   -outdir       [\$fvhome/radmon]
   -starttime    [\"000000\"]
   -enddate      [last day of startdate month]
   -endtime      [\"180000\"]
-  -bin2txt_x    [pyradmon/gsidiag/gsidiag_bin2txt/gsidiag_bin2txt.x]
   -mstorage     [\$fvhome/run/mstorage.arc]
   -gsidiagsrc   [\$fvroot/etc/gsidiags.rc]
   -inst         [all-insts-found-in-archive-expid-obs-dir]
@@ -1078,6 +1098,21 @@ option defaults
   -q            [1 if \$archive is visible; otherwise 0]
   -clean        [1]
 
+gsidiag_bin2txt.x options
+  -bin2txt_x b2tx  Pathname of gsidiags_bin2txt.x program
+                   (default: pyradmon/gsidiag/gsidiag_bin2txt/gsidiag_bin2txt.x)
+  -nc4             Read NC4 Diag (instead of binary)
+  -debugB2T        Set debug verbosity
+  -sst_ret         SST BC term is included (default: not included)
+  -passivebc       Do Bias Correction calculations for passive channels
+                   (by default these fields are reported as missing values)
+  -npred INT       Number of predictors (default: 7)
+  -iversion INT    Override iversion with INT (default: use internal iversion)
+  -merra2          MERRA-2 file format; same as "-iversion 19180"
+  -append_txt      Append .txt suffix, instead of replace last three characters
+                   (default: replaced)
+                   Note: The GMAO diag files end with .bin or .nc4, which is
+                         where fixed 3-char truncation originates
 other options
   -i            Inquire; Prompt for all values not supplied from rcIN or options
   -np           No prompt; Do not prompt for any values
