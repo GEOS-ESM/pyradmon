@@ -18,8 +18,8 @@ use Getopt::Long qw(GetOptions);
 #-----------------
 my ($bin2img_j, $bin2img_log, $bin2txt_csh, $clean, $clean_txt_csh);
 my ($debug, $enddate, $endtime, $esmadir, $expbase, $getbins_err);
-my ($getbins_j, $getbins_log, $inquire, $label, $noprompt);
-my ($outtmp, $pid, $rcIN, $startdate, $starttime, $workdir);
+my ($getbins_j, $getbins_log, $inquire, $label, $noprompt, $outtmp);
+my ($pid, $rcIN, $startdate, $starttime, $workdir);
 my (%rc, %xtrCR, @rcVars);
 
 # this array determines order of variables written to rcfile
@@ -29,6 +29,7 @@ my (%rc, %xtrCR, @rcVars);
               fvroot
               archive
               pyradmon
+              pytmpl
               workhead
               outdir
               startdatetime
@@ -47,7 +48,7 @@ my (%rc, %xtrCR, @rcVars);
 
 # extra <cr>'s in output rcfile after these variables
 #----------------------------------------------------
-%xtrCR = ( "pyradmon"         => 1,
+%xtrCR = ( "pytmpl"           => 1,
            "outdir"           => 1,
            "enddatetime"      => 1,
            "bin2txt_options"  => 1,
@@ -77,10 +78,11 @@ my (%rc, %xtrCR, @rcVars);
 # purpose - get runtime options and parameters
 #=======================================================================
 sub init {
-    my ($append_txt, $archive, $bin2txt_opts, $bin2txt_x, $bindir, $debugB2T);
-    my ($expid, $fvhome, $fvroot, $groupID, $gsidiagsrc, $help, $iversion);
-    my ($merra2flag, $mstorage, $nc4, $npred, $outdir, $passivebc, $pyradmon);
-    my ($queue_jobs, $scp_host, $scp_path, $send_plots, $sst_ret, $workhead);
+    my ($append_txt, $archive, $bin2txt_opts, $bin2txt_x, $bindir);
+    my ($debugB2T, $expid, $fvhome, $fvroot, $groupID, $gsidiagsrc);
+    my ($help, $iversion, $merra2flag, $mstorage, $nc4, $npred);
+    my ($outdir, $passivebc, $pyradmon, $pytmpl_name, $queue_jobs);
+    my ($scp_host, $scp_path, $send_plots, $sst_ret, $workhead);
     my (@inst, %opts);
 
     $inquire = 1 unless @ARGV;
@@ -89,6 +91,7 @@ sub init {
                 "fvroot=s"     => \$fvroot,
                 "archive=s"    => \$archive,
                 "pyradmon=s"   => \$pyradmon,
+                "pytmpl=s"     => \$pytmpl_name,
                 "workhead"     => \$workhead,
                 "outdir"       => \$outdir,
                 "startdate=i"  => \$startdate,
@@ -137,23 +140,23 @@ sub init {
         @inst = split(/,/,join(',',@inst));
         $rc{"instruments"} = "@inst";
     }
-    $rc{"expid"}        = $expid      if $expid;
-    $rc{"fvhome"}       = $fvhome     if $fvhome;
-    $rc{"fvroot"}       = $fvroot     if $fvroot;
-    $rc{"archive"}      = $archive    if $archive;
-    $rc{"merra2flag"}   = $merra2flag if $merra2flag;
-    $rc{"pyradmon"}     = $pyradmon   if $pyradmon;
-    $rc{"workhead"}     = $workhead   if $workhead;
-    $rc{"outdir"}       = $outdir     if $outdir;
-    $rc{"mstorage"}     = $mstorage   if $mstorage;
-    $rc{"gsidiagsrc"}   = $gsidiagsrc if $gsidiagsrc;
-    $rc{"bin2txt_exec"} = $bin2txt_x  if $bin2txt_x;
-    $rc{"scp_userhost"} = $scp_host   if $scp_host;
-    $rc{"scp_path"}     = $scp_path   if $scp_path;
-    $rc{"groupID"}      = $groupID    if $groupID;
-    $rc{"send_plots"}   = $send_plots if defined($send_plots);
-    $rc{"queue_jobs"}   = $queue_jobs if defined($queue_jobs);
-    $rc{"clean"}        = $clean      if defined($clean);
+    $rc{"expid"}        = $expid       if $expid;
+    $rc{"fvhome"}       = $fvhome      if $fvhome;
+    $rc{"fvroot"}       = $fvroot      if $fvroot;
+    $rc{"archive"}      = $archive     if $archive;
+    $rc{"pyradmon"}     = $pyradmon    if $pyradmon;
+    $rc{"pytmpl"}       = $pytmpl_name if $pytmpl_name;
+    $rc{"workhead"}     = $workhead    if $workhead;
+    $rc{"outdir"}       = $outdir      if $outdir;
+    $rc{"mstorage"}     = $mstorage    if $mstorage;
+    $rc{"gsidiagsrc"}   = $gsidiagsrc  if $gsidiagsrc;
+    $rc{"bin2txt_exec"} = $bin2txt_x   if $bin2txt_x;
+    $rc{"scp_userhost"} = $scp_host    if $scp_host;
+    $rc{"scp_path"}     = $scp_path    if $scp_path;
+    $rc{"groupID"}      = $groupID     if $groupID;
+    $rc{"send_plots"}   = $send_plots  if defined($send_plots);
+    $rc{"queue_jobs"}   = $queue_jobs  if defined($queue_jobs);
+    $rc{"clean"}        = $clean       if defined($clean);
 
     # bin2txt options
     #----------------
@@ -164,8 +167,9 @@ sub init {
     $bin2txt_opts .= " -sst_ret"            if $sst_ret;
     $bin2txt_opts .= " -passivebc"          if $passivebc;
     $bin2txt_opts .= " -npred $npred"       if $npred;
-    $bin2txt_opts .= " -npred $npred"       if $npred;
     $bin2txt_opts .= " -iversion $iversion" if $iversion;
+    $bin2txt_opts .= " -merra2"             if $merra2flag;
+    $bin2txt_opts .= " -append_txt"         if $append_txt;
     $bin2txt_opts =~ s/^\s+// if $bin2txt_opts;
 
     $rc{"bin2txt_options"} = "$bin2txt_opts" if $bin2txt_opts;
@@ -295,6 +299,11 @@ sub get_missing_rc_vals {
         unless $rc{"pyradmon"};
     die "Error. Cannot find dir, $rc{pyradmon};" unless -d $rc{"pyradmon"};
     $gsidiag = "$rc{fvroot}/bin";
+
+    unless ($rc{"pytmpl"}) {
+        $dflt = "radiance_plots";
+        $rc{"pytmpl"} = query("pyradmon plotting template name", $dflt)
+    }
 
     # workhead, outdir
     #-----------------
@@ -854,10 +863,10 @@ foreach inst (\$insts)
 
   # yaml templates
   #---------------
-  if (-e \$pyradmon_path/config/radiance_plots.\$inst.yaml.tmpl) then
-    set configtmpl="\$pyradmon_path/config/radiance_plots.\$inst.yaml.tmpl"
+  if (-e \$pyradmon_path/config/$rc{"pytmpl"}.\$inst.yaml.tmpl) then
+    set configtmpl="\$pyradmon_path/config/$rc{"pytmpl"}.\$inst.yaml.tmpl"
   else
-    set configtmpl="\$pyradmon_path/config/radiance_plots.yaml.tmpl"
+    set configtmpl="\$pyradmon_path/config/$rc{"pytmpl"}.yaml.tmpl"
   endif
 
   set configfile="\$workdir/\$inst.\$expid.\$startdate.\$enddate.plot.yaml"
@@ -1064,6 +1073,7 @@ pyradmon options with a default value
   -fvroot FVROOT        FVROOT directory of the build used to run this experiment
   -archive archive      Archive directory where expid can be found
   -pyradmon pdir        Directory location of pyradmon programs
+  -pytmpl pytmpl_name   Name for pyradmon plotting template
   -workhead workhead    Directory location for where to put the work directory
   -outdir outdir        Output directory location
   -starttime starttime  Start time of pyradmon experiment
@@ -1083,6 +1093,7 @@ pyradmon option defaults
   -fvroot       [from \$Bin/radmon_process.config file]
   -archive      [\$ARCHIVE]
   -pyradmon     [\$Bin/..]
+  -pytmpl       ["radiance_plots"]
   -workhead     [\$fvhome/..]
   -outdir       [\$fvhome/radmon]
   -starttime    [\"000000\"]
