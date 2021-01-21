@@ -16,11 +16,18 @@ use Getopt::Long qw(GetOptions);
 
 # global variables
 #-----------------
-my ($bin2img_j, $bin2img_log, $bin2txt_csh, $clean, $clean_txt_csh);
+my ($bin2img_j, $bin2img_log, $bin2txt_pl, $clean, $clean_txt_csh);
 my ($debug, $enddate, $endtime, $esmadir, $expbase, $getbins_err);
-my ($getbins_j, $getbins_log, $inquire, $label, $noprompt, $outtmp);
+my ($getbins_j, $getbins_log, $inquire, $label, $noprompt, $pngdir);
 my ($pid, $rcIN, $startdate, $starttime, $workdir);
 my (%rc, %xtrCR, @rcVars);
+
+# bin2txt flags
+#--------------
+my ($append_txt, $debugB2T, $iversion, $merra2FLG);
+my ($nc4, $npred, $passivebc, $sst_ret);
+
+my $MAX = 6;  # maximum number of parallel jobs
 
 # this array determines order of variables written to rcfile
 #-----------------------------------------------------------
@@ -70,7 +77,6 @@ my (%rc, %xtrCR, @rcVars);
 
     run_jscript($getbins_j, $getbins_log);
     run_jscript($bin2img_j, $bin2img_log);
-
 }
 
 #=======================================================================
@@ -78,11 +84,10 @@ my (%rc, %xtrCR, @rcVars);
 # purpose - get runtime options and parameters
 #=======================================================================
 sub init {
-    my ($append_txt, $archive, $bin2txt_opts, $bin2txt_x, $bindir);
-    my ($debugB2T, $expid, $fvhome, $fvroot, $groupID, $gsidiagsrc);
-    my ($help, $iversion, $merra2flag, $mstorage, $nc4, $npred);
-    my ($outdir, $passivebc, $pyradmon, $pytmpl_name, $queue_jobs);
-    my ($scp_host, $scp_path, $send_plots, $sst_ret, $workhead);
+    my ($archive, $bin2txt_opts, $bin2txt_x, $bindir);
+    my ($expid, $fvhome, $fvroot, $groupID, $gsidiagsrc);
+    my ($help, $mstorage, $outdir, $pyradmon, $pytmpl_name);
+    my ($queue_jobs, $scp_host, $scp_path, $send_plots, $workhead);
     my (@inst, %opts);
 
     $inquire = 1 unless @ARGV;
@@ -115,7 +120,7 @@ sub init {
                 "passivebc"    => \$passivebc,
                 "npred=i"      => \$npred,
                 "iversion=i"   => \$iversion,
-                "merra2"       => \$merra2flag,
+                "merra2"       => \$merra2FLG,
                 "append_txt"   => \$append_txt,
 
                 "i"            => \$inquire,
@@ -160,7 +165,12 @@ sub init {
 
     # bin2txt options
     #----------------
-    if ($merra2flag) { $iversion = 19180 unless $iversion }
+    if ($merra2FLG) {
+        $npred = 7 unless $npred;
+        $iversion = 19180 unless $iversion;
+    }
+    $npred = 12 unless $npred;
+
     $bin2txt_opts = "";
     $bin2txt_opts .= " -nc4"                if $nc4;
     $bin2txt_opts .= " -debug"              if $debugB2T;
@@ -168,7 +178,7 @@ sub init {
     $bin2txt_opts .= " -passivebc"          if $passivebc;
     $bin2txt_opts .= " -npred $npred"       if $npred;
     $bin2txt_opts .= " -iversion $iversion" if $iversion;
-    $bin2txt_opts .= " -merra2"             if $merra2flag;
+    $bin2txt_opts .= " -merra2"             if $merra2FLG;
     $bin2txt_opts .= " -append_txt"         if $append_txt;
     $bin2txt_opts =~ s/^\s+// if $bin2txt_opts;
 
@@ -198,15 +208,14 @@ sub init {
     #-----------
     $label = "$startdate.$enddate";
 
-    # work, outtmp, and output directories
+    # work, pngdir, and output directories
     #-------------------------------------
+    %opts = ("debug" => 1);
     $workdir = "$rc{workhead}/radmon.work.$rc{expid}.$startdate.$$";
     rmtree($workdir, \%opts) if -d $workdir;
 
-    %opts = ("debug" => 1);
-
-    $outtmp = "$workdir/radmon";
-    mkpath($outtmp, \%opts) or die "Error mkpath($outtmp);";
+    $pngdir = "$workdir/pngdir";
+    mkpath($pngdir, \%opts) or die "Error mkpath($pngdir);";
 
     unless (-d $rc{"outdir"}) {
         mkpath($rc{outdir}, \%opts) or die "Error mkpath($rc{outdir});" }
@@ -219,8 +228,9 @@ sub init {
 # purpose - read input resource file, $rcIN
 #=======================================================================
 sub read_rcIN {
-    my ($var);
-    open RC, "< $rcIN" or die "Error opening file, $rcIN;";
+    my (@b2t_split, $b2tFLG, $var);
+    
+    open(RC, "< $rcIN") or die "Error opening file, $rcIN;";
   line: foreach (<RC>) {
       foreach $var (@rcVars) {
           if ( /^\s*$var\s*:\s*(.*)\s*$/ ) {
@@ -235,6 +245,25 @@ sub read_rcIN {
     }
     if ($rc{"enddatetime"}) {
         ($enddate, $endtime) = split /\s+/, $rc{"enddatetime"};
+    }
+    if ($rc{"bin2txt_options"}) {
+        @b2t_split = split /\s+/, $rc{"bin2txt_options"};
+        while (@b2t_split) {
+            $b2tFLG = shift @b2t_split;
+
+            $nc4       = 1 if $b2tFLG eq "-nc4";
+            $debugB2T  = 1 if $b2tFLG eq "-debugB2T";
+            $sst_ret   = 1 if $b2tFLG eq "-sst_ret";
+            $passivebc = 1 if $b2tFLG eq "-passivebc";
+            $merra2FLG = 1 if $b2tFLG eq "-merra2";
+            
+            if ($b2tFLG eq "-npred") {
+                $npred = shift @b2t_split unless $npred;
+            }
+            if ($b2tFLG eq "-iversion") {
+                $iversion = shift @b2t_split unless $iversion;
+            }
+        }
     }
 
     # substitute for variables within value strings
@@ -403,7 +432,7 @@ sub read_radmon_config {
     $radmon_config = "$Bin/radmon_process.config";
     return unless -d $radmon_config;
 
-    open CONF, "< $radmon_config" or die "Error opening $radmon_config;";
+    open(CONF, "< $radmon_config") or die "Error opening $radmon_config;";
     while (<CONF>) {
         @info = split /\s+/;
         next unless scalar(@info) == 3;
@@ -430,8 +459,8 @@ sub print_rcinfo {
 #=======================================================================
 # name - write_rcOUT
 # purpose
-# - write output rcfile to $outtmp
-# - copy input rcfile to $outtmp, if the file exists
+# - write output rcfile to outdir
+# - copy input rcfile to outdir if the file exists
 #
 # note
 # - The output rcfile is not used during this run, but it shows the values
@@ -440,23 +469,23 @@ sub print_rcinfo {
 sub write_rcOUT {
     my ($rcOUT, $rcORIG, $var, $value);
 
-    $rcOUT = "$outtmp/radmon-$rc{expid}.$label.rc";
+    $rcOUT = "$rc{outdir}/radmon-$rc{expid}.$label.rc";
 
-    # if input resource file is given, copy it to $outtmp
-    #----------------------------------------------------
+    # if input resource file is given, copy it to outdir
+    #---------------------------------------------------
     if ($rcIN) {
         if (basename($rcIN) eq basename($rcOUT)) {
-            $rcORIG = "$outtmp/$rcIN.orig";
+            $rcORIG = "$rc{outdir}/$rcIN.orig";
         }
         else {
-            $rcORIG = "$outtmp/" .basename($rcIN);
+            $rcORIG = "$rc{outdir}/" .basename($rcIN);
         }
         copy($rcIN, $rcORIG);
     }
 
     # write output resource file
     #---------------------------
-    open RC, "> $rcOUT" or die "Error opening file, $rcOUT;";
+    open(RC, "> $rcOUT") or die "Error opening file, $rcOUT;";
     foreach $var (@rcVars) {
         $value = $rc{$var};
         if ($var eq "instruments") {
@@ -499,19 +528,17 @@ sub display {
 #
 # notes
 # 1. This sub writes $getbins_j
-# 2. This sub and $getbins_j write $bincopy_csh
-# 3. This sub and $getbins_j write $bin2txt_csh
-# 4. This sub and $getbins_j write $clean_txt_csh
-#
-# 5. $getbins_j is submitted or run from main program
-# 6. $getbins_j runs $bincopy_csh
-# 7. $bin2txt_csh is run in $bin2img_j *
-# 8. $clean_txt_csh is run in $bin2img_j *
+# 2. $getbins_j is submitted or run from main program
+# 3. $getbins_j writes $bin2txt_pl
+# 4. $getbins_j writes $clean_txt_csh
+# 5. $getbins_j copies bin files from archive to the experiment directory
+# 6. $bin2txt_pl is run in $bin2img_j *
+# 7. $clean_txt_csh is run in $bin2img_j *
 #
 #  * written in sub bin2img()
 #=======================================================================
 sub get_binfiles {
-    my ($instruments, $bin2txt_opts, $bincopy_csh);
+    my ($instruments, $bin2txt_opts);
 
     $instruments = "";
     $instruments = $rc{"instruments"} if $rc{"instruments"};
@@ -519,197 +546,231 @@ sub get_binfiles {
     $bin2txt_opts = "";
     $bin2txt_opts = "$rc{bin2txt_options}" if $rc{"bin2txt_options"};
 
-    # bincopy script
-    #---------------
-    $bincopy_csh = "$workdir/bincopy.$label.csh";
-    open(BCP, "> $bincopy_csh") or die "Error opening file, $bincopy_csh;";
-    print BCP "#!/usr/bin/env tcsh\n";
-    print BCP "set echo\n";
-    print BCP "unalias cp\n\n";
-    close BCP;
-    chmod 0744, $bincopy_csh;
-
-    # bin2txt script
-    #---------------
-    $bin2txt_csh = "$workdir/bin2txt.$label.csh";
-    open(B2T, "> $bin2txt_csh") or die "Error opening file, $bin2txt_csh;";
-    print B2T "#!/usr/bin/env tcsh\n";
-    print B2T "set echo\n";
-    print B2T "unalias rm\n\n";
-    print B2T "set bin2txt = $rc{bin2txt_exec}\n";
-    print B2T "set options = ( $bin2txt_opts )";
-    close B2T;
-    chmod 0744, $bin2txt_csh;
-
-    # clean_txt script
-    #-----------------
-    $clean_txt_csh = "$workdir/clean_txt.$label.csh";
-    open(XOBS, "> $clean_txt_csh") or die "Error opening file, $clean_txt_csh;";
-    print XOBS "#!/usr/bin/env tcsh\n";
-    print XOBS "set echo\n";
-    print XOBS "unalias rm\n\n";
-    close XOBS ;
-    chmod 0744, $clean_txt_csh;
-
-    # getbins error file
-    #-------------------
+    $bin2txt_pl = "$workdir/bin2txt.$label.pl";
     $getbins_err = "$workdir/GETBINS_ERR";
+    $clean_txt_csh = "$workdir/clean_txt.$label.csh";
 
-    # getbins jobscript
-    #------------------
-    $getbins_j = "$outtmp/$rc{expid}.getbins.$label.j";
+    $getbins_j = "$rc{outdir}/$rc{expid}.getbins.$label.j";
     $getbins_log = "$rc{outdir}/$rc{expid}.getbins.$label.log.txt";
     unlink $getbins_log if -e $getbins_log;
 
-    open SCR, "> $getbins_j" or die "Error opening file, $getbins_j;";
+    # getbins jobscript
+    #------------------
+    open(SCR, "> $getbins_j") or die "Error opening file, $getbins_j;";
     print SCR << "EOF";
-#!/usr/bin/env tcsh
+#!/usr/bin/env perl
 #SBATCH --account=$rc{groupID}
 #SBATCH --export=NONE
-#SBATCH --time=1:00:00
+#SBATCH --time=2:00:00
 #SBATCH --output=$getbins_log
 #SBATCH --partition=datamove
+use strict;
+use warnings;
+use File::Basename qw(dirname);
+use File::Copy qw(copy);
+use File::Path qw(mkpath rmtree);
+use Scalar::Util qw(openhandle);
+use lib ("$rc{pyradmon}/scripts");
+use LoadBalance qw(load_balance);
+my (\$B2T, \$BCP, \$CLN);
+my (\$ESMADIR, \$FVROOT, \$PESTOROOT);
+my (\$afile, \$archive, \$archroot, \$atmpl);
+my (\$bfile, \$bin2txt_x, \$bin2txt_pl, \$btmpl);
+my (\$clean_txt_csh, \$echorc, \$edir, \$expbase, \$expid, \$exproot);
+my (\$fvhome, \$getbins_err, \$gsidiagsrc, \$inst);
+my (\$msg, \$mstorage, \$ndenddate, \$ndstartdate);
+my (\$pid, \$pyradmon, \$tfile, \$tick, \$tmpl, \$workdir);
+my (\%arc2binH, \%bin2txtH, \%opts);
+my (\@arcfiles, \@dmgetlist, \@enddate, \@insts, \@pidArr, \@startdate, \@template);
+my \$MAX = $MAX;
 
-unalias cd
-unalias cp
+\$| = 1;  # flush buffer after each output operation
+\%opts = ( "verbose" => 1 );
 
-setenv FVROOT $rc{"fvroot"}
-set echorc = \$FVROOT/bin/echorc.x
+\$FVROOT = "$rc{fvroot}";
+\$pyradmon = "$rc{pyradmon}";
 
-setenv ESMADIR $esmadir
-source \$ESMADIR/src/g5_modules
+#\$echorc = "\$FVROOT/bin/echorc.x";
+\$echorc = "\$pyradmon/scripts/echorc.pl";
 
-set expid   = $rc{"expid"}
-set fvhome  = $rc{"fvhome"}
-set archive = $rc{"archive"}
-set expbase = $expbase
+{
+    local \@ARGV = ("\$FVROOT/bin");
+    do "\$FVROOT/bin/g5_modules_perl_wrapper";
+}
+\$expid   = "$rc{expid}";
+\$fvhome  = "$rc{fvhome}";
+\$archive = "$rc{archive}";
+\$expbase = "$expbase";
 
-set startdate = ( $rc{"startdatetime"} )
-set enddate   = ( $rc{"enddatetime"} )
+\@startdate = qw( $rc{"startdatetime"} );
+\@enddate   = qw( $rc{"enddatetime"} );
 
-set pyradmon  = $rc{"pyradmon"}
-set bin2txt   = $rc{"bin2txt_exec"}
+\$bin2txt_x  = "$rc{bin2txt_exec}";
 
-set mstorage   = $rc{"mstorage"}
-set gsidiagsrc = $rc{"gsidiagsrc"}
-set workdir    = $workdir
+\$mstorage   = "$rc{mstorage}";
+\$gsidiagsrc = "$rc{gsidiagsrc}";
+\$workdir    = "$workdir";
 
-set ndstartdate = \$startdate[1]`echo \$startdate[2] | cut -c1-2`
-set ndenddate   = \$enddate[1]`echo \$enddate[2] | cut -c1-2`
+\$ndstartdate = \$startdate[0] .substr(\$startdate[1],0,2);
+\$ndenddate   = \$enddate[0] .substr(\$enddate[1],0,2);
 
-set getbins_err = $getbins_err
+\$getbins_err = "\$workdir/GETBINS_ERR";
 
-if (! -d \$archive) then
-   unset echo
-   echo "\$getbins_err found"
-   set msg = "Error. \$archive not found in getbins job"
-   echo \$msg |& tee \$getbins_err
-   exit 1
-endif
+if (! -d \$archive) {
+    print "\$getbins_err found\\n";
+    \$msg = "Error. \$archive not found in getbins job";
+    system("echo \$msg \|\& tee \$getbins_err");
+    die "\$msg;";
+}
 
-set insts = ($instruments)
-if ("\$insts" == "") then
-   set insts = (`\$echorc -rc \$gsidiagsrc satlist`)
-endif
-echo insts = \$insts
+\@insts = (qw($instruments));
+unless (\@insts) {
+    \@insts = (split /\\s+/, `\$echorc -rc \$gsidiagsrc satlist`);
+}
+print "insts = \@insts\\n";
 
-set tick = \$FVROOT/bin/tick
-if (! -e \$tick) then
-   unset echo
-   echo "Unable to find \$tick"
-   exit
-endif
+\$tick = "\$FVROOT/bin/tick";
+die "Unable to find \$tick;" unless -e \$tick;
 
-cd \$workdir
+mkpath(\$workdir, \\\%opts) unless -d \$workdir;
+chdir \$workdir;
 
-set binfiles = ()
-set bincopy_csh = $bincopy_csh
-set bin2txt_csh = $bin2txt_csh
-set clean_txt_csh = $clean_txt_csh
+\$bin2txt_pl = "$bin2txt_pl";
+\$clean_txt_csh = "$clean_txt_csh";
 
-\@ arcnt = 0
-while (\$ndstartdate <= \$ndenddate)
-   echo; echo; echo "date: \$ndstartdate"
-   set arcfiles = ()
+\%arc2binH = ();
+\%bin2txtH = ();
 
-   foreach inst (\$insts)
-      echo "looking for binfiles: \$inst"
-      set template = `cat \$mstorage | grep \$inst | grep bin\$`
+while (\$ndstartdate <= \$ndenddate) {
+    print "\\n\\ndate: \$ndstartdate\\n";
+    \@dmgetlist = ();
 
-      foreach tmpl (\$template)
-         setenv PESTOROOT \$archive/
-         set afile = `\$echorc -template \$expid \$startdate -fill \$tmpl`
+    \$archroot = "\$archive/";
+    \$exproot = "\$expbase/";
+    foreach \$inst (\@insts) {
+        print "looking for binfiles: \$inst\\n";
+        \@template = (`cat \$mstorage | grep \$inst | grep -P bin\\\$`);
 
-         setenv PESTOROOT \$expbase/
-         set bfile = `\$echorc -template \$expid \$startdate -fill \$tmpl`
-         set tfile = `echo \$bfile | sed 's/bin\$/txt/'`
+        foreach \$tmpl (\@template) {
+            \$ENV{"PESTOROOT"} = \$archroot;
+            \$atmpl = ( `\$echorc -template \$expid \@startdate -fill \$tmpl` );
+            chomp(\$atmpl);
+            foreach \$afile (glob(\$atmpl)) {
+                next unless -e \$afile;
+                (\$bfile = \$afile) =~ s/\$archroot/\$exproot/;
+                (\$tfile = \$bfile) =~ s/bin\$/txt/;
+                next if \$bin2txtH{\$bfile};
+                next if -e \$tfile;
+                unless (-e \$bfile) {
+                    \$arc2binH{\$afile} = \$bfile;
+                    push \@dmgetlist, \$afile;
+                }
+                \$bin2txtH{\$bfile} = \$tfile;
+            }
 
-         # check for bin file in archive and experiment directories
-         #---------------------------------------------------------
-         if (! -e \$tfile && (-e \$afile || -e \$bfile)) then
+            \$ENV{"PESTOROOT"} = \$exproot;
+            \$btmpl = ( `\$echorc -template \$expid \@startdate -fill \$tmpl` );
+            chomp(\$btmpl);
+            foreach \$bfile (glob(\$btmpl)) {
+                next unless -e \$bfile;
+                next if \$bin2txtH{\$bfile};
+                (\$tfile = \$bfile) =~ s/bin\$/txt/;
+                next if -e \$tfile;
+                \$bin2txtH{\$bfile} = \$tfile;
+            }
+        }
+    }
+    if (\@dmgetlist) {
+        print "dmget \@dmgetlist\\n";
+        \@pidArr = load_balance(\\\@pidArr, \$MAX);
+        defined(\$pid=fork) or die "Error. Cannot fork: \$!";
+        unless (\$pid) {
+            exec("dmget \@dmgetlist");
+        }
+        push \@pidArr, \$pid;
+    }
+    chomp(\@startdate = (split /\\s+/, `\$tick \@startdate 0 060000`));
+    \$ndstartdate = \$startdate[0] .substr(\$startdate[1], 0, 2);
+}
 
-            # add to list of bin files to copy from archive
-            #----------------------------------------------
-            if (! -e \$bfile) then
-               \@ arcnt ++
-               set arcfiles = (\$arcfiles \$afile)
-               echo "echo"                             >> \$bincopy_csh
-               echo "set afile = \$afile"              >> \$bincopy_csh
-               echo "set bfile = \$bfile"              >> \$bincopy_csh
-               echo 'set edir = \`dirname \$bfile\`'   >> \$bincopy_csh
-               echo 'if (! -d \$edir) mkdir -p \$edir' >> \$bincopy_csh
-               echo 'cp \$afile \$bfile'               >> \$bincopy_csh
-               echo ''                                 >> \$bincopy_csh
-            endif
+# copy bin files from archive
+#----------------------------
+if (\%arc2binH) {
+    \@arcfiles = (sort keys \%arc2binH);
+    foreach \$afile (\@arcfiles) {
+        \$bfile = \$arc2binH{\$afile};
+        \$edir = dirname(\$bfile);
+        print "\\n";
+        mkpath(\$edir, \\\%opts) unless -d \$edir;
+        print "afile: \$afile\\n";
+        print "bfile: \$bfile\\n";
+        print "copy(afile, bfile)\\n";
 
-            # list of bin files to convert to txt
-            #------------------------------------
-            set binfiles = (\$binfiles \$bfile)
+        \@pidArr = load_balance(\\\@pidArr, \$MAX);
+        defined(\$pid=fork) or die "Error. Cannot fork: \$!";
+        unless (\$pid) {
+            copy(\$afile, \$bfile);
+            exit;
+        }
+        push \@pidArr, \$pid;
+    }
+    print "\\n";
+    load_balance(\\\@pidArr, 0);
+} else { print "No need to copy bin files from archive.\\n" }
 
-            # txt files to delete when processing is complete
-            #------------------------------------------------
-            echo "rm -f \$tfile" >> \$clean_txt_csh
+if (%bin2txtH) {
 
-         endif
-      end
-   end
+    # write bin2txt script
+    #---------------------
+    unlink \$bin2txt_pl if -e \$bin2txt_pl;
+    open(\$B2T, "> \$bin2txt_pl") or die "Error opening file, \$bin2txt_pl;";
+    print \$B2T qq(#!/usr/bin/env perl\\n);
+    print \$B2T qq(use strict;\\n);
+    print \$B2T qq(use warnings;\\n);
+    print \$B2T qq(use lib ("$rc{pyradmon}/scripts");\\n);
+    print \$B2T qq(use LoadBalance qw(load_balance);\\n);
+    print \$B2T qq(my (\\\$bfile, \\\$bin2txt_x, \\\$options);\\n);
+    print \$B2T qq(my (\\\$pid, \\\@pidArr);\\n);
+    print \$B2T qq(my \\\$MAX = $MAX;\\n);
+    print \$B2T qq(\\n);
+    print \$B2T qq(\\\$bin2txt_x = "$rc{bin2txt_exec}";\\n);
+    print \$B2T qq(\\\$options = "$bin2txt_opts";\\n);
+    print \$B2T qq(\\\@pidArr = ();\\n);
+    print \$B2T qq(\\n);
+    print \$B2T qq(sub b2t {\\n);
+    print \$B2T qq(   my \\\$bfile = shift \\\@_;\\n);
+    print \$B2T qq(   \\\@pidArr = load_balance(\\\\\\\@pidArr, \\\$MAX);\\n);
+    print \$B2T qq(   defined(\\\$pid=fork) or die "Error. Cannot fork: \\\\\\\$!";\\n);
+    print \$B2T qq(   unless (\\\$pid) {\\n);
+    print \$B2T qq(       exec("\\\$bin2txt_x \\\$options \\\$bfile");\\n);
+    print \$B2T qq(   }\\n);
+    print \$B2T qq(   push \\\@pidArr, \\\$pid;\\n);
+    print \$B2T qq(}\\n);
+    print \$B2T qq(\\\@pidArr = load_balance(\\\\\\\@pidArr, 0);\\n\\n);
 
-   # dmget archive files
-   #--------------------
-   if ("\$arcfiles" != "") then
-      echo dmget arcfiles
-      dmget \$arcfiles &
-   endif
+    foreach \$bfile (sort keys \%bin2txtH) {
+        print \$B2T qq(b2t("\$bfile");\\n);
+    }
+    close \$B2T;
 
-   set startdate = `\$tick \$startdate 0 060000`
-   set ndstartdate = \$startdate[1]`echo \$startdate[2] | cut -c1-2`
-end
+    # write clean_text script
+    #------------------------
+    unlink \$clean_txt_csh if -e \$clean_txt_csh;
+    open(\$CLN, "> \$clean_txt_csh") or die "Error opening file, \$clean_txt_csh;";
+    print \$CLN "#!/usr/bin/env tcsh\\n";
+    print \$CLN "set echo\\n";
+    print \$CLN "unalias rm\\n\\n";
 
-if (! \$arcnt) then
-   echo "No need to copy bin files from archive." >> \$bincopy_csh
-endif
-
-if ("\$binfiles" != "") then
-
-   # copy bin files from archive
-   #----------------------------
-   set bincopy_csh = $bincopy_csh
-   echo \$bincopy_csh
-   \$bincopy_csh
-
-   # write bin2txt script (used in bin2img jobscript)
-   #-------------------------------------------------
-   foreach bfile (\$binfiles)
-      echo ""                            >> \$bin2txt_csh
-      echo "echo"                        >> \$bin2txt_csh
-      echo "set bfile = \$bfile"         >> \$bin2txt_csh
-      echo '\$bin2txt \$options \$bfile' >> \$bin2txt_csh
-      echo 'rm \$bfile'                  >> \$bin2txt_csh
-   end
-
-else
-      echo "echo No need to convert bin files to txt." >> \$bin2txt_csh;
-endif
+    foreach \$afile (sort keys \%arc2binH) {
+        print \$CLN qq(rm -f \$arc2binH{\$afile}\\n);
+    }
+    foreach \$bfile (sort keys \%bin2txtH) {
+        print \$CLN qq(rm -f \$bin2txtH{\$bfile}\\n);
+    }
+    close \$CLN;
+    chmod 0744, \$bin2txt_pl;
+    chmod 0744, \$clean_txt_csh;
+} else { print "No need to convert bin files to txt.\\n" }
 EOF
 ;
     close SCR;
@@ -724,7 +785,7 @@ EOF
 # 2. This sub writes $scp_data_j
 #
 # 3. $bin2img_j is submitted or run from main program
-# 4. $bin2img_j runs $bin2txt_csh *
+# 4. $bin2img_j runs $bin2txt_pl *
 # 5. $bin2img_j runs $clean_txt_csh *
 # 6. $bin2img_j submits $scp_data_j
 #
@@ -740,7 +801,7 @@ sub bin2img {
     unlink($scp_data_j) if -e $scp_data_j;
     unlink($scp_data_log) if -e $scp_data_log;
 
-    open SCR, "> $scp_data_j" or die "Error opening file, $scp_data_j;";
+    open(SCR, "> $scp_data_j") or die "Error opening file, $scp_data_j;";
     print SCR << "EOF";
 #!/usr/bin/env tcsh
 #SBATCH --account=$rc{groupID}
@@ -770,14 +831,14 @@ EOF
 
     # bin2img jobscript
     #------------------
-    $bin2img_j = "$outtmp/$rc{expid}.bin2img.$label.j";
+    $bin2img_j = "$rc{outdir}/$rc{expid}.bin2img.$label.j";
     $bin2img_log = "$rc{outdir}/$rc{expid}.bin2img.$label.log.txt";
     unlink $bin2img_log if -e $bin2img_log;
 
     $instruments = "";
     $instruments = $rc{"instruments"} if $rc{"instruments"};
 
-    open SCR, "> $bin2img_j" or die "Error opening file, $bin2img_j;";
+    open(SCR, "> $bin2img_j") or die "Error opening file, $bin2img_j;";
     print SCR << "EOF";
 #!/usr/bin/env tcsh
 #SBATCH --account=$rc{groupID}
@@ -811,9 +872,17 @@ set send_plots      = $rc{"send_plots"}
 
 set workdir         = $workdir
 set outdir          = $rc{"outdir"}
-set output_dir      = $outtmp
+set output_dir      = $pngdir
 
 set label           = $label
+
+if (! -d \$output_dir) then
+   mkdir -p \$output_dir
+endif
+
+if (! -d \$outdir) then
+   mkdir -p \$outdir
+endif
 
 set data_dirbase = \$expbase/\$expid
 echo \$data_dirbase
@@ -826,13 +895,13 @@ if (-e \$getbins_err) then
     exit 1
 endif
 
-set bin2txt_csh = $bin2txt_csh
+set bin2txt_pl = $bin2txt_pl
 set clean_txt_csh = $clean_txt_csh
 set scp_data_j = $scp_data_j
 
 # run bin2txt script
 #-------------------
-\$bin2txt_csh
+\$bin2txt_pl
 
 # determine instruments
 #----------------------
@@ -1109,7 +1178,7 @@ pyradmon option defaults
   -q            [1 if \$archive is visible; otherwise 0]
   -clean        [1]
 
-gsidiag_bin2txt.x options
+bin2txt options
   -bin2txt_x b2tx  Pathname of gsidiags_bin2txt.x program
                    (default: pyradmon/gsidiag/gsidiag_bin2txt/gsidiag_bin2txt.x)
   -nc4             Read NC4 Diag (instead of binary)
@@ -1117,9 +1186,9 @@ gsidiag_bin2txt.x options
   -sst_ret         SST BC term is included (default: not included)
   -passivebc       Do Bias Correction calculations for passive channels
                    (by default these fields are reported as missing values)
-  -npred INT       Number of predictors (default: 7)
+  -npred INT       Number of predictors (default: 12)
   -iversion INT    Override iversion with INT (default: use internal iversion)
-  -merra2          MERRA-2 file format; same as "-iversion 19180"
+  -merra2          MERRA-2 file format; same as "-iversion 19180 -npred 7"
   -append_txt      Append .txt suffix, instead of replace last three characters
                    (default: replaced)
                    Note: The GMAO diag files end with .bin or .nc4, which is
