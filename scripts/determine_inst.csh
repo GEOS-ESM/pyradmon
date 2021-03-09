@@ -20,7 +20,7 @@ while ( $curdate <= $enddate )
     set obsdir = $dir/obs/Y$year/M$mon/D$day
     if (-d $obsdir) set dirs = ($dirs $obsdir)
 
-    set curdate  = `$ESMADIR/Linux/bin/tick $curdate`
+    set curdate  = `$FVROOT/bin/tick $curdate`
 end
 
 set instList = ()

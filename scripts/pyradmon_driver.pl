@@ -853,7 +853,8 @@ unalias mv
 unalias rm
 
 setenv ESMADIR $esmadir
-source \$ESMADIR/src/g5_modules
+setenv FVROOT $rc{"fvroot"}
+source \$FVROOT/bin/g5_modules
 set echo
 
 set expid           = $rc{"expid"}
