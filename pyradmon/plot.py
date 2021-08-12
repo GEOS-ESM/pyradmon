@@ -649,36 +649,28 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
                                         warn("Colors specified vs. amount of Y data: %i vs. %i" % (len(subplot["data"]["colors"]), len(subplot["data"]["y"])))
                             
                             # Filter out any invalid data (-9999.99)...
-                            # ...but ensure that "iuse" exists first!
-                            if isset("iuse", data_dict):
-                                # Do we need to skip graphing (due to
-                                # all of the values being bad)?
-                                skip_graph = False
+                            skip_graph = False
                                 
-                                # Loop through prefixes...
-                                for prefix in VALID_PREFIX:
-                                    # Check for negative iuses
-                                    if any(iuse < 0 for iuse in data_dict["iuse"][prefix]):
-                                        #debug("Detected -1 in iuse field!")
-                                        
-                                        # Check to see if all of the
-                                        # values are bad
-                                        bad_vals = [ y for y in y_dat if (y <= -9999) ]
-                                        
-                                        # Are they all bad apples?
-                                        if len(bad_vals) == len(y_dat):
-                                            # Take steps to make an
-                                            # empty plot
-                                            axe.xaxis_date()
-                                            y_id += 1
-                                            
-                                            skip_graph = True
-                                            break
-                                        
-                                        # Otherwise, just filter the data!
-                                        replaced_y = [ np.nan if y <= -9999 else y for y in y_dat ]
-                                        y_dat = replaced_y
-                                        break
+                            # Loop through prefixes...
+                            for prefix in VALID_PREFIX:
+                                # Check to see if all of the
+                                # values are bad
+                                bad_vals = [ y for y in y_dat if (y <= -9999) ]
+                                
+                                # Are they all bad apples?
+                                if len(bad_vals) == len(y_dat):
+                                    # Take steps to make an
+                                    # empty plot
+                                    axe.xaxis_date()
+                                    y_id += 1
+                                    
+                                    skip_graph = True
+                                    break
+                                
+                                # Otherwise, just filter the data!
+                                replaced_y = [ np.nan if y <= -9999 else y for y in y_dat ]
+                                y_dat = replaced_y
+                                break
                             
                             # Check for a labels attribute...
                             if isset("labels", subplot["data"]):
