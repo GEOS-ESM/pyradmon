@@ -130,6 +130,7 @@ sub init {
     usage() if $help;
     $inquire = 0 if $noprompt;
     $debug = 0 unless $debug;
+    $clean = 1 unless(defined($clean));
 
     # read from input resource file, if given
     #----------------------------------------
@@ -480,7 +481,7 @@ sub write_rcOUT {
         else {
             $rcORIG = "$rc{outdir}/" .basename($rcIN);
         }
-        copy($rcIN, $rcORIG);
+        copy($rcIN, $rcORIG) unless abs_path($rcIN) eq abs_path($rcORIG);
     }
 
     # write output resource file
@@ -1156,7 +1157,7 @@ pyradmon options with a default value
   -scp_path scp_path    Pathname of output directory on userhost
   -grpID gid            Account group ID for submitting queued jobs
   -[no]send_plots       Send plots to userhost (1=yes, 0=no)
-  -[no]q                Queue bin2txt and txt2img jobs rather than running interactively
+  -[no]q                Always queue getbins and bin2img jobs
   -[no]clean            Remove obs files from expdir after processing complete
 
 pyradmon option defaults

@@ -64,6 +64,7 @@
       array("name" => "airscld_aqua",    "longname" => "AIRSCLD Aqua",   "nchan" => 281, "startch" => 3,  "dosubset" => false),
       array("name" => "iasi_metop-a", "longname" => "IASI METOP-A",   "nchan" => 616, "startch" => 1,  "dosubset" => false),
       array("name" => "iasi_metop-b", "longname" => "IASI METOP-B",   "nchan" => 616, "startch" => 1,  "dosubset" => false),
+      array("name" => "iasi_metop-c", "longname" => "IASI METOP-C",   "nchan" => 616, "startch" => 1,  "dosubset" => false),
       array("name" => "iasicld_metop-a", "longname" => "IASICLD METOP-A","nchan" => 616, "startch" => 1,  "dosubset" => false),
       array("name" => "iasicld_metop-b", "longname" => "IASICLD METOP-B","nchan" => 616, "startch" => 1,  "dosubset" => false),
       array("name" => "cris_npp",     "longname" => "CRIS SNPP",      "nchan" => 399, "startch" => 1,  "dosubset" => false),
