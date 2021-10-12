@@ -115,6 +115,7 @@
       array("name" => "avhrr_n15",    "longname" => "AVHRR NOAA-15",      "nchan" => 3,   "startch" => 1,  "dosubset" => false),
       array("name" => "avhrr_n17",    "longname" => "AVHRR NOAA-17",      "nchan" => 3,   "startch" => 1,  "dosubset" => false),
       array("name" => "avhrr_n18",       "longname" => "AVHRR NOAA-18",  "nchan" => 3,   "startch" => 1,  "dosubset" => false),
+      array("name" => "avhrr_n19",       "longname" => "AVHRR NOAA-19",  "nchan" => 3,   "startch" => 1,  "dosubset" => false),
       array("name" => "avhrr_metop-a",   "longname" => "AVHRR MetOp-A",  "nchan" => 3,   "startch" => 1,  "dosubset" => false),
       array("name" => "avhrr_metop-b",   "longname" => "AVHRR MetOp-B",  "nchan" => 3,   "startch" => 1,  "dosubset" => false),
       array("name" => "gmi_gpm",         "longname" => "GMI GPM",        "nchan" => 13,  "startch" => 1,  "dosubset" => false),
