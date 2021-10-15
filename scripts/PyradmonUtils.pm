@@ -1,10 +1,8 @@
-package LoadBalance;
+package PyradmonUtils;
 #=======================================================================
-# name: LoadBalance
+# name: PyradmonUtils
 # purpose:
-#    This package provides a function that will monitor a list of
-#    process IDs and will wait until the number of active processes is
-#    less than a MAX value.
+#    This package provides utility routines needed by the Pyradmon perl scripts.
 #=======================================================================
 use strict;
 use warnings;
@@ -14,7 +12,7 @@ require 5.000;
 require Exporter;
 
 our @ISA = qw(Exporter);
-our @EXPORT = qw( load_balance );
+our @EXPORT = qw( load_balance substitute );
 
 #=======================================================================
 # name: load_balance
@@ -60,5 +58,34 @@ sub load_balance {
         @pidArr = @pidArr_;
         sleep 1; # wait one second before looping through again
     }
+}
+
+#=======================================================================
+# name - substitute
+# purpose - substitute values for labels in a template file and write
+#           result to an output file
+#
+# input parameters
+# > $tmpl:  input template file
+# > $outf:  output file
+# > %values: substitute values where $values{$label} = $value
+#=======================================================================
+sub substitute {
+    my ($tmpl, $outf, %values);
+    my ($key);
+    $tmpl = shift @_;
+    $outf = shift @_;
+    %values = @_;
+
+    open (FH1, "< $tmpl") or die "Error opening input file, $tmpl;";
+    open (FH2, "> $outf") or die "Error opening output file, $outf;";
+    while (<FH1>) {
+        foreach $key (reverse sort keys %values) {
+            s/$key/$values{$key}/g if m/$key/;
+        }
+        print FH2 $_;
+    }
+    close FH1;
+    close FH2;
 }
 1;
