@@ -750,7 +750,7 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
                 # bbox_to_anchor - the "bounding box" where the legend will anchor to
                 # borderaxespad - the pad between the axes and legend border
                 # handlelength - the length of the legend handles
-                legend = axe.legend(loc='center left', bbox_to_anchor=(-0.3, 0.5), borderaxespad=0., handlelength=0, **legend_kwargs)
+                legend = axe.legend(loc='center left', bbox_to_anchor=(-0.3, 0.5), borderaxespad=1., handlelength=3, **legend_kwargs)
                 
                 # Make the legend title large!
                 # (But only if the legend actually exists - if there's
@@ -776,7 +776,7 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
                         labels.append(l.replace("%STDDEV%", "N/A"))
                     
                     # Finally, add the fake legend to the plot!
-                    ext_leg = plt.legend(rects, labels, loc='center left', bbox_to_anchor=(-0.3, 0.5), borderaxespad=0., handlelength=0, **legend_kwargs)
+                    ext_leg = plt.legend(rects, labels, loc='center left', bbox_to_anchor=(-0.3, 0.5), borderaxespad=1., handlelength=3, **legend_kwargs)
             
             # If there's a subplot title, make one!
             if isset("title", subplot):
