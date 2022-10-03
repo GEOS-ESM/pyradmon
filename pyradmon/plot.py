@@ -474,17 +474,22 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
                                 warn("Assimilation state mismatch - last element uses %i instead of %i! (Changing to former value.)" % (data_dict["iuse"][prefix][-1], iuse_state))
                             iuse_state = -1
                         else:
-                            if iuse_state and iuse_state == -1:
-                                warn("Assimilation state mismatch - last element uses %i instead of %i! (Changing to former value.)" % (data_dict["iuse"][prefix][-1], iuse_state))
-                            iuse_state = data_dict["iuse"][prefix][-1]
+                            if data_dict["iuse"][prefix][-1] == 1:
+                                if iuse_state and iuse_state != 1:
+                                    warn("Assimilation state mismatch - last element uses %i instead of %i! (Changing to former value.)" % (data_dict["iuse"][prefix][-1], iuse_state))
+                                iuse_state = data_dict["iuse"][prefix][-1]
+                            else:
+                                iuse_state = data_dict["iuse"][prefix][0]
                     
                     # Check to ensure iuse_state has been set!
-                    if not iuse_state:
+                    if not iuse_state and iuse_state != 0:
                         die("Assimilation state could not be updated! (No prefixes found?)")
                     
                     # Now check the last element - if -1, it's not assimilated!
                     if iuse_state == -1:
                         fig.text(0.67, 0.948, "Not Assimilated", ha="center", va="bottom", size="x-large",color="red")
+                    elif iuse_state == 0:
+                        fig.text(0.67, 0.948, "Monitored", ha="center", va="bottom", size="x-large",color="cyan")
                     else:
                         fig.text(0.67, 0.948, "Assimilated", ha="center", va="bottom", size="x-large",color="green")
                 else:
