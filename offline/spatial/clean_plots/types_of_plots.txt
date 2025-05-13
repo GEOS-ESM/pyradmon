@@ -1,0 +1,44 @@
+There are currently 10 types of plots (per channel) on the
+original RADMON spatial coverage plots web page.
+
+These 10 types of plots are:
+
+1
+o-a  bias correction (qc0=QC: Assimilated, ALL w/Gross Tb Check)
+omabc.AMSUA_N19.20210102_00z.allsfc.allarea.allday.qc0.13.png
+
+2
+o-a  w/o bias correction (qc1=QC: Assimilated, Accepted)
+omanbc.AMSUA_N19.20210102_00z.allsfc.allarea.allday.qc1.13.png
+
+3
+o-f bias correction (qc0=QC: Assimilated, ALL w/Gross Tb Check)
+omgbc.AMSUA_N19.20210102_00z.allsfc.allarea.allday.qc0.13.png
+
+4
+o-f w/o bias correction (qc1=QC: Assmiliated, Accepted)
+omgbc.AMSUA_N19.20210102_00z.allsfc.allarea.allday.qc1.13.png
+
+5
+o-f w/o bias correction (qc0=QC: Assimilated, ALL w/Gross Tb Check)
+omgnbc.AMSUA_N19.20210102_00z.allsfc.allarea.allday.qc0.13.png
+
+6
+o-f w/o bias correction (qc1=QC: Assmiliated, Accepted)
+omgnbc.AMSUA_N19.20210102_00z.allsfc.allarea.allday.qc1.13.png
+
+7
+Brightness Temperature (qc0=QC: Assimilated, ALL w/Gross Tb Check)
+tbobs.AMSUA_N19.20210102_00z.allsfc.allarea.allday.qc0.13.png
+
+8
+Brightness Temperature (qc1=QC: Assmiliated, Accepted)
+tbobs.AMSUA_N19.20210102_00z.allsfc.allarea.allday.qc1.13.png
+
+9 
+Total bias Correction (qc0=QC: Assimilated, ALL w/Gross Tb Check)
+totbc.AMSUA_N19.20210102_00z.allsfc.allarea.allday.qc0.13.png
+
+10
+Total bias Correction (qc1=QC: Assmiliated, Accepted)
+totbc.AMSUA_N19.20210102_00z.allsfc.allarea.allday.qc1.13.png
