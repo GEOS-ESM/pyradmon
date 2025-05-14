@@ -18,10 +18,13 @@ ACTIVATE_VENV = os.getenv("ACTIVATE_VENV") # the path to your virtual environmen
 
 # Environment Configuration
 ###########################
+pyradmon = PYRADMON_HOME_DIR
 PYRADMON_TIMESERIES_DIR = os.path.join(PYRADMON_HOME_DIR,'offline/timeseries/')
 PYRADMON_TIMESERIES_SRC_DIR = os.path.join(PYRADMON_TIMESERIES_DIR,'src/')
-PYRADMON_TIMESERIES_WRK_DIR = os.path.join(PYRADMON_TIMESERIES_DIR,'fvwork.RADMON/')
-PYRADMON_TIMESERIES_OUTPUT_DIR = os.path.join(PYRADMON_TIMESERIES_WRK_DIR,'clean_plots/%Y%m%d/')
+#PYRADMON_TIMESERIES_WRK_DIR = PYRADMON_TIMESERIES_EXPBASE_DIR = os.path.join(PYRADMON_TIMESERIES_SRC_DIR, expbase)
+#PYRADMON_TIMESERIES_OUTPUT_DIR = os.path.join(PYRADMON_TIMESERIES_WRK_DIR,'clean_plots/%Y%m%d/')
+#scratch_dir
+
 
 print(
     f''' ----------------PyRadmonTimeseries Configuration (.env file) ------------------------------
@@ -47,6 +50,26 @@ command = 'source $ACTIVATE_VENV && cd $PYRADMON_TIMESERIES_SRC_DIR && source te
 process = subprocess.run(command, shell=True, executable='/bin/bash')
 
 
+# Environment Configuration
+###########################
+PYRADMON_TIMESERIES_DIR = os.path.join(PYRADMON_HOME_DIR,'offline/timeseries/')
+PYRADMON_TIMESERIES_SRC_DIR = os.path.join(PYRADMON_TIMESERIES_DIR,'src/')
+PYRADMON_TIMESERIES_WRK_DIR = os.path.join(PYRADMON_TIMESERIES_DIR,'fvwork.RADMON/')
+PYRADMON_TIMESERIES_OUTPUT_DIR = os.path.join(PYRADMON_TIMESERIES_WRK_DIR,'clean_plots/%Y%m%d/')
+        
+# Set Environment variables
+###########################
+# radmon_process.config equivalent
+os.environ['ESMADIR'] = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/' #self.pyradmon
+os.environ['expid'] = self.expid
+os.environ['expbase'] = self.expbase
+os.environ['arcbase'] = self.arcbase
+os.environ['startdate'] = self.startdate
+os.environ['enddate'] = self.enddate
+os.environ['pyradmon'] = self.pyradmon
+os.environ['exprc'] = self.exprc
+os.environ['rcfile'] = self.rcfile
+
 
 ###############################
 
@@ -67,128 +90,21 @@ process = subprocess.run(command, shell=True, executable='/bin/bash')
 print(f'g5_modules loaded  ------------------------------------------------------------------')
 
 
-# m21c.current.rc.tmpl equivalent 
-#################################
-class PyRadmonBase:
-    def __init__(self, config_yaml_path): 
-        """
-        Initialize the PyRadmonBase class using a YAML configuration file.
-        :param config_yaml_path: Path to the YAML configuration file. See PyRadmonBase_template.yaml
-        
-        """
+# Set Environment variables
+###########################
 
-        with open(config_yaml_path, 'r') as file:
-            config = yaml.safe_load(file)
-            #print(f'config: {config}')
-        
-        """
-        pyradmon: str | pyradmon top lvl dir | /home/dao_ops/pyradmon/
-        expid: str \ path| experiment id | e5303_m21c_jan18
-        expbase: str \ path | working dir (local experiment dir)? | /discover/nobackup/projects/gmao/r21c/aelakkra/TBR/radmon/time_series/m21c_radmon/
-        arcbase: str \ path | /home/dao_ops/m21c/archive/
-        data_dirbase: str \ path | /home/dao_ops/m21c/archive/e5303_m21c_jan18/obs
-        startdate: 20190530 000000
-        enddate:  20190531 180000
+# radmon_process.config equivalent
+os.environ['ESMADIR'] = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/' #self.pyradmon
 
-        scratch_dir: /discover/nobackup/projects/gmao/r21c/aelakkra/TBR/radmon/time_series/m21c_radmon/scratch
-        output_dir: /discover/nobackup/projects/gmao/r21c/aelakkra/TBR/radmon/time_series/m21c_radmon/radmon
-
-        #optional:
-        mstorage: 
-        #instruments: 
-        bin2txt_exec: 
-        bin2txt_nl: 
-        #rename_date_dir: current
-        #scp_userhost: aelakkra@polar
-        #scp_path: /www/html/intranet/personnel/aelakkra/m21c/radmon_data/
-        """
-        # m21c.current.rc.tmpl equivalent
-        #################################
-        self.expid = config['expid'] #e5303_m21c_jan18
-        self.startdate = config['startdate'] # 20190530 000000
-        self.enddate = config['enddate'] # 20190531 180000
-        self.arcbase = config['arcbase'] #/home/dao_ops/m21c/archive/
-        self.expbase = config['expbase'] #/discover/nobackup/projects/gmao/r21c/aelakkra/TBR/radmon/time_series/m21c_radmon/
-
-        # Defaults ~ user should not need to change these values
-        ## Executables and Code and .rc files
-        self.pyradmon = '/home/dao_ops/pyradmon/'
-        self.gsidiagsrc = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.rc'
-
-        ## Existing Data Files
-        ### created from: self.arcbase = config['arcbase'] #/home/dao_ops/m21c/archive/
-        self.data_dirbase = os.path.join(self.arcbase, self.expid, 'obs') #config['data_dirbase'] #/home/dao_ops/m21c/archive/e5303_m21c_jan18/obs
-        self.runbase = os.path.join(self.arcbase, self.expid, 'run') # /home/dao_ops/e5303_m21c_jan18/run/
-        self.runbase = config['runbase'] # /home/dao_ops/e5303_m21c_jan18/run/
-
-        ## User working directories (created and deleted during main process later)
-        ### created from: self.expbase = config['expbase'] 
-        self.scratch_dir = os.path.join(self.expbase, 'scratch_dir') #config['scratch_dir']
-        self.output_dir = os.path.join(self.expbase, 'output_dir') #config['output_dir'] 
-        
-        ## Exisitng (master?) .rc files
-        ## These are just a copy of th confing_input_yaml. Should be changed.
-        self.exprc = config_yaml_path
-        self.rcfile = config_yaml_path
-
-        #optional
-
-        #########
-        #self.mstorage = config['mstorage'] #
-        #self.instruments = config['instruments'] #
-        #self.bin2txt_exec = config['bin2txt_exec'] #
-        #self.bin2txt_nl = config['bin2txt_nl'] #
-        #self.rename_date_dir = config['rename_date_dir'] #
-
-    #def __repr__(self):
-     #   return 
-        print(f"pyradmon = {self.pyradmon},expid = {self.expid}, expbase = {self.expbase},arcbase = {self.arcbase}, data_dirbase = {self.data_dirbase},startdate = {self.startdate}, enddate = {self.enddate}, scratch_dir = {self.scratch_dir},output_dir = {self.output_dir}, rcfile = {self.rcfile},exprc = {self.exprc}, gsidiagsrc = {self.gsidiagsrc}, self.runbase  = {self.runbase })")
-
-
-        # pyradmon_bin2txt_driver while loop line 74 equivalent
-        def parse_mstorage(file_path, search_string):
-            """
-            Reads a file line by line and prints lines containing a specified string.
-
-            Args:
-                file_path (str): The path to the file.
-                search_string (str): The string to search for in each line.
-            """
-            try:
-                section_lines = []
-                with open(file_path, 'r') as file:
-                    for line in file:
-                        if search_string in line and '.bin' in line:
-                            print(line, end='')
-                            section_lines.append(line)
-                return section_lines
-            except FileNotFoundError:
-                print(f"Error: File not found: {file_path}")
-
-            """
-            for sat in sats:
-                template = parse_mstorage(file_path, search_string)
-                os.environ['PESTOROOT'] = self.arcbase
-                os.environ['PESTOROOT'] = self.arcbase
-                print(template)
-            """
-
-        
-        # Set Environment variables
-        ###########################
-
-        # radmon_process.config equivalent
-        os.environ['ESMADIR'] = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/' #self.pyradmon
-
-        # config_yaml (m21c.current.rc) equivalent
-        os.environ['expid'] = self.expid
-        os.environ['expbase'] = self.expbase
-        os.environ['arcbase'] = self.arcbase
-        os.environ['startdate'] = self.startdate
-        os.environ['enddate'] = self.enddate
-        os.environ['pyradmon'] = self.pyradmon
-        os.environ['exprc'] = self.exprc
-        os.environ['rcfile'] = self.rcfile
+# config_yaml (m21c.current.rc) equivalent
+os.environ['expid'] = self.expid
+os.environ['expbase'] = self.expbase
+os.environ['arcbase'] = self.arcbase
+os.environ['startdate'] = self.startdate
+os.environ['enddate'] = self.enddate
+os.environ['pyradmon'] = self.pyradmon
+os.environ['exprc'] = self.exprc
+os.environ['rcfile'] = self.rcfile
 
         # Generate log file name with date
         log_filename = f"log_pyradmon_driver_offline_{datetime.now().strftime('%Y-%m-%d')}.log"

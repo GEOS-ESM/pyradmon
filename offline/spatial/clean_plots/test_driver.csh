@@ -9,16 +9,16 @@
   
   #module purge
   #source /discover/nobackup/sicohen/RADMON/venvs/radmon_sles15_venv/bin/activate.csh
+  #source /discover/nobackup/sicohen/RADMON/develop/pyradmon/.venvs/radmon_sles15_venv/bin/activate.csh
   #module load python/l
   #setenv G5MODULES "GEOSenv comp/gcc/10.1.0 comp/intel/2021.2.0 mpi/impi/2021.2.0 python/GEOSpyD/Min4.8.3_py2.7"
   #source $FVROOT/bin/g5_modules
-  
-  setenv FVWORK /discover/nobackup/sicohen/RADMON/work/aelakkra-sic/fvwork.RADMON 
+  setenv FVWORK /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/spatial/clean_plots/fvwork.RADMON 
                     # /discover/nobackup/projects/gmao/r21c/aelakkra/TBR/radmon/fvwork.RADMON
   
   /bin/rm -rf $FVWORK
   /bin/mkdir -p $FVWORK             # create working directory
-  /bin/cp -r /discover/nobackup/sicohen/RADMON/work/aelakkra-sic/clean_plots $FVWORK
+  /bin/cp -r /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/spatial/clean_plots $FVWORK
   cd $FVWORK/clean_plots
   
   foreach hour ( 00 )
