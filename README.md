@@ -69,6 +69,10 @@ Copy the path and open the `.env_example` file. Paste the copied path into the l
 
 
 ### Timeseries
+1. cd to .../pyradmon/offline/timeseries/src
+2. Copy test_config_yaml_path.skeleton.yaml to test_config_yaml_path.tmpl.yaml
+3. Open test_config_yaml_path.tmpl.yaml and make the necessary edits (everything in {}'s)
+4. python3 pyradmon_driver_offline.py test_config_yaml_path.tmpl.yaml
 
 </div>
 
