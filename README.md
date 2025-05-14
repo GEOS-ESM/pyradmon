@@ -77,4 +77,16 @@ Copy the path and open the `.env_example` file. Paste the copied path into the l
 
 </div>
 
+#
 
+</div>
+
+### Licence:
+
+(C) Copyright 2021- United States Government as represented by the Administrator of the National
+Aeronautics and Space Administration. All Rights Reserved.
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+
+### Description:
