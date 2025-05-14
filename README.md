@@ -8,9 +8,10 @@ Python Radiance Monitoring Tool. Contains both spatial and timeseries pyradmon.
 
 ### Installation and Environment Setup
 
-Clone the repo.
+Clone the repo. 
+### Make sure you are cloning/using the *develop* branch (temporary)
 ```sh
-$ git clone https://github.com/GEOS-ESM/pyradmon.git
+$ git clone -b develop https://github.com/GEOS-ESM/pyradmon.git
 $ cd pyradmon
 ```
 
