@@ -57,7 +57,7 @@ Copy the path and open the `.env_example` file. Paste the copied path into the l
 
 #### After editing close .env_example, and make a copy named *.env*. In order to ensure your edits will be saved even if you update the repo the new copy MUST be named '.env'. 
 
-#### Open `pyradmon_driver_offline_spatial.py` to see how pyradmon will use the two values in the .env to make the rest of the relative paths needed by the rest of the repo- **YOU WILL NOT NEED TO MAKE ANY EDITS TO THIS FILE EVER**. On line 49 note that pyradmon will, from now on, activate the virtual envirnoment itself. You will only need to manually run 'source .venv/bin/activate.csh' once during the initial setup (which you should already have completed). After setup is complete the pyradmon scripts will do this automatically.
+Open `pyradmon_driver_offline_spatial.py` to see how pyradmon will use the two values in the .env to make the rest of the relative paths needed by the rest of the repo- **YOU WILL NOT NEED TO MAKE ANY EDITS TO THIS FILE EVER**. On line 49 note that pyradmon will, from now on, activate the virtual envirnoment itself. You will only need to manually run 'source .venv/bin/activate.csh' once during the initial setup (which you should already have completed). After setup is complete the pyradmon scripts will do this automatically.
 
 * `pyradmon_driver_offline_timeseries.py`* *is still in progress but will act the same way when complete. ~ SC 5/13/2025*
 
