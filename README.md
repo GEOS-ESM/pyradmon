@@ -27,12 +27,12 @@ Note you may have to change this to match the shell you're using. Look at the ot
 
 To find the appropriate activate script run the following:
 ```sh
-$ ls .venv/bin/activate*
+$ ls .venvs/radmon_sles15_venv/bin/activate*
 ```
 
 Now activate the virtual environment by running the following (change 'activate.csh' to the appropriate script you just found for your shell):
 ```sh
-$ source .venv/bin/activate.csh
+$ source .venvs/radmon_sles15_venv/bin/activate.csh
 ```
 
 Install the dependencies from the requirements.txt file by running:
