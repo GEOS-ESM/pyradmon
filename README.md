@@ -49,7 +49,7 @@ $ deactivate
 It is encouraged to use a virtual environment; however, you may choose to not use one. If you do you will have to locate all the references to the *'ACTIVATE_VENV'* variable, which will be explained later, and change them - this will end up being more time consuming. 
 
 
-Now, run: 
+~~Now, run: 
 ```sh
 $ echo $PWD
 ```
@@ -59,7 +59,7 @@ Copy the path and open the `.env_example` file. Paste the copied path into the l
 
 Open `pyradmon_driver_offline_spatial.py` to see how pyradmon will use the two values in the .env to make the rest of the relative paths needed by the rest of the repo- **YOU WILL NOT NEED TO MAKE ANY EDITS TO THIS FILE EVER**. On line 49 note that pyradmon will, from now on, activate the virtual envirnoment itself. You will only need to manually run 'source .venv/bin/activate.csh' once during the initial setup (which you should already have completed). After setup is complete the pyradmon scripts will do this automatically.
 
-* `pyradmon_driver_offline_timeseries.py`* *is still in progress but will act the same way when complete. ~ SC 5/13/2025*
+* `pyradmon_driver_offline_timeseries.py`* *is still in progress but will act the same way when complete. ~ SC 5/13/2025*~~
 
 #
 
