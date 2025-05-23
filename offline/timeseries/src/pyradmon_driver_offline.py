@@ -185,7 +185,7 @@ class PyRadmonBase:
 
 
         # Execute the directory setup
-        exec_directory_setup(self)
+        #exec_directory_setup(self)
 
         """
         ## Logs
