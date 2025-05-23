@@ -41,11 +41,6 @@ $ python3 -m pip install -r requirements.txt
 ```
 
 
-To deactivate the virtual environment simply run:
-```sh
-$ deactivate
-```
-
 It is encouraged to use a virtual environment; however, you may choose to not use one. If you do you will have to locate all the references to the *'ACTIVATE_VENV'* variable, which will be explained later, and change them - this will end up being more time consuming. 
 
 
@@ -65,6 +60,11 @@ It is encouraged to use a virtual environment; however, you may choose to not us
 
 </div>
 
+
+When finished using pyradmon you may deactivate the virtual environment by running:
+```sh
+$ deactivate
+```
 
 </div>
 
