@@ -279,7 +279,7 @@ if __name__ == "__main__":
     print(args)
     
     PyRadmonConfig = PyRadmonBase(args.config)
-    #PyRadmonConfig.exec_bin2txt_driver()
+    PyRadmonConfig.exec_bin2txt_driver()
     #PyRadmonConfig.exec_img_driver()
 
     # pipe

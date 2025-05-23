@@ -52,7 +52,6 @@ ln -sf $bin2txtnl .
 
 echo bin2txt: $bin2txt
 echo sats: $sats
-
 # .... 
 
 while ($ndstartdate <= $ndenddate)
@@ -60,7 +59,9 @@ while ($ndstartdate <= $ndenddate)
    set expfiles=''
    foreach sat ($sats)
      set template=`cat $mstorage |grep $sat |grep bin$`
+     echo template
      foreach tmpl ($template)
+        echo tmpl
 #       set cfile=`$echorc -template $expid $startdate
         setenv PESTOROOT $arcbase
         set cfilearc=`$echorc -template $expid $startdate -fill $tmpl`
@@ -74,9 +75,9 @@ while ($ndstartdate <= $ndenddate)
         echo $cfilearc
         if (-e $cfilearc) then
            set cfileout=`echo $cfileexp | sed 's/bin$/txt/'`
-           #echo $cfileexp
-           #echo $expfiles
-           #echo --------------------
+           echo $cfileexp
+           echo $expfiles
+           echo --------------------
            mkdir -p `dirname $cfileout`
            echo asdf $cfileout
            if (! -e $cfileout) then
