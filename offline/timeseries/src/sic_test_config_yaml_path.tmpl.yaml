@@ -17,12 +17,12 @@ mstorage: /home/dao_ops/e5303_m21c_jan18/run/mstorage.arc # $runbase/mstorage.ar
 arcbase: /home/dao_ops/m21c/archive/ # M21C Specific
 
 #
-expbase: /discover/nobackup/sicohen/Tests/pyradmon/offline/timeseries/src/testing_expbase/
-scratch_dir: /discover/nobackup/sicohen/Tests/pyradmon/offline/timeseries/src/testing_expbase/scratch
-output_dir: /discover/nobackup/sicohen/Tests/pyradmon/offline/timeseries/src/testing_expbase/output
+expbase: /discover/nobackup/sicohen/Tests/pyradmon/offline/timeseries/src/tests/expbase/
+scratch_dir: /discover/nobackup/sicohen/Tests/pyradmon/offline/timeseries/src/tests/expbase/scratch
+output_dir: /discover/nobackup/sicohen/Tests/pyradmon/offline/timeseries/src/tests/expbase/output
 
 #
-rcfile: /discover/nobackup/sicohen/Tests/pyradmon/offline/timeseries/src/sic_test_config_yaml_path.tmpl.yaml #path to this yaml file
+rcfile: /discover/nobackup/sicohen/Tests/pyradmon/offline/timeseries/src/tests/expbase/sic_test_config_yaml_path.tmpl.yaml #path to this yaml file
 
 # Optional ~ see the satlist.yaml for insturment list (ex: amsua_n15)
 instruments: amsua_n15 
