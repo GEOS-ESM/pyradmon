@@ -211,7 +211,7 @@ class PyRadmonBase:
         os.environ['M2BASE'] = '/home/dao_ops/m21c/archive/'
 
         # changing directory ------ !!! -------
-        os.chdir('/discover/nobackup/sicohen/RADMON/offline/work/r21c/TBR/radmon/time_series/')
+        #os.chdir('/discover/nobackup/sicohen/RADMON/offline/work/r21c/TBR/radmon/time_series/')
 
         """    
         # Is any of this needed?:     
@@ -239,8 +239,9 @@ class PyRadmonBase:
         print(f'----------- self ---- : {self}')
 
         try:
-            subprocess.run(["./pyradmon_bin2txt_driver.csh", self.exprc]) #'test_config_yaml_path.yaml']) #exprc])
-            #subprocess.run(["./pyradmon_bin2txt_driver.csh", self.exprc]) #exprc])
+            
+            #subprocess.run(["./pyradmon_bin2txt_driver.csh", self.exprc]) #'test_config_yaml_path.yaml']) #exprc])
+            subprocess.run([os.path.join(self.pyradmon, 'pyradmon_bin2txt_driver.csh'), self.exprc]) #exprc])
         except Exception as e:
             error_message = f"Error: {e}"
             print(error_message)
@@ -259,8 +260,8 @@ class PyRadmonBase:
         #os.environ['rcfile'] = self
 
         try:
-            subprocess.run(["./pyradmon_img_driver.csh", self.exprc]) # 'test_config_yaml_path.yaml'])
-            #subprocess.run(["./pyradmon_img_driver.csh", self.exprc]) 
+            #subprocess.run(["./pyradmon_img_driver.csh", self.exprc]) # 'test_config_yaml_path.yaml'])
+            subprocess.run([os.path.join(self.pyradmon, 'pyradmon_img_driver.csh'), self.exprc]) #exprc])
         except Exception as e:
             error_message = f"Error: {e}"
             print(error_message)
@@ -278,8 +279,8 @@ if __name__ == "__main__":
     print(args)
     
     PyRadmonConfig = PyRadmonBase(args.config)
-    PyRadmonConfig.exec_bin2txt_driver()
-    PyRadmonConfig.exec_img_driver()
+    #PyRadmonConfig.exec_bin2txt_driver()
+    #PyRadmonConfig.exec_img_driver()
 
     # pipe
     #process1 = subprocess.Popen(['source', './pyradmon_bin2txt_driver.csh','test_config_yaml_path.yaml'])# , stdout=subprocess.PIPE)
