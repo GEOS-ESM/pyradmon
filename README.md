@@ -65,7 +65,7 @@ User only needs to edit/make the configuration yaml file that is used in the com
 6. Replace the `{YYYYMMDD}` values for the start and end dates of the period you want
 8. Replace all instances of `{expid}` with the `experiment id` of the data you want to plot (< how to say this the right way?) - for example you could put: `e5303_m21c_jan18`. Note that this is not an arbitrary value.
 9. Replace all instances of `{timeseries_src_dir} ` with the path you saved from step 3
-10. Replace all instances of `{expname}` with a name of your choosing for your working directory -
+10. Replace all instances of `{expname}` with a name of your choosing for your working directory - this is an arbitrary value ex. `sicohen_m21c_radmon` or `m21_radmon`
 
 #### Description and expected values for {variable}'s:
 - pyradmon will create a new directory using the value of `{expname}` in the timeseries_src_dir.
