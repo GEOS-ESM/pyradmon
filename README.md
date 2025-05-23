@@ -20,19 +20,19 @@ Next, create virtual environment using venv - or any other preferred method; how
 The venv name is arbitrary but it is encouraged to keep the name as is because the repo is fragile at the moment.
 
 ```sh
-$ python3 -m venv .venvs/radmon_sles15_venv
+$ python3 -m venv .venv/radmon_sles15_venv
 ```
 
 Note you may have to change this to match the shell you're using. Look at the other 'activate' scripts in .venv/bin/ 
 
 To find the appropriate activate script run the following:
 ```sh
-$ ls .venvs/radmon_sles15_venv/bin/activate*
+$ ls .venv/radmon_sles15_venv/bin/activate*
 ```
 
 Now activate the virtual environment by running the following (change 'activate.csh' to the appropriate script you just found for your shell):
 ```sh
-$ source .venvs/radmon_sles15_venv/bin/activate.csh
+$ source .venv/radmon_sles15_venv/bin/activate.csh
 ```
 
 Install the dependencies from the requirements.txt file by running:
