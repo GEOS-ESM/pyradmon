@@ -15,9 +15,9 @@ $ git clone -b develop https://github.com/GEOS-ESM/pyradmon.git
 $ cd pyradmon
 ```
 
-```console
-$ git clone -b develop https://github.com/GEOS-ESM/pyradmon.git
-$ cd pyradmon
+```sh
+git clone -b develop https://github.com/GEOS-ESM/pyradmon.git
+cd pyradmon
 ```
 
 
