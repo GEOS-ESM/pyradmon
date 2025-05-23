@@ -282,6 +282,8 @@ if __name__ == "__main__":
     PyRadmonConfig = PyRadmonBase(args.config)
     PyRadmonConfig.exec_bin2txt_driver()
     PyRadmonConfig.exec_img_driver()
+    
+    subprocess.run(["unlink", "ndate"]) # 'test_config_yaml_path.yaml'])
 
     # pipe
     #process1 = subprocess.Popen(['source', './pyradmon_bin2txt_driver.csh','test_config_yaml_path.yaml'])# , stdout=subprocess.PIPE)
