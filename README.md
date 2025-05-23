@@ -63,12 +63,12 @@ User only needs to edit/make the configuration yaml file that is used in the com
 4. Copy test_config_yaml_path.skeleton.yaml to test_config_yaml_path.tmpl.yaml
 5. Open test_config_yaml_path.tmpl.yaml and make the necessary edits (All the placeholders in {}'s, including the brackets). Recommend that you use find and replace (ctrl-F).
 6. Replace the `{YYYYMMDD}` values for the start and end dates of the period you want
-7.  Replace all instances of `{expid}` with the `experiment id` of the data you want to plot (< how to say this the right way?) - for example you could put: `e5303_m21c_jan18`. Note that this is not an arbitrary value.
-8.   Replace all instances of `{timeseries_src_dir} ` with the path you saved from step 3
-9.   Replace place all instances of `{expname}` with a name of your choosing for your working directory - this is an arbitrary value ex. `sicohen_m21c_radmon` or `m21_radmon`
-10. *OPTIONAL CONFIG OPTIONS* At the bottom of the yaml file are other fields which were not edited in the previous steps:
-- *Default Values* :Do not edit the *Default Values* unless you are certain of the implications.
-- *Optional* : user may edit these but is not required to do in order to run pyradmon. See the `satlist.yaml` for insturment list if you wish to use this option.
+7. Replace all instances of `{expid}` with the `experiment id` of the data you want to plot (< how to say this the right way?) - for example you could put: `e5303_m21c_jan18`. Note that this is not an arbitrary value.
+8. Replace all instances of `{timeseries_src_dir} ` with the path you saved from step 3
+9. Replace place all instances of `{expname}` with a name of your choosing for your working directory - this is an arbitrary value ex. `sicohen_m21c_radmon` or `m21_radmon`
+10. At the bottom of the yaml file are other fields which were not edited in the previous steps:
+- *Default Values*: Do not edit the *Default Values* unless you are certain of the implications.
+- *Optional*: User may edit these but is not required to do in order to run pyradmon. See the `satlist.yaml` for insturment list if you wish to use this option.
 - *Polar* : Only for those who wish to run `online version of pyradmon`. Leave commented out or fill in your discover & polar information and uncomment.
 
 #### Description and expected values for {variable}'s:
