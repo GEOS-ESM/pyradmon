@@ -11,55 +11,37 @@ Python Radiance Monitoring Tool. Contains both spatial and timeseries pyradmon.
 Clone the repo. 
 ### Make sure you are cloning/using the *develop* branch (temporary)
 ```sh
-$ git clone -b develop https://github.com/GEOS-ESM/pyradmon.git
-$ cd pyradmon
+git clone -b develop https://github.com/GEOS-ESM/pyradmon.git
+cd pyradmon
 ```
-
 
 Next, create virtual environment using venv - or any other preferred method; however, this will only cover venv.
 The venv name is arbitrary but it is encouraged to keep the name as is because the repo is fragile at the moment.
 
 ```sh
-$ python3 -m venv .venvs/radmon_sles15_venv
+python3 -m venv .venv/radmon_sles15_venv
 ```
 
 Note you may have to change this to match the shell you're using. Look at the other 'activate' scripts in .venv/bin/ 
 
 To find the appropriate activate script run the following:
 ```sh
-$ ls .venv/bin/activate*
+ls .venv/radmon_sles15_venv/bin/activate*
 ```
 
 Now activate the virtual environment by running the following (change 'activate.csh' to the appropriate script you just found for your shell):
 ```sh
-$ source .venv/bin/activate.csh
+source .venv/radmon_sles15_venv/bin/activate.csh
 ```
 
 Install the dependencies from the requirements.txt file by running:
 ```sh
-$ python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
-
-To deactivate the virtual environment simply run:
-```sh
-$ deactivate
-```
 
 It is encouraged to use a virtual environment; however, you may choose to not use one. If you do you will have to locate all the references to the *'ACTIVATE_VENV'* variable, which will be explained later, and change them - this will end up being more time consuming. 
 
-
-Now, run: 
-```sh
-$ echo $PWD
-```
-Copy the path and open the `.env_example` file. Paste the copied path into the line 15 PYRADMON_HOME_DIR = '$PWD'. Now check the path for ACTIVATE_VENV on line 16 - if necessary replace the existing value with the same command you used to activate the venv a few steps prior. While you have .env open take a minute to read through the comments at the top for possibly useful context.
-
-#### After editing close .env_example, and make a copy named *.env*. In order to ensure your edits will be saved even if you update the repo the new copy MUST be named '.env'. 
-
-Open `pyradmon_driver_offline_spatial.py` to see how pyradmon will use the two values in the .env to make the rest of the relative paths needed by the rest of the repo- **YOU WILL NOT NEED TO MAKE ANY EDITS TO THIS FILE EVER**. On line 49 note that pyradmon will, from now on, activate the virtual envirnoment itself. You will only need to manually run 'source .venv/bin/activate.csh' once during the initial setup (which you should already have completed). After setup is complete the pyradmon scripts will do this automatically.
-
-* `pyradmon_driver_offline_timeseries.py`* *is still in progress but will act the same way when complete. ~ SC 5/13/2025*
 
 #
 
@@ -69,15 +51,63 @@ Open `pyradmon_driver_offline_spatial.py` to see how pyradmon will use the two v
 ### Spatial
 
 
-### Timeseries
-1. cd to .../pyradmon/offline/timeseries/src
-2. Copy test_config_yaml_path.skeleton.yaml to test_config_yaml_path.tmpl.yaml
-3. Open test_config_yaml_path.tmpl.yaml and make the necessary edits (everything in {}'s)
-4. python3 pyradmon_driver_offline.py test_config_yaml_path.tmpl.yaml
+### Timeseries: `python3 pyradmon_driver_offline.py [user_input_yaml]`
+
+User only needs to edit/make the configuration yaml file that is used in the command above. No other edits should be needed. To do so follow instructions below.
+
+#### Instructions:
+1. Open a txt file with a text editor (Notepad, Word, Stickies, etc.) on your laptop 
+2. cd to offline/timeseries/src 
+3. Run `echo $PWD` , copy the resulting path and paste it to the text file
+4. Copy test_config_yaml_path.skeleton.yaml to test_config_yaml_path.tmpl.yaml
+5. Open test_config_yaml_path.tmpl.yaml and make the necessary edits (All the placeholders in {}'s, including the brackets). Recommend that you use find and replace (ctrl-F).
+6. Replace the `{YYYYMMDD}` values for the start and end dates of the period you want
+7. Replace all instances of `{expid}` with the `experiment id` of the data you want to plot (< how to say this the right way?) - for example you could put: `e5303_m21c_jan18`. Note that this is not an arbitrary value.
+8. Replace all instances of `{timeseries_src_dir} ` with the path you saved from step 3
+9. Replace place all instances of `{expname}` with a name of your choosing for your working directory - this is an arbitrary value ex. `sicohen_m21c_radmon` or `m21_radmon`
+10. At the bottom of the yaml file are other fields which were not edited in the previous steps:
+- *Default Values*: Do not edit the *Default Values* unless you are certain of the implications.
+- *Optional*: User may edit these but is not required to do in order to run pyradmon. See the `satlist.yaml` for insturment list if you wish to use this option.
+- *Polar* : Only for those who wish to run `online version of pyradmon`. Leave commented out or fill in your discover & polar information and uncomment.
+
+#### Description and expected values for {variable}'s:
+- pyradmon will create a new directory using the value of `{expname}` in the timeseries_src_dir.
+- This new directory will contain 3 subdirectories: `{expid}`, `radmon`, and `scratch`. All the output from pyradmon as well as the temporary files it creates and deletes (plotting yamls,...) get placed in these subdirectories.
+- The `{expid}` directory will contain: Obs data diag txt files used for plotting organized by date - {expname}/{expid}/obs/Y%Y/M%m/D%d/H%H/
+- The `radmon` directory will contain: Plots and tar archive of plots
+- The `scratch` directory will contain: temporary files pyradmon creates, uses, and deletes (plotting yamls,...)
+- See `example_test_config_yaml_path.tmpl.yaml` for an example
+
+  Once all edits to the yaml file are complete, pyradmon will be ready to run.
+  You may change the name of the new yaml file you've created if you wish.
+  
+
+11. Run pyradmon in the command line with:
+```sh
+python3 pyradmon_driver_offline.py test_config_yaml_path.tmpl.yaml
+```
 
 </div>
 
-#
+
+
+/
+
+/
+
+/
+/
+
+
+
+
+</div>
+
+
+When finished using pyradmon you may deactivate the virtual environment by running:
+```sh
+deactivate
+```
 
 </div>
 
