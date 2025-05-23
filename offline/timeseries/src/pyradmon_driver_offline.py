@@ -68,7 +68,7 @@ class PyRadmonBase:
 
         # Defaults ~ user should not need to change these values
         ## Executables and Code and .rc files
-        self.pyradmon = '/home/dao_ops/pyradmon/'
+        self.pyradmon = config['pyradmon'] #'/home/dao_ops/pyradmon/'
         self.gsidiagsrc = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.rc'
 
         ## Existing Data Files
