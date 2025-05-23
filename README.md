@@ -53,7 +53,7 @@ It is encouraged to use a virtual environment; however, you may choose to not us
 
 
 ### Timeseries
-1. cd to .../pyradmon/offline/timeseries/src
+1. cd to offline/timeseries/src
 2. Copy test_config_yaml_path.skeleton.yaml to test_config_yaml_path.tmpl.yaml
 3. Open test_config_yaml_path.tmpl.yaml and make the necessary edits (everything in {}'s)
 4. python3 pyradmon_driver_offline.py test_config_yaml_path.tmpl.yaml
