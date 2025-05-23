@@ -11,8 +11,8 @@ Python Radiance Monitoring Tool. Contains both spatial and timeseries pyradmon.
 Clone the repo. 
 ### Make sure you are cloning/using the *develop* branch (temporary)
 ```sh
-$ git clone -b develop https://github.com/GEOS-ESM/pyradmon.git
-$ cd pyradmon
+git clone -b develop https://github.com/GEOS-ESM/pyradmon.git
+cd pyradmon
 ```
 
 ```sh
@@ -25,24 +25,24 @@ Next, create virtual environment using venv - or any other preferred method; how
 The venv name is arbitrary but it is encouraged to keep the name as is because the repo is fragile at the moment.
 
 ```sh
-$ python3 -m venv .venv/radmon_sles15_venv
+python3 -m venv .venv/radmon_sles15_venv
 ```
 
 Note you may have to change this to match the shell you're using. Look at the other 'activate' scripts in .venv/bin/ 
 
 To find the appropriate activate script run the following:
 ```sh
-$ ls .venv/radmon_sles15_venv/bin/activate*
+ls .venv/radmon_sles15_venv/bin/activate*
 ```
 
 Now activate the virtual environment by running the following (change 'activate.csh' to the appropriate script you just found for your shell):
 ```sh
-$ source .venv/radmon_sles15_venv/bin/activate.csh
+source .venv/radmon_sles15_venv/bin/activate.csh
 ```
 
 Install the dependencies from the requirements.txt file by running:
 ```sh
-$ python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 
@@ -90,7 +90,7 @@ User only needs to edit/make the configuration yaml file that is used in the com
 
 11. Run pyradmon in the command line with:
 ```sh
-$ python3 pyradmon_driver_offline.py test_config_yaml_path.tmpl.yaml
+python3 pyradmon_driver_offline.py test_config_yaml_path.tmpl.yaml
 ```
 
 </div>
@@ -112,7 +112,7 @@ $ python3 pyradmon_driver_offline.py test_config_yaml_path.tmpl.yaml
 
 When finished using pyradmon you may deactivate the virtual environment by running:
 ```sh
-$ deactivate
+deactivate
 ```
 
 </div>
