@@ -62,23 +62,34 @@ while ($ndstartdate <= $ndenddate)
      echo template
      foreach tmpl ($template)
         echo tmpl
+        echo $tmpl
 #       set cfile=`$echorc -template $expid $startdate
         setenv PESTOROOT $arcbase
         set cfilearc=`$echorc -template $expid $startdate -fill $tmpl`
         setenv PESTOROOT $expbase
         set cfileexp=`$echorc -template $expid $startdate -fill $tmpl`
         echo $cfileexp
+        echo cfileexp
         echo $arcbase
+        echo arcbase
         echo $expid
+        echo expid
         echo $startdate
+        echo startdate
         echo $tmpl
+        echo tmpl
         echo $cfilearc
+        echo cfilearc
         if (-e $cfilearc) then
            set cfileout=`echo $cfileexp | sed 's/bin$/txt/'`
            echo $cfileexp
+           echo cfileexp
            echo $expfiles
+           echo expfiles
            echo --------------------
            mkdir -p `dirname $cfileout`
+           echo cfileout
+           echo $cfileout
            echo asdf $cfileout
            if (! -e $cfileout) then
               set arcfiles=($arcfiles $cfilearc) 
