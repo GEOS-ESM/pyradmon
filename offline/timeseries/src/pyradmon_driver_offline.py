@@ -240,8 +240,8 @@ class PyRadmonBase:
 
         try:
             
-            #subprocess.run(["./pyradmon_bin2txt_driver.csh", self.exprc]) #'test_config_yaml_path.yaml']) #exprc])
-            subprocess.run([os.path.join(self.pyradmon, 'pyradmon_bin2txt_driver.csh'), self.exprc]) #exprc])
+            subprocess.run(["./pyradmon_bin2txt_driver.csh", self.exprc]) #'test_config_yaml_path.yaml']) #exprc])
+            #subprocess.run([os.path.join(self.pyradmon, 'pyradmon_bin2txt_driver.csh'), self.exprc]) #exprc])
         except Exception as e:
             error_message = f"Error: {e}"
             print(error_message)
@@ -260,8 +260,8 @@ class PyRadmonBase:
         #os.environ['rcfile'] = self
 
         try:
-            #subprocess.run(["./pyradmon_img_driver.csh", self.exprc]) # 'test_config_yaml_path.yaml'])
-            subprocess.run([os.path.join(self.pyradmon, 'pyradmon_img_driver.csh'), self.exprc]) #exprc])
+            subprocess.run(["./pyradmon_img_driver.csh", self.exprc]) # 'test_config_yaml_path.yaml'])
+            #subprocess.run([os.path.join(self.pyradmon, 'pyradmon_img_driver.csh'), self.exprc]) #exprc])
         except Exception as e:
             error_message = f"Error: {e}"
             print(error_message)
