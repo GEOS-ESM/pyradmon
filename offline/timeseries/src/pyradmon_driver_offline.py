@@ -96,6 +96,23 @@ class PyRadmonBase:
         #self.bin2txt_nl = config['bin2txt_nl'] #
         #self.rename_date_dir = config['rename_date_dir'] #
 
+       
+        # Set Environment variables
+        ###########################
+
+        # radmon_process.config equivalent
+        os.environ['ESMADIR'] = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/' #self.pyradmon
+
+        # config_yaml (m21c.current.rc) equivalent
+        os.environ['expid'] = self.expid
+        os.environ['expbase'] = self.expbase
+        os.environ['arcbase'] = self.arcbase
+        os.environ['startdate'] = self.startdate
+        os.environ['enddate'] = self.enddate
+        os.environ['pyradmon'] = self.pyradmon
+        os.environ['exprc'] = self.exprc
+        os.environ['rcfile'] = self.rcfile
+
     #def __repr__(self):
      #   return 
         print(f'''
@@ -144,25 +161,37 @@ class PyRadmonBase:
                 print(template)
             """
 
-        
-        # Set Environment variables
-        ###########################
 
-        # radmon_process.config equivalent
-        os.environ['ESMADIR'] = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/' #self.pyradmon
+        def directory_setup_base(directory_path):
 
-        # config_yaml (m21c.current.rc) equivalent
-        os.environ['expid'] = self.expid
-        os.environ['expbase'] = self.expbase
-        os.environ['arcbase'] = self.arcbase
-        os.environ['startdate'] = self.startdate
-        os.environ['enddate'] = self.enddate
-        os.environ['pyradmon'] = self.pyradmon
-        os.environ['exprc'] = self.exprc
-        os.environ['rcfile'] = self.rcfile
+            # Check if the directory exists
+            if not os.path.exists(directory_path):
+                # Create the directory if it does not exist
+                os.makedirs(directory_path)
+                print(f"Directory '{directory_path}' created successfully.")
+            else:
+                print(f"Directory '{directory_path}' already exists.")
 
+        def exec_directory_setup(self):
+            # make expbase dir
+            directory_setup_base(self.expbase)
+            # make scratch dir
+            directory_setup_base(self.scratch_dir)
+            # make output dir
+            directory_setup_base(self.output_dir)
+            # make log dir
+            log_dir = os.path.join(self.expbase, 'log')
+            directory_setup_base(log_dir)
+
+
+        # Execute the directory setup
+        exec_directory_setup(self)
+
+        """
+        ## Logs
         # Generate log file name with date
-        log_filename = f"log_pyradmon_driver_offline_{datetime.now().strftime('%Y-%m-%d')}.log"
+        log_dir = os.path.join(self.expbase, 'log')
+        log_filename = os.path.join(self.expbase, f"log_pyradmon_driver_offline_{datetime.now().strftime('%Y-%m-%d')}.log")
         
         # Setup logging
         logging.basicConfig(filename=log_filename, level=logging.INFO, 
@@ -172,7 +201,8 @@ class PyRadmonBase:
         log_message = f"Initialized PYRADMON-OFFLINE with configuration from {config_yaml_path}"
         logging.info(log_message)
         #print(log_message)
-    
+        """
+
     # m21c_radmon.csh equivalent
     ############################
     def exec_m21c_radmon():
@@ -247,9 +277,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
     
-    A = PyRadmonBase(args.config)
-    A.exec_bin2txt_driver()
-    A.exec_img_driver()
+    PyRadmonConfig = PyRadmonBase(args.config)
+    PyRadmonConfig.exec_bin2txt_driver()
+    PyRadmonConfig.exec_img_driver()
 
     # pipe
     #process1 = subprocess.Popen(['source', './pyradmon_bin2txt_driver.csh','test_config_yaml_path.yaml'])# , stdout=subprocess.PIPE)

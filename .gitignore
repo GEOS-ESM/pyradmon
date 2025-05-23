@@ -83,3 +83,6 @@ archive/
 work*
 m21c_radmon/
 log*
+pyradmon/offline/timeseries/src/drafts
+pyradmon/offline/timeseries/src/archive
+pyradmon/offline/timeseries/helper_functions
