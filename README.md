@@ -58,12 +58,12 @@ It is encouraged to use a virtual environment; however, you may choose to not us
 3. Run `echo $PWD` , copy the resulting path and paste it to the text file
 4. Copy test_config_yaml_path.skeleton.yaml to test_config_yaml_path.tmpl.yaml
 5. Open test_config_yaml_path.tmpl.yaml and make the necessary edits (All the placeholders in {}'s, including the brackets). Recommend that you use find and replace (ctrl-F).
-6. Replace the `{{YYYYMMDD}` values for the start and end dates of the period you want
+6. Replace the `{YYYYMMDD}` values for the start and end dates of the period you want
 8. Replace all instances of `{expid}` with the `experiment id` of the data you want to plot (< how to say this the right way?) - for example you could put: `e5303_m21c_jan18`. Note that this is not an arbitrary value.
 9. Replace all instances of `{timeseries_src_dir} ` with the path you saved from step 3
 10. Replace all instances of `{expname}` with a name of your choosing for your working directory -
 
-Note: 
+#### Description and expected values for {variable}'s:
 - pyradmon will create a new directory using the value of `{expname}` in the timeseries_src_dir.
 - This new directory will contain 3 subdirectories: `{expid}`, `radmon`, and `scratch`. All the output from pyradmon as well as the temporary files it creates and deletes (plotting yamls,...) get placed in these subdirectories.
 - The `{expid}` directory will contain: Obs data diag txt files used for plotting organized by date - {expname}/{expid}/obs/Y%Y/M%m/D%d/H%H/
