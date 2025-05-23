@@ -80,3 +80,6 @@ env.bak/
 venv.bak/
 archive/
 .venvs/
+work*
+m21c_radmon/
+log*
