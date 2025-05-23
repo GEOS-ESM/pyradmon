@@ -68,7 +68,8 @@ It is encouraged to use a virtual environment; however, you may choose to not us
 - This new directory will contain 3 subdirectories: `{expid}`, `radmon`, and `scratch`. All the output from pyradmon as well as the temporary files it creates and deletes (plotting yamls,...) get placed in these subdirectories.
 - The `{expid}` directory will contain: Obs data diag txt files used for plotting organized by date - {expname}/{expid}/obs/Y%Y/M%m/D%d/H%H/
 - The `radmon` directory will contain: Plots and tar archive of plots
-- The `scratch` directory will contain: temporary files pyradmon creates, uses, and deletes (plotting yamls,...) 
+- The `scratch` directory will contain: temporary files pyradmon creates, uses, and deletes (plotting yamls,...)
+- See `example_test_config_yaml_path.tmpl.yaml` for an example
 
 11. python3 pyradmon_driver_offline.py test_config_yaml_path.tmpl.yaml
 12. 
