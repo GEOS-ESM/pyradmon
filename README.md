@@ -15,12 +15,6 @@ git clone -b develop https://github.com/GEOS-ESM/pyradmon.git
 cd pyradmon
 ```
 
-```sh
-git clone -b develop https://github.com/GEOS-ESM/pyradmon.git
-cd pyradmon
-```
-
-
 Next, create virtual environment using venv - or any other preferred method; however, this will only cover venv.
 The venv name is arbitrary but it is encouraged to keep the name as is because the repo is fragile at the moment.
 
