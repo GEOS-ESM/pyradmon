@@ -185,7 +185,7 @@ class PyRadmonBase:
 
 
         # Execute the directory setup
-        #exec_directory_setup(self)
+        exec_directory_setup(self)
 
         """
         ## Logs
@@ -280,7 +280,7 @@ if __name__ == "__main__":
     
     PyRadmonConfig = PyRadmonBase(args.config)
     PyRadmonConfig.exec_bin2txt_driver()
-    #PyRadmonConfig.exec_img_driver()
+    PyRadmonConfig.exec_img_driver()
 
     # pipe
     #process1 = subprocess.Popen(['source', './pyradmon_bin2txt_driver.csh','test_config_yaml_path.yaml'])# , stdout=subprocess.PIPE)
