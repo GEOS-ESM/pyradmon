@@ -29,7 +29,7 @@ instruments: amsua_n15
 
 
 # DEFAULT VALUES ~ No Edits Required
-pyradmon: /discover/nobackup/sicohen/RADMON/develop/pyradmon/ #/home/dao_ops/pyradmon/
+pyradmon: /home/dao_ops/pyradmon/
 bin2txt_exec: /home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/bin/gsidiag_bin2txt.x
 gsidiagsrc: /home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.rc
 

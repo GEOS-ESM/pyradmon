@@ -68,7 +68,8 @@ class PyRadmonBase:
 
         # Defaults ~ user should not need to change these values
         ## Executables and Code and .rc files
-        self.pyradmon = config['pyradmon'] #'/home/dao_ops/pyradmon/'
+        self.pyradmon = config['pyradmon'] 
+        #self.pyradmon_path = config['pyradmon_src'] 
         self.gsidiagsrc = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.rc'
 
         ## Existing Data Files
@@ -79,8 +80,9 @@ class PyRadmonBase:
 
         ## User working directories (created and deleted during main process later)
         ### created from: self.expbase = config['expbase'] 
+        self.expid_dir = os.path.join(self.expbase, self.expid) #config['output_dir'] 
         self.scratch_dir = os.path.join(self.expbase, 'scratch') #config['scratch_dir']
-        self.output_dir = os.path.join(self.expbase, 'radmon') #config['output_dir'] 
+        self.output_dir = os.path.join(self.expbase, 'output') #config['output_dir'] 
         
         ## Exisitng (master?) .rc files
         ## These are just a copy of th confing_input_yaml. Should be changed.
@@ -175,6 +177,8 @@ class PyRadmonBase:
         def exec_directory_setup(self):
             # make expbase dir
             directory_setup_base(self.expbase)
+            # make expid data dir
+            directory_setup_base(self.expid_dir)
             # make scratch dir
             directory_setup_base(self.scratch_dir)
             # make output dir
