@@ -9,6 +9,9 @@
 startdate: 20190501 000000
 enddate:  20190531 180000
 
+# Users local clone of pyradmon https://github.com/GEOS-ESM/pyradmon/tree/develop
+pyradmon: /discover/nobackup/sicohen/RADMON/develop/pyradmon/
+
 #
 expid: e5303_m21c_jan18
 data_dirbase: /home/dao_ops/m21c/archive/e5303_m21c_jan18/obs
@@ -29,7 +32,6 @@ instruments: amsua_n15
 
 
 # DEFAULT VALUES ~ No Edits Required
-pyradmon: /discover/nobackup/sicohen/RADMON/develop/pyradmon/ #/home/dao_ops/pyradmon/
 bin2txt_exec: /home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/bin/gsidiag_bin2txt.x
 gsidiagsrc: /home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.rc
 

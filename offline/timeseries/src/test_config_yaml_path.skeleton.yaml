@@ -1,5 +1,6 @@
 # All values within {}'s must be replaced by the user
 # {YYYYMMDD} ~ 20190530
+# {path_to_pyradmon} ~ Users local clone of pyradmon https://github.com/GEOS-ESM/pyradmon/tree/develop
 # {expid} ~ e5303_m21c_jan18
 # {timeseries_src_dir} ~ the full path to the directory src directory (i.e. $NOBACKUP/pyradmon/offline/timeseries/src/)
 # {expname} ~ can be anything, ex: m21c_radmon
@@ -8,6 +9,9 @@
 #
 startdate: {YYYYMMDD} 000000
 enddate:  {YYYYMMDD} 180000
+
+# Users local clone of pyradmon https://github.com/GEOS-ESM/pyradmon/tree/develop
+pyradmon: {path_to_pyradmon}
 
 #
 expid: {expid}
@@ -29,7 +33,6 @@ instruments: amsua_n15
 
 
 # DEFAULT VALUES ~ No Edits Required
-pyradmon: /home/dao_ops/pyradmon/
 bin2txt_exec: /home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/bin/gsidiag_bin2txt.x
 gsidiagsrc: /home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.rc
 
