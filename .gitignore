@@ -87,3 +87,6 @@ offline/timeseries/src/drafts
 offline/timeseries/src/archive
 offline/timeseries/helper_functions
 offline/timeseries/src/drafts
+
+# Jupyter NB
+.ipynb_checkpoints
