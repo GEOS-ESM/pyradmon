@@ -1,34 +1,35 @@
 # All values within {}'s must be replaced by the user
 # {YYYYMMDD} ~ 20190530
+# {path_to_pyradmon} ~ Users local clone of pyradmon https://github.com/GEOS-ESM/pyradmon/tree/develop
 # {expid} ~ e5303_m21c_jan18
 # {timeseries_src_dir} ~ the full path to the directory src directory (i.e. $NOBACKUP/pyradmon/offline/timeseries/src/)
 # {expname} ~ can be anything, ex: m21c_radmon
-
+# yaml file name ~ test_config_yaml_path.yaml
  
 #
-startdate: 20190501 000000
-enddate:  20190531 180000
+startdate: 19990901 000000
+enddate:  19990902 180000 #19991130 180000
 
 # Users local clone of pyradmon https://github.com/GEOS-ESM/pyradmon/tree/develop
 pyradmon: /discover/nobackup/sicohen/RADMON/develop/pyradmon/
 
 #
-expid: e5303_m21c_jan18
-data_dirbase: /home/dao_ops/m21c/archive/e5303_m21c_jan18/obs
-runbase: /home/dao_ops/e5303_m21c_jan18/run/
-mstorage: /home/dao_ops/e5303_m21c_jan18/run/mstorage.arc # $runbase/mstorage.arc
+expid: e5303_m21c_jan98
+data_dirbase: /home/dao_ops/m21c/archive/e5303_m21c_jan98/obs
+runbase: /home/dao_ops/e5303_m21c_jan98/run/
+mstorage: /home/dao_ops/e5303_m21c_jan98/run/mstorage.arc # $runbase/mstorage.arc
 arcbase: /home/dao_ops/m21c/archive/ # M21C Specific
 
 #
 expbase: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeseries/src/m21c_radmon/
 scratch_dir: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeseries/src/m21c_radmon/scratch/
-output_dir: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeseries/src/m21c_radmon/radmon/
+output_dir: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeseries/src/m21c_radmon/output/
 
 #
-rcfile: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeseries/src/test_config_yaml_path.yaml #path to this yaml file
+rcfile: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeseries/src/test_config_yaml_path.tmpl.yaml #{yaml file name} #path to this yaml file
 
-# Optional ~ see the satlist.yaml for insturment list (ex: amsua_n15)
-instruments: amsua_n15, amsua_n16, amsua_n17, amsua_n18
+# Optional ~ see the satlist.yaml for instrument list (ex: amsua_n15)
+#instruments: amsua_n15 
 
 
 # DEFAULT VALUES ~ No Edits Required
@@ -37,5 +38,5 @@ gsidiagsrc: /home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.r
 
 ## Polar
 #rename_date_dir: current
-#scp_userhost: sicohen@polar
-#scp_path: /www/html/intranet/personnel/sicohen/m21c/radmon_data/
+#scp_userhost: cbloecke@polar
+#scp_path: /www/html/intranet/personnel/cbloecke/m21c/radmon_data/

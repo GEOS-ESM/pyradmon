@@ -20,7 +20,7 @@ runbase: /home/dao_ops/{expid}/run/
 mstorage: /home/dao_ops/{expid}/run/mstorage.arc # $runbase/mstorage.arc
 arcbase: /home/dao_ops/m21c/archive/ # M21C Specific
 
-#
+# Working Directory
 expbase: {timeseries_src_dir}/{expname}
 scratch_dir: {expbase}/scratch
 output_dir: {expbase}/radmon
@@ -29,7 +29,9 @@ output_dir: {expbase}/radmon
 rcfile: {timeseries_src_dir}/test_config_yaml_path.yaml #{yaml file name} #path to this yaml file
 
 # Optional ~ see the satlist.yaml for insturment list (ex: amsua_n15)
-instruments: amsua_n15 
+#instruments: amsua_n15            # run one
+#instruments: amsua_n15,amsua_n16  # run multiple
+#instruments:                      # run all
 
 
 # DEFAULT VALUES ~ No Edits Required

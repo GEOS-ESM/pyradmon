@@ -96,17 +96,21 @@ foreach inst ($insts)
   $pyradmon_path/offline/timeseries/src/pyradmon.py --config-file $configfile plot --data-instrument-sat $inst
 end
 
-echo '----------------------------------'
-echo $output_dir
-cd $output_dir
-echo $expid
+#echo '----------------------------------'
+#echo $output_dir
+#cd $output_dir
+#echo $expid
 echo '----------------------------------'
 
 if ($rename_date_dir != '/dev/null') mv $expid/$startdate-$enddate $expid/$rename_date_dir
 
 tar cvf $expid.tar $expid/
 
-#rm -rf $expid/
+
+echo '----------------------------------'
+echo $expid
+rm -rf $expid/
+echo '----------------------------------'
 
 if ($scp_userhost != '/dev/null' && $scp_path != '/dev/null') then 
    scp $expid.tar $scp_userhost\:$scp_path

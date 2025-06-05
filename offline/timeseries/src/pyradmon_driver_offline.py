@@ -104,6 +104,7 @@ class PyRadmonBase:
 
         # radmon_process.config equivalent
         os.environ['ESMADIR'] = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/' #self.pyradmon
+        os.environ['FVROOT'] = '/home/dao_ops/GEOSadas-5_29_5/GEOSadas/install' #self.pyradmon
 
         # config_yaml (m21c.current.rc) equivalent
         os.environ['expid'] = self.expid
@@ -240,6 +241,8 @@ class PyRadmonBase:
                 set exprc=$argv[1]
                 ./pyradmon_bin2txt_driver.csh $exprc
         """
+    
+        print(f'Now running: execute exec_bin2txt_driver.csh')
         print(f'----------- self ---- : {self}')
 
 
@@ -253,7 +256,7 @@ class PyRadmonBase:
             logging.error(error_message)
 
 
-        print(f'exec_bin2txt_driver finished  ------------------------------------------------------------------')
+        print(f'finished: exec_bin2txt_driver   ------------------------------------------------------------------')
 
     # pyradmon_img_driver.csh equivalent
     ####################################
@@ -261,9 +264,14 @@ class PyRadmonBase:
         """
         execute pyradmon_img_driver.csh
         """
+        print(f'Now running: execute pyradmon_img_driver.csh')
+        print(f'----------- self ---- : {self}')
 
         #os.environ['rcfile'] = self
         try:
+            print(f'self.exprc: {self.exprc} --------------------')
+            print(f'self.pyradmon: {self.pyradmon} --------------------')
+            #print(f'self.pyradmon: {self.pyradmon} --------------------')
             self.pyradmon_img_driver = os.path.join(self.pyradmon, 'offline/timeseries/src/pyradmon_img_driver.csh')
             subprocess.run([self.pyradmon_img_driver, self.exprc]) # 'test_config_yaml_path.yaml'])
             #subprocess.run([os.path.join(self.pyradmon, 'pyradmon_img_driver.csh'), self.exprc]) #exprc])
@@ -271,7 +279,7 @@ class PyRadmonBase:
             error_message = f"Error: {e}"
             print(error_message)
             logging.error(error_message)
-        print(f'exec_img_driver finished  ------------------------------------------------------------------')
+        print(f'finished: exec_img_driver   ------------------------------------------------------------------')
 
 
 # python script.py config.yaml
@@ -287,7 +295,7 @@ if __name__ == "__main__":
     PyRadmonConfig.exec_bin2txt_driver()
     PyRadmonConfig.exec_img_driver()
     
-    subprocess.run(["unlink", "ndate"]) # 'test_config_yaml_path.yaml'])
+    #subprocess.run(["unlink", "ndate"]) # 'test_config_yaml_path.yaml'])
 
     # pipe
     #process1 = subprocess.Popen(['source', './pyradmon_bin2txt_driver.csh','test_config_yaml_path.yaml'])# , stdout=subprocess.PIPE)
