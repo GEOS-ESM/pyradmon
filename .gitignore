@@ -100,3 +100,4 @@ work.test_config_yaml_path.example.yaml
 offline/timeseries/src/m21c_radmon/
 run/
 offline/timeseries/src/yamls/
+offline/spatial/clean_plots/fvwork.RADMON/

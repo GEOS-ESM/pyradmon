@@ -106,17 +106,21 @@ if ($rename_date_dir != '/dev/null') mv $expid/$startdate-$enddate $expid/$renam
 
 
 echo "--------- saving .png's in $expid.tar  "
-#echo $PWD
+echo $PWD
+echo $expbase
 cd $expbase
-tar cvf $expid.tar $expid/
+tar cvf $expid.tar $expid/ ;
 
 
 echo "--------- removing img directory (contains loose .png's): ----  $expid"
-# echo $expid
+echo $PWD
+echo $expid
 rm -rf $expid/
 echo '--------------- checking for polar option -------------------'
 
-if ($scp_userhost != '/dev/null' && $scp_path != '/dev/null') then 
+if ($scp_userhost != '/dev/null' && $scp_path != '/dev/null') then
+   echo $scp_userhost 
+   echo $scp_path 
    scp $expid.tar $scp_userhost\:$scp_path
    ssh $scp_userhost "cd $scp_path ; tar xvf $expid.tar"
 endif

@@ -74,7 +74,7 @@ class PyRadmonBase:
 
         ## Existing Data Files
         ### created from: self.arcbase = config['arcbase'] #/home/dao_ops/m21c/archive/
-        self.data_dirbase = os.path.join(self.arcbase, self.expid, 'obs') #config['data_dirbase'] #/home/dao_ops/m21c/archive/e5303_m21c_jan18/obs
+        self.data_dirbase = os.path.join(self.arcbase, self.expid) #, 'obs') #config['data_dirbase'] #/home/dao_ops/m21c/archive/e5303_m21c_jan18/obs
         self.runbase = os.path.join(self.arcbase, self.expid, 'run') # /home/dao_ops/e5303_m21c_jan18/run/
         self.runbase = config['runbase'] # /home/dao_ops/e5303_m21c_jan18/run/
 
