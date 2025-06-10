@@ -11,8 +11,7 @@ startdate: {YYYYMMDD} 000000
 enddate:  {YYYYMMDD} 180000
 
 # Users local clone of pyradmon https://github.com/GEOS-ESM/pyradmon/tree/develop
-pyradmon: {path_to_pyradmon}
-
+pyradmon: /home/dao_ops/pyradmon/
 #
 expid: {expid}
 data_dirbase: /home/dao_ops/m21c/archive/{expid}/obs
@@ -42,3 +41,4 @@ gsidiagsrc: /home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.r
 #rename_date_dir: current
 #scp_userhost: sicohen@polar
 #scp_path: /www/html/intranet/personnel/sicohen/m21c/radmon_data/
+ 

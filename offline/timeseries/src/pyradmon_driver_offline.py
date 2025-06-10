@@ -247,9 +247,13 @@ class PyRadmonBase:
 
 
         try:
-            self.pyradmon_bin2txt_driver = os.path.join(self.pyradmon, 'offline/timeseries/src/pyradmon_bin2txt_driver.csh')
-            subprocess.run([self.pyradmon_bin2txt_driver, self.exprc]) #'test_config_yaml_path.yaml']) #exprc])
-            #subprocess.run([os.path.join(self.pyradmon, 'pyradmon_bin2txt_driver.csh'), self.exprc]) #exprc])
+            # Self contained version ~ branch: develop
+            # -----------------------
+            #self.pyradmon_bin2txt_driver = os.path.join(self.pyradmon, 'offline/timeseries/src/pyradmon_bin2txt_driver.csh')
+            #subprocess.run([self.pyradmon_bin2txt_driver, self.exprc]) #'test_config_yaml_path.yaml']) #exprc])
+            # Pointer version ~ hard coded ~ branch: feature/dao-ops-pointer
+            # -----------------------
+            subprocess.run(['./pyradmon_bin2txt_driver.csh', self.exprc]) #exprc])
         except Exception as e:
             error_message = f"Error: {e}"
             print(error_message)
@@ -271,10 +275,14 @@ class PyRadmonBase:
         try:
             print(f'self.exprc: {self.exprc} --------------------')
             print(f'self.pyradmon: {self.pyradmon} --------------------')
-            #print(f'self.pyradmon: {self.pyradmon} --------------------')
-            self.pyradmon_img_driver = os.path.join(self.pyradmon, 'offline/timeseries/src/pyradmon_img_driver.csh')
-            subprocess.run([self.pyradmon_img_driver, self.exprc]) # 'test_config_yaml_path.yaml'])
-            #subprocess.run([os.path.join(self.pyradmon, 'pyradmon_img_driver.csh'), self.exprc]) #exprc])
+
+            # Self contained version  ~ branch: develop
+            # -----------------------
+            #self.pyradmon_img_driver = os.path.join(self.pyradmon, 'offline/timeseries/src/pyradmon_img_driver.csh')
+            #subprocess.run([self.pyradmon_img_driver, self.exprc]) # 'test_config_yaml_path.yaml'])
+            # Pointer version ~ hard coded ~ branch: feature/dao-ops-pointer
+            # -----------------------
+            subprocess.run(['./pyradmon_img_driver.csh', self.exprc]) #exprc])
         except Exception as e:
             error_message = f"Error: {e}"
             print(error_message)
