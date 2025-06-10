@@ -82,7 +82,7 @@ class PyRadmonBase:
         ### created from: self.expbase = config['expbase'] 
         self.expid_dir = os.path.join(self.expbase, self.expid) #config['output_dir'] 
         self.scratch_dir = os.path.join(self.expbase, 'scratch') #config['scratch_dir']
-        self.output_dir = os.path.join(self.expbase, 'output') #config['output_dir'] 
+        self.output_dir = os.path.join(self.expbase, 'radmon') #config['output_dir'] 
         
         ## Exisitng (master?) .rc files
         ## These are just a copy of th confing_input_yaml. Should be changed.
