@@ -243,7 +243,7 @@ class PyRadmonBase:
         """
     
         print(f'Now running: execute exec_bin2txt_driver.csh')
-        print(f'----------- self ---- : {self}')
+        #print(f'----------- self ---- : {self}')
 
 
         try:
@@ -270,12 +270,12 @@ class PyRadmonBase:
         execute pyradmon_img_driver.csh
         """
         print(f'Now running: execute pyradmon_img_driver.csh')
-        print(f'----------- self ---- : {self}')
+        #print(f'----------- self ---- : {self}')
 
         #os.environ['rcfile'] = self
         try:
-            print(f'self.exprc: {self.exprc} --------------------')
-            print(f'self.pyradmon: {self.pyradmon} --------------------')
+            #print(f'self.exprc: {self.exprc} --------------------')
+            #print(f'self.pyradmon: {self.pyradmon} --------------------')
 
             # Self contained version  ~ branch: develop
             # -----------------------
@@ -295,11 +295,11 @@ class PyRadmonBase:
 # python script.py config.yaml
 if __name__ == "__main__":
 
-    print(os.path.basename(__file__))
+    #print(os.path.basename(__file__))
     parser = argparse.ArgumentParser(description="configuration YAML file.")
     parser.add_argument("config", help="Path to the YAML configuration file.")
     args = parser.parse_args()
-    print(args)
+    #print(args)
     
     PyRadmonConfig = PyRadmonBase(args.config)
     PyRadmonConfig.exec_bin2txt_driver()
