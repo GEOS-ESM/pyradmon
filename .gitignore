@@ -91,9 +91,9 @@ offline/timeseries/src/drafts
 
 # Jupyter NB
 .ipynb_checkpoints
+#test_config_yaml_path.tmpl.cbloecke.yaml
 test_config_yaml_path.example.yaml
 test_config_yaml_path.example1.yaml
-test_config_yaml_path.tmpl.cbloecke.yaml
 test_config_yaml_path.tmpl.yaml
 sic_test_config_yaml_path.tmpl.yaml
 work.test_config_yaml_path.example.yaml
