@@ -106,9 +106,9 @@ if ($rename_date_dir != '/dev/null') mv $expid/$startdate-$enddate $expid/$renam
 
 
 echo "--------- saving .png's in $expid.tar  "
-echo $PWD
-echo $expbase
-echo $expid
+#echo $PWD
+#echo $expbase
+#echo $expid
 
 # output_dir: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeseries/src/m21c_radmon/radmon/e5303_m21c_jan98/
 #      ...../e5303_m21c_jan98/19990901-19990901/amsua_n15/*.png
@@ -118,9 +118,9 @@ tar cvf $expid.tar $expid/ ;
 
 
 echo "--------- removing img directory (contains loose .png's): ----  $expid"
-echo $PWD
-echo $expid
-rm -rf $expid/
+#echo $PWD
+#echo $expid
+#rm -rf $expid/
 echo '--------------- checking for polar option -------------------'
 
 if ($scp_userhost != '/dev/null' && $scp_path != '/dev/null') then

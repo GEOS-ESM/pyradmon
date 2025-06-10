@@ -8,7 +8,7 @@
  
 #
 startdate: 19990901 000000
-enddate:  19990901 180000 #19991130 180000
+enddate:  19990931 180000 #19991130 180000
 
 # Users local clone of pyradmon https://github.com/GEOS-ESM/pyradmon/tree/develop
 pyradmon: /home/dao_ops/pyradmon/
