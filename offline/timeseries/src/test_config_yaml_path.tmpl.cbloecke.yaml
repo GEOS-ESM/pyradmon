@@ -8,7 +8,7 @@
  
 #
 startdate: 19990901 000000
-enddate:  19990902 180000 #19991130 180000
+enddate:  19990901 180000 #19991130 180000
 
 # Users local clone of pyradmon https://github.com/GEOS-ESM/pyradmon/tree/develop
 pyradmon: /home/dao_ops/pyradmon/
@@ -23,7 +23,7 @@ arcbase: /home/dao_ops/m21c/archive/ # M21C Specific
 #
 expbase: /discover/nobackup/projects/gmao/geos-it/cbloecke/pyradmon/offline/timeseries/src/m21c_radmon/
 scratch_dir: /discover/nobackup/projects/gmao/geos-it/cbloecke/pyradmon/offline/timeseries/src/m21c_radmon/scratch/
-output_dir: /discover/nobackup/projects/gmao/geos-it/cbloecke/pyradmon/offline/timeseries/src/m21c_radmon/output/
+output_dir: /discover/nobackup/projects/gmao/geos-it/cbloecke/pyradmon/offline/timeseries/src/m21c_radmon/radmon/
 
 #
 rcfile: /discover/nobackup/projects/gmao/geos-it/cbloecke/pyradmon/offline/timeseries/src/test_config_yaml_path.tmpl.cbloecke.yaml #{yaml file name} #path to this yaml file
@@ -38,5 +38,5 @@ gsidiagsrc: /home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.r
 
 ## Polar
 #rename_date_dir: current
-scp_userhost: cbloecke@polar
-scp_path: /www/html/intranet/personnel/cbloecke/m21c/radmon_data/
+#scp_userhost: cbloecke@polar
+#scp_path: /www/html/intranet/personnel/cbloecke/m21c/radmon_data/

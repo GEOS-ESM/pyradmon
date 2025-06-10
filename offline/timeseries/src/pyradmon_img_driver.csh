@@ -52,8 +52,8 @@ echo "Determining instruments for $expid from $startdate to $enddate.  This "
 echo "  may take a while..."
 set insts=`$ESMADIR/install/bin/echorc.x -rc $rcfile instruments`
 if ($status != 0) then
-   set insts=`$pyradmon_path/offline/timeseries/src/scripts/determine_inst.csh $data_dirbase $startdate $enddate`
-   echo $pyradmon_path/offline/timeseries/src/scripts/determine_inst.csh $data_dirbase $startdate $enddate
+   set insts=`$pyradmon_path/scripts/determine_inst.csh $data_dirbase $startdate $enddate`
+   echo $pyradmon_path/scripts/determine_inst.csh $data_dirbase $startdate $enddate
 endif
 
 echo $insts
@@ -72,12 +72,12 @@ set pyr_enddate="$eyyyy-$emm-$edd $ehh"
 
 foreach inst ($insts) 
   echo $inst  
-  if (-e $pyradmon_path/offline/timeseries/src/config/radiance_plots.$inst.yaml.tmpl) then
+  if (-e $pyradmon_path/config/radiance_plots.$inst.yaml.tmpl) then
 #    set configtmpl="$pyradmon_path/config/radiance_plots_emissbc.$inst.yaml.tmpl"
-    set configtmpl="$pyradmon_path/offline/timeseries/src/config/radiance_plots.$inst.yaml.tmpl"
+    set configtmpl="$pyradmon_path/config/radiance_plots.$inst.yaml.tmpl"
   else
 #    set configtmpl="$pyradmon_path/config/radiance_plots_emissbc.yaml.tmpl"
-    set configtmpl="$pyradmon_path/offline/timeseries/src/config/radiance_plots.yaml.tmpl"
+    set configtmpl="$pyradmon_path/config/radiance_plots.yaml.tmpl"
   endif
 
   set configfile="$scratch_dir/$inst.$expid.$startdate.$enddate.plot.yaml"
@@ -92,8 +92,8 @@ foreach inst ($insts)
 
   echo "Running PyRadMon for $inst from $pyr_startdate to $pyr_enddate"
   echo $configfile 
-  echo $pyradmon_path/offline/timeseries/src/pyradmon.py
-  $pyradmon_path/offline/timeseries/src/pyradmon.py --config-file $configfile plot --data-instrument-sat $inst
+  echo $pyradmon_path/pyradmon.py
+  $pyradmon_path/pyradmon.py --config-file $configfile plot --data-instrument-sat $inst
 end
 
 #echo '----------------------------------'

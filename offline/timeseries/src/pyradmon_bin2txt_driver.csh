@@ -1,6 +1,5 @@
 #!/bin/csh
 
-
 source radmon_process.config
 
 set exprc=$argv[1]
@@ -101,8 +100,11 @@ while ($ndstartdate <= $ndenddate)
 
 end
 
+
+printenv
+
 cd $startdir
-rm -rf work.$exprc
+#rm -rf work.$exprc
 
 
 
