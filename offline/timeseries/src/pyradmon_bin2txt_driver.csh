@@ -104,7 +104,7 @@ end
 printenv
 
 cd $startdir
-#rm -rf work.$exprc
+rm -rf work.$exprc
 
 
 
