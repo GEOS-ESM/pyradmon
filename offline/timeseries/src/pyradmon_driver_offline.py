@@ -60,34 +60,29 @@ class PyRadmonBase:
         """
         # m21c.current.rc.tmpl equivalent
         #################################
-        self.expid = config['expid'] #e5303_m21c_jan18
         self.startdate = config['startdate'] # 20190530 000000
         self.enddate = config['enddate'] # 20190531 180000
+        #
+        self.pyradmon = config['pyradmon'] 
+        #
+        self.expid = config['expid'] #e5303_m21c_jan18
+        self.data_dirbase = config['data_dirbase'] #os.path.join(self.arcbase, self.expid) #, 'obs') #config['data_dirbase'] #/home/dao_ops/m21c/archive/e5303_m21c_jan18/obs
+        self.runbase = config['runbase'] # /home/dao_ops/e5303_m21c_jan18/run/
+        self.mstorage = config['mstorage'] #
         self.arcbase = config['arcbase'] #/home/dao_ops/m21c/archive/
+        #
         self.expbase = config['expbase'] #/discover/nobackup/projects/gmao/r21c/aelakkra/TBR/radmon/time_series/m21c_radmon/
+        self.scratch_dir = config['scratch_dir'] # os.path.join(self.expbase, 'scratch') #config['scratch_dir']
+        self.output_dir = config['output_dir']  #os.path.join(self.expbase, 'radmon') #config['output_dir'] 
 
         # Defaults ~ user should not need to change these values
         ## Executables and Code and .rc files
-        self.pyradmon = config['pyradmon'] 
-        #self.pyradmon_path = config['pyradmon_src'] 
         self.gsidiagsrc = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.rc'
 
-        ## Existing Data Files
-        ### created from: self.arcbase = config['arcbase'] #/home/dao_ops/m21c/archive/
-        self.data_dirbase = os.path.join(self.arcbase, self.expid) #, 'obs') #config['data_dirbase'] #/home/dao_ops/m21c/archive/e5303_m21c_jan18/obs
-        self.runbase = os.path.join(self.arcbase, self.expid, 'run') # /home/dao_ops/e5303_m21c_jan18/run/
-        self.runbase = config['runbase'] # /home/dao_ops/e5303_m21c_jan18/run/
-
-        ## User working directories (created and deleted during main process later)
-        ### created from: self.expbase = config['expbase'] 
-        self.expid_dir = os.path.join(self.expbase, self.expid) #config['output_dir'] 
-        self.scratch_dir = os.path.join(self.expbase, 'scratch') #config['scratch_dir']
-        self.output_dir = os.path.join(self.expbase, 'radmon') #config['output_dir'] 
-        
         ## Exisitng (master?) .rc files
         ## These are just a copy of th confing_input_yaml. Should be changed.
-        self.exprc = config_yaml_path
-        self.rcfile = config_yaml_path
+        self.exprc = config_yaml_path #config['rcfile'] 
+        self.rcfile = config_yaml_path #config['rcfile'] 
 
         #optional
 
@@ -99,6 +94,14 @@ class PyRadmonBase:
         #self.rename_date_dir = config['rename_date_dir'] #
 
        
+        ## Existing Data Files
+        ### created from: self.arcbase = config['arcbase'] #/home/dao_ops/m21c/archive/
+
+        ## User working directories (created and deleted during main process later)
+        ### created from: self.expbase = config['expbase'] 
+        #elf.expid = config['expid'] # os.path.join(self.expbase, self.expid) #config['output_dir'] 
+        #self.expid_dir = config['output_dir']  # os.path.join(self.expbase, self.expid) #
+        
         # Set Environment variables
         ###########################
 
@@ -115,9 +118,13 @@ class PyRadmonBase:
         os.environ['pyradmon'] = self.pyradmon
         os.environ['exprc'] = self.exprc
         os.environ['rcfile'] = self.rcfile
+        os.environ['rcfile'] = self.rcfile
+
+
 
     #def __repr__(self):
      #   return 
+        """
         print(f'''
               pyradmon = {self.pyradmon},
               expid = {self.expid}, 
@@ -134,6 +141,7 @@ class PyRadmonBase:
               self.runbase  = {self.runbase }
               )'''
               )
+        """
 
 
         # pyradmon_bin2txt_driver while loop line 74 equivalent
@@ -190,7 +198,7 @@ class PyRadmonBase:
 
 
         # Execute the directory setup
-        exec_directory_setup(self)
+        #exec_directory_setup(self)
 
         """
         ## Logs
