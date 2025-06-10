@@ -9,9 +9,9 @@ Python Radiance Monitoring Tool. Contains both spatial and timeseries pyradmon.
 ### Installation and Environment Setup
 
 Clone the repo. 
-### Make sure you are cloning/using the *feature/dao-ops-pointer* branch (temporary)
+### Make sure you are cloning/using the *develop* branch (temporary)
 ```sh
-git clone -b feature/dao-ops-pointer https://github.com/GEOS-ESM/pyradmon.git
+git clone -b develop https://github.com/GEOS-ESM/pyradmon.git
 cd pyradmon
 ```
 
@@ -62,7 +62,7 @@ User only needs to edit/make the configuration yaml file that is used in the com
 4. Copy test_config_yaml_path.skeleton.yaml to test_config_yaml_path.tmpl.yaml
 5. Open test_config_yaml_path.tmpl.yaml and make the necessary edits (All the placeholders in {}'s, including the brackets). Recommend that you use find and replace (ctrl-F).
 6. Replace the `{YYYYMMDD}` values for the start and end dates of the period you want
-7. ~~Replace `{path_to_pyradmon}` with the path to the local clone of pyradmon ~ ex. `path/to/local/pyradmon/`~~ Leave pyradmon set to /home/dao_ops/pyradmon/
+7. Replace `{path_to_pyradmon}` with the path to the local clone of pyradmon ~ ex. `path/to/local/pyradmon/`
 8. Replace all instances of `{expid}` with the `experiment id` of the data you want to plot (< how to say this the right way?) - for example you could put: `e5303_m21c_jan18`. Note that this is not an arbitrary value.
 9. Replace all instances of `{timeseries_src_dir} ` with the path you saved from step 3
 10. Replace place all instances of `{expname}` with a name of your choosing for your working directory - this is an arbitrary value ex. `sicohen_m21c_radmon` or `m21_radmon`
@@ -84,11 +84,6 @@ User only needs to edit/make the configuration yaml file that is used in the com
   
 
 11. Run pyradmon in the command line with:
-
-`python3 pyradmon_driver_offline.py [user_input_yaml]`
-
-For an example run:
-
 ```sh
 python3 pyradmon_driver_offline.py test_config_yaml_path.tmpl.yaml
 ```
@@ -129,5 +124,4 @@ Aeronautics and Space Administration. All Rights Reserved.
 
 
 Python Radiance Monitoring Tool. Contains both spatial and timeseries pyradmon.
-
 
