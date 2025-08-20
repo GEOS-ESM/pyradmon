@@ -90,3 +90,22 @@ offline/timeseries/src/drafts
 
 # Jupyter NB
 .ipynb_checkpoints
+
+*.DS_Store
+../../.DS_Store
+../../._.DS_Store
+../../spatial/.DS_Store
+../../spatial/._.DS_Store
+../../spatial/clean_plots/.DS_Store
+../../spatial/clean_plots/._.DS_Store
+geosit_radmon/
+merra2_radmon/
+pyradmon-spatial-scrapwork.sh
+radmon_config_d5124_m2_jan10.yaml
+radmon_config_geosit_stream3.yaml
+sic_radmon_config_d5124_m2_jan10.yaml
+test_config_yaml_path.tmpl.sicohen.geosit.yaml
+test_config_yaml_path.tmpl.sicohen.m21c.yaml
+yamls/
+run/
+pyradmon_img_driver_2.csh
