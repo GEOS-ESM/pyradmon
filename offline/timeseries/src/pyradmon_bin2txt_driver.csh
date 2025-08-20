@@ -49,8 +49,8 @@ if ($status == 0) set sats=($insts)
 
 ln -sf $bin2txtnl .
 
-echo bin2txt: $bin2txt
-echo sats: $sats
+#echo bin2txt: $bin2txt
+#echo sats: $sats
 # .... 
 
 while ($ndstartdate <= $ndenddate)
@@ -59,7 +59,9 @@ while ($ndstartdate <= $ndenddate)
    foreach sat ($sats)
      set template=`cat $mstorage |grep $sat |grep bin$`
      echo $template
-     #echo '--------------------'
+     echo $arcbase
+     echo $expbase
+     echo '--------------------'
      echo $ndstartdate $sat
      foreach tmpl ($template)
 #       set cfile=`$echorc -template $expid $startdate
@@ -104,7 +106,7 @@ while ($ndstartdate <= $ndenddate)
 end
 
 
-printenv
+#printenv
 
 cd $startdir
 rm -rf work.$exprc
