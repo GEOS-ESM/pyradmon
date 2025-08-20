@@ -7,15 +7,15 @@
 # yaml file name ~ test_config_yaml_path.yaml
  
 #
-startdate: 19990901 000000
-enddate:  19990931 180000 #19991130 180000
+startdate: 20000901 000000
+enddate:  20000901 180000 #19991130 180000
 
 # Users local clone of pyradmon https://github.com/GEOS-ESM/pyradmon/tree/develop
 pyradmon: /home/dao_ops/pyradmon/
 
 #
 expid: e5303_m21c_jan98
-data_dirbase: /home/dao_ops/m21c/archive/e5303_m21c_jan98/obs
+data_dirbase: /home/dao_ops/m21c/archive/e5303_m21c_jan98/obs/
 runbase: /home/dao_ops/e5303_m21c_jan98/run/
 mstorage: /home/dao_ops/e5303_m21c_jan98/run/mstorage.arc # $runbase/mstorage.arc
 arcbase: /home/dao_ops/m21c/archive/ # M21C Specific
@@ -29,7 +29,7 @@ output_dir: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeserie
 rcfile: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeseries/src/test_config_yaml_path.tmpl.sicohen.yaml #{yaml file name} #path to this yaml file
 
 # Optional ~ see the satlist.yaml for instrument list (ex: amsua_n15)
-#instruments: amsua_n15 
+instruments: amsua_n15 
 
 
 # DEFAULT VALUES ~ No Edits Required
@@ -38,5 +38,5 @@ gsidiagsrc: /home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.r
 
 ## Polar
 #rename_date_dir: current
-#scp_userhost: cbloecke@polar
-#scp_path: ...
+#scp_userhost: sicohen@polar
+#scp_path: /www/html/intranet/personnel/sicohen/m21c/radmon_data/

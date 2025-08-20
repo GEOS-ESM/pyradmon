@@ -1,0 +1,32 @@
+plot_config:
+    xrange: [-180,180]
+    yrange: [-90,90]
+    rcparams:
+#        figure.figsize: [4.8,3.6]
+        figure.figsize: [6.4,4.8]
+        font.size: 12
+        axes.titlesize: 12
+plots:
+    omabc:
+        var: 'omfbc'
+        cmap: 'coolwarm'
+        chan: used
+        mask: '(obs > 50) & (obs < 400)'
+        markersize: 10
+        cbar_title:  "Brightness Temperature O-A w/ BC (K)\nnobs=$nobs, avg=$avg, std=$std"
+        cbar_style:  'centerzero'
+        cbar_min: -10
+        cbar_max: 10
+        plot_title:  "$psatellite $psensor\n$hour UTC $day $shortmon $year\nAll Observations, Channel $ch $chinfo"
+        filename: "omabc.${psensor}_$psatellite.${year}${mon}${day}_${hour}z.allsfc.allarea.allday.qc0.$ch.png"
+    oma:
+        var: 'omfbc'
+        cmap: 'coolwarm'
+        chan: used
+        mask: '(used == 1)'
+        markersize: 10
+        cbar_title:  "Brightness Temperature O-A w/ BC (K)\nnobs=$nobs, avg=$avg, std=$std"
+        cbar_style:  'centerzero'
+        plot_title:  "$psatellite $psensor\n$hour UTC $day $shortmon $year\nUsed Observations, Channel $ch $chinfo"
+        filename: "omabc.${psensor}_$psatellite.${year}${mon}${day}_${hour}z.allsfc.allarea.allday.qc1.$ch.png"
+

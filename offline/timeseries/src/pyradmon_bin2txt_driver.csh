@@ -58,7 +58,9 @@ while ($ndstartdate <= $ndenddate)
    set expfiles=''
    foreach sat ($sats)
      set template=`cat $mstorage |grep $sat |grep bin$`
-     #echo template
+     echo $template
+     #echo '--------------------'
+     echo $ndstartdate $sat
      foreach tmpl ($template)
 #       set cfile=`$echorc -template $expid $startdate
         setenv PESTOROOT $arcbase
@@ -76,6 +78,7 @@ while ($ndstartdate <= $ndenddate)
               #echo --------------------
            endif
            echo asdf2
+           echo '--------------------'
         endif
       end
    end

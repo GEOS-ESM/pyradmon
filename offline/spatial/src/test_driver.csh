@@ -1,5 +1,5 @@
 #!/bin/csh
-  set date = '20230214'
+  set Date = '20230214'
   #set EXPID = 'd5294_geosit_jan18' # GEOS-IT
   #source /home/dao_ops/d5294_geosit_jan18/run/FVDAS_Run_Config #.SLES15
   set EXPID = 'f5295_fp' # GEOS FP
@@ -22,21 +22,21 @@
   cd $FVWORK/$EXPID/tmp
   #rm -rf do_*
 
-  foreach hour ( 00 )
-     set hour = '18'
-     ./do_atms.csh $EXPID $date $hour 
-     ./do_amsr2.csh $EXPID $date $hour 
-     ./do_amsua.csh $EXPID $date $hour 
-     ./do_amsua_n15.csh $EXPID $date $hour 
-     ./do_avhrr.csh $EXPID $date $hour 
-     ./do_gmi.csh $EXPID $date $hour 
-     ./do_hirs.csh $EXPID $date $hour 
-     ./do_mhs.csh $EXPID $date $hour 
-     ./do_seviri.csh $EXPID $date $hour 
-     ./do_ssmis.csh $EXPID $date $hour 
-     ./do_cris.csh $EXPID $date $hour
-     ./do_airs.csh $EXPID $date $hour 
-     ./do_iasi.csh $EXPID $date $hour 
+  foreach hour ( 00 )1
+     #set hour = '18'
+     ./do_atms.csh $EXPID $Date $hour 
+     ./do_amsr2.csh $EXPID $Date $hour 
+     ./do_amsua.csh $EXPID $Date $hour 
+     ./do_amsua_n15.csh $EXPID $Date $hour 
+     ./do_avhrr.csh $EXPID $Date $hour 
+     ./do_gmi.csh $EXPID $Date $hour 
+     ./do_hirs.csh $EXPID $Date $hour 
+     ./do_mhs.csh $EXPID $Date $hour 
+     ./do_seviri.csh $EXPID $Date $hour 
+     ./do_ssmis.csh $EXPID $Date $hour 
+     ./do_cris.csh $EXPID $Date $hour
+     ./do_airs.csh $EXPID $Date $hour 
+     ./do_iasi.csh $EXPID $Date $hour 
   end
 
 

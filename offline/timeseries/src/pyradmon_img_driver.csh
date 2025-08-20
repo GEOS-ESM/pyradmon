@@ -118,9 +118,8 @@ tar cvf $expid.tar $expid/ ;
 
 
 echo "--------- removing img directory (contains loose .png's): ----  $expid"
-#echo $PWD
-#echo $expid
-#rm -rf $expid/
+rm -rf $output_dir/$expid/
+
 echo '--------------- checking for polar option -------------------'
 
 if ($scp_userhost != '/dev/null' && $scp_path != '/dev/null') then

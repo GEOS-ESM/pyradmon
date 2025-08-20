@@ -1,0 +1,11 @@
+
+PYRADMON: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/spatial/src
+EXPID: f5295_fp
+Date: 20231201
+hour: 18
+
+obstypes:
+  - atms 
+  - amsr2 
+  - amsua
+  - amsua_n15
