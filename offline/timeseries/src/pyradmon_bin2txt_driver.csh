@@ -41,7 +41,6 @@ set ndstartdate=`echo $startdate[1]``echo $startdate[2] |cut -b1-2`
 set    ndenddate=`echo $enddate[1]``echo $enddate[2] |cut -b1-2`
 
 set mstorage=`$echorc -rc $exprc mstorage`
-
 if ($status) set mstorage=$expbase/$expid/run/mstorage.arc
 
 set insts=`$echorc -rc $exprc instruments`
@@ -58,34 +57,37 @@ while ($ndstartdate <= $ndenddate)
    set expfiles=''
    foreach sat ($sats)
      set template=`cat $mstorage |grep $sat |grep bin$`
-     echo $template
-     echo $arcbase
-     echo $expbase
-     echo '--------------------'
+     echo '----------1----------'
      echo $ndstartdate $sat
      foreach tmpl ($template)
+        echo $template
 #       set cfile=`$echorc -template $expid $startdate
         setenv PESTOROOT $arcbase
         set cfilearc=`$echorc -template $expid $startdate -fill $tmpl`
         setenv PESTOROOT $expbase
+        #echo $PESTOROOT 
         set cfileexp=`$echorc -template $expid $startdate -fill $tmpl`
         if (-e $cfilearc) then
+           echo $cfilearc
            set cfileout=`echo $cfileexp | sed 's/bin$/txt/'`
+           #echo $cfileout
            mkdir -p `dirname $cfileout`
            echo asdf $cfileout
            if (! -e $cfileout) then
               set arcfiles=($arcfiles $cfilearc) 
               set expfiles=($expfiles $cfileexp)
+              echo $arcfilese
+              echo $expfiles
               ln -sf $cfilearc $cfileexp
-              #echo --------------------
+              echo '-----------2---------'
            endif
            echo asdf2
-           echo '--------------------'
+         echo '----------3----------'
         endif
       end
    end
 
-   echo dmgetting arcfiles $arcfiles
+   #echo dmgetting arcfiles $arcfiles
 
    if ("$arcfiles" != "" ) dmget $arcfiles
 
@@ -109,7 +111,7 @@ end
 #printenv
 
 cd $startdir
-rm -rf work.$exprc
+#rm -rf work.$exprc
 
 
 

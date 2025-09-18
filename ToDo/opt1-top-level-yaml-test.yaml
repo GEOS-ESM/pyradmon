@@ -5,7 +5,17 @@
 # {timeseries_src_dir} ~ the full path to the directory src directory (i.e. $NOBACKUP/pyradmon/offline/timeseries/src/)
 # {expname} ~ can be anything, ex: m21c_radmon
 # yaml file name ~ test_config_yaml_path.yaml
- 
+
+pyradmon: ~/workenv/pyradmon #{path_to_pyradmon}
+expname: m21c_radmon
+expbase: "{pyradmon}/offline/timeseries/src/{expname}" # {timeseries_src_dir}/{expname}
+expid: e5303_m21c_jan18
+arcbase: /home/dao_ops/m21c/archive/ # M21C Specific
+data_dirbase: "/home/dao_ops/m21c/archive/{expid}/obs" # "{arcbase}/{expid}/obs"
+
+
+user: sicohen
+
 # 1a - 1b
 startdate: 20190101 000000
 enddate:  20190102 180000

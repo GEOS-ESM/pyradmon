@@ -4,6 +4,7 @@ import yaml
 import argparse
 from datetime import datetime, timedelta
 import subprocess
+import shutil
 
 # Global Constants, Modules and Environment Setup
 
@@ -22,7 +23,6 @@ command = 'source $ESMADIR/install/bin/g5_modules'
 process = subprocess.run(command, shell=True, executable='/bin/bash')
 print(f'g5_modules loaded  ------------------------------------------------------------------')
 
-
 # m21c.current.rc.tmpl equivalent 
 #################################
 class PyRadmonBase:
@@ -32,10 +32,41 @@ class PyRadmonBase:
         :param config_yaml_path: Path to the YAML configuration file. See PyRadmonBase_template.yaml
         
         """
+        #self.logger = logging.getLogger(self.__class__.__name__)
+        # self.config = self._load_config(config_yaml_path)
+        #self._setup_logging()
+
+        log_dir='.log'
+        log_filename='app.log'
+        level=logging.INFO
+        try:
+            # Create the log directory if it doesn't exist
+            if not os.path.exists(log_dir):
+                os.makedirs(log_dir)
+            
+            # Create full path to log file
+            log_file = os.path.join(log_dir, log_filename)
+            
+            # Set up logging configuration
+            logging.basicConfig(
+                level=level,
+                filename=log_file,
+                format='%(asctime)s - %(levelname)s - %(message)s',
+                filemode='a'
+            )
+            
+            # Log that logging has been initialized
+            logging.info("Logging initialized successfully")
+            
+            #return True, os.path.abspath(log_file)
+            
+        except (OSError, PermissionError) as e:
+            error_msg = f"Failed to set up logging: {e}"
+            print(error_msg)
+            #return False, error_msg
 
         with open(config_yaml_path, 'r') as file:
             config = yaml.safe_load(file)
-            #print(f'config: {config}')
         
         """
         pyradmon: str | pyradmon top lvl dir | /home/dao_ops/pyradmon/
@@ -64,6 +95,8 @@ class PyRadmonBase:
         self.enddate = config['enddate'] # 20190531 180000
         #
         self.pyradmon = config['pyradmon'] 
+        self.pyradmon_local_dir = config['expbase'].split('offline/')[0]
+        self.pyradmon_run_dir = self.pyradmon_local_dir + 'run/'
         #
         self.expid = config['expid'] #e5303_m21c_jan18
         self.data_dirbase = config['data_dirbase'] #os.path.join(self.arcbase, self.expid) #, 'obs') #config['data_dirbase'] #/home/dao_ops/m21c/archive/e5303_m21c_jan18/obs
@@ -118,30 +151,6 @@ class PyRadmonBase:
         os.environ['pyradmon'] = self.pyradmon
         os.environ['exprc'] = self.exprc
         os.environ['rcfile'] = self.rcfile
-        os.environ['rcfile'] = self.rcfile
-
-
-
-    #def __repr__(self):
-     #   return 
-        """
-        print(f'''
-              pyradmon = {self.pyradmon},
-              expid = {self.expid}, 
-              expbase = {self.expbase},
-              arcbase = {self.arcbase}, 
-              data_dirbase = {self.data_dirbase},
-              startdate = {self.startdate}, 
-              enddate = {self.enddate}, 
-              scratch_dir = {self.scratch_dir},
-              output_dir = {self.output_dir}, 
-              rcfile = {self.rcfile},
-              exprc = {self.exprc}, 
-              gsidiagsrc = {self.gsidiagsrc}, 
-              self.runbase  = {self.runbase }
-              )'''
-              )
-        """
 
 
         # pyradmon_bin2txt_driver while loop line 74 equivalent
@@ -162,7 +171,7 @@ class PyRadmonBase:
                             section_lines.append(line)
                 return section_lines
             except FileNotFoundError:
-                print(f"Error: File not found: {file_path}")
+                logging.info('Error: File not found:'+file_path)
 
             """
             for sat in sats:
@@ -172,18 +181,17 @@ class PyRadmonBase:
                 print(template)
             """
 
-
-        def directory_setup_base(directory_path):
+        def directory_setup_base(directory_path)-> None:
 
             # Check if the directory exists
             if not os.path.exists(directory_path):
                 # Create the directory if it does not exist
                 os.makedirs(directory_path)
-                print(f"Directory '{directory_path}' created successfully.")
+                logging.info(f"Directory '{directory_path}' created successfully.")
             else:
-                print(f"Directory '{directory_path}' already exists.")
+                logging.info(f"Directory '{directory_path}' already exists.")
 
-        def exec_directory_setup(self):
+        def exec_directory_setup(self)-> None:
             # make expbase dir
             directory_setup_base(self.expbase)
             # make expid data dir
@@ -192,10 +200,8 @@ class PyRadmonBase:
             directory_setup_base(self.scratch_dir)
             # make output dir
             directory_setup_base(self.output_dir)
-            # make log dir
-            log_dir = os.path.join(self.expbase, 'log')
-            directory_setup_base(log_dir)
-
+            # pyradmon/run
+            directory_setup_base(self.pyradmon_run_dir)
 
         # Execute the directory setup
         #exec_directory_setup(self)
@@ -214,11 +220,25 @@ class PyRadmonBase:
         log_message = f"Initialized PYRADMON-OFFLINE with configuration from {config_yaml_path}"
         logging.info(log_message)
         #print(log_message)
-        """
+    
+    def _setup_logging(self):
+        if not self.logger.handlers:
+            # Console output
+            console_handler = logging.StreamHandler()
+            console_handler.setFormatter(logging.Formatter('%(name)s - %(levelname)s - %(message)s'))
+            
+            # File output - creates 'app.log' in current directory
+            file_handler = logging.FileHandler('.log/app.log')
+            file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+            
+            self.logger.addHandler(console_handler)
+            self.logger.addHandler(file_handler)
+            self.logger.setLevel(logging.INFO)
+                    """
 
     # m21c_radmon.csh equivalent
     ############################
-    def exec_m21c_radmon():
+    def exec_m21c_radmon() -> None:
         print(f'Running NRT Radmon for MERRA21C')
         os.environ['FVROOT'] = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/'
         os.environ['M2BASE'] = '/home/dao_ops/m21c/archive/'
@@ -242,7 +262,7 @@ class PyRadmonBase:
 
     # pyradmon_bin2txt_driver.csh equivalent
     ########################################
-    def exec_bin2txt_driver(self):
+    def exec_bin2txt_driver(self) -> None:
         """        
         execute pyradmon_bin2txt_driver.csh
                 
@@ -250,7 +270,7 @@ class PyRadmonBase:
                 ./pyradmon_bin2txt_driver.csh $exprc
         """
     
-        print(f'Now running: execute exec_bin2txt_driver.csh')
+        logging.info(f'Now running: execute exec_bin2txt_driver.csh')
         #print(f'----------- self ---- : {self}')
 
 
@@ -267,7 +287,7 @@ class PyRadmonBase:
             error_message = f"Error: {e}"
             print(error_message)
             logging.error(error_message)
-
+   
 
         print(f'finished: exec_bin2txt_driver   ------------------------------------------------------------------')
 
@@ -278,12 +298,8 @@ class PyRadmonBase:
         execute pyradmon_img_driver.csh
         """
         print(f'Now running: execute pyradmon_img_driver.csh')
-        #print(f'----------- self ---- : {self}')
 
-        #os.environ['rcfile'] = self
         try:
-            #print(f'self.exprc: {self.exprc} --------------------')
-            #print(f'self.pyradmon: {self.pyradmon} --------------------')
 
             # Self contained version  ~ branch: develop
             # -----------------------
@@ -299,31 +315,34 @@ class PyRadmonBase:
             logging.error(error_message)
         print(f'finished: exec_img_driver   ------------------------------------------------------------------')
 
+    def move_files(self) -> None:
+        src_dir = self.output_dir
+        dst_dir = self.pyradmon_run_dir +'/.'
+        print(f'Copying  output to pyradmon/run directory. {src_dir} to: {dst_dir}')
+        logging.info(f' Copying  file(s) from: {src_dir} to: {dst_dir}')
+
+        try:
+            logging.info(f' Copying  file(s) from:  {src_dir}')
+            logging.info(f' Copying  file(s) to: {dst_dir}')
+            shutil.copy(src_dir, dst_dir)
+
+        except Exception:
+            logging.info(f'Copying  failed, see if source files exist {src_dir} to {dst_dir}')
+ 
 
 # python script.py config.yaml
 if __name__ == "__main__":
-
-    #print(os.path.basename(__file__))
     parser = argparse.ArgumentParser(description="configuration YAML file.")
     parser.add_argument("config", help="Path to the YAML configuration file.")
     args = parser.parse_args()
-    #print(args)
-    
+
+    # Run Pyradmon
     PyRadmonConfig = PyRadmonBase(args.config)
+    #PyRadmonConfig.exec_directory_setup()
     PyRadmonConfig.exec_bin2txt_driver()
     PyRadmonConfig.exec_img_driver()
-    
-    #subprocess.run(["unlink", "ndate"]) # 'test_config_yaml_path.yaml'])
+    PyRadmonConfig.move_files()
 
-    # pipe
-    #process1 = subprocess.Popen(['source', './pyradmon_bin2txt_driver.csh','test_config_yaml_path.yaml'])# , stdout=subprocess.PIPE)
-    #process2 = subprocess.Popen(['source', './pyradmon_img_driver.csh','test_config_yaml_path.yaml']) #, stdin=process1.stdout, stdout=subprocess.PIPE)
+    # move output files to the run directory
+    #move_files(PyRadmonConfig.output_dir, PyRadmonConfig.pyradmon_run_dir)
 
-    
-
-"""
-
-if __name__ == "__main__":
-    uploader = S3Uploader('config.yaml')  # Specify the path to your YAML config file
-    uploader.upload_directory()
-"""
