@@ -26,7 +26,7 @@ scratch_dir: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeseri
 output_dir: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeseries/src/geosit_radmon/radmon/
 
 #
-rcfile: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeseries/src/test_config_yaml_path.tmpl.geosit.yaml #{yaml file name} #path to this yaml file
+rcfile: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeseries/src/geosit.yaml #{yaml file name} #path to this yaml file
 
 # Optional ~ see the satlist.yaml for instrument list (ex: amsua_n15)
 instruments: atms_npp #, atms_n20, atms_n21, airs_aqua, mhs_metop-a, mhs_metop-b, mhs_metop-c, mhs_n18, mhs_n19, amsua_metop-a, amsua_metop-b, amsua_metop-c

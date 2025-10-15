@@ -76,7 +76,7 @@ while ($ndstartdate <= $ndenddate)
            if (! -e $cfileout) then
               set arcfiles=($arcfiles $cfilearc) 
               set expfiles=($expfiles $cfileexp)
-              echo $arcfilese
+              echo $arcfiles
               echo $expfiles
               ln -sf $cfilearc $cfileexp
               echo '-----------2---------'
@@ -111,7 +111,7 @@ end
 #printenv
 
 cd $startdir
-#rm -rf work.$exprc
+rm -rf work.$exprc
 
 
 
