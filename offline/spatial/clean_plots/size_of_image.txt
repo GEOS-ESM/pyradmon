@@ -1,1 +1,0 @@
-in original RADMON coverage plots, dimensions of plotted image were 480x360

@@ -47,9 +47,16 @@ It is encouraged to use a virtual environment; however, you may choose to not us
 
 
 ## How to run
+ 
+### Spatial: `python3 pyradmon_driver_offline_spatial_test_driver.py [user_input_yaml]`
 
-### Spatial
+# Example user_input_yaml: `config_test_driver.yaml` 
+expver: f5295_fp
+yyyymmdd: '20231201'
+hh: '18'
+pyradmon: '$NOBACKUP/pyradmon'
 
+pyradmon should be the full path to the users local clone of pyradmon: {userid}/.../pyradmon
 
 ### Timeseries: `python3 pyradmon_driver_offline.py [user_input_yaml]`
 
@@ -88,17 +95,7 @@ User only needs to edit/make the configuration yaml file that is used in the com
 python3 pyradmon_driver_offline.py test_config_yaml_path.tmpl.yaml
 ```
 
-</div>
-
-
-
-/
-
-/
-
-/
-/
-
+</div> 
 
 
 

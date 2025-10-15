@@ -1,9 +1,0 @@
-link .nc4 files to current directory
-for each radiance type in (ls do*.csh) create coverage plots
-create tar files of png images
-
-scp: send tar files to polar:/radmon/radmon/f5271_fp/coverage/yyyymmdd
-ssh: untar tar files
-ssh: delete tar files
- 
-job is complete

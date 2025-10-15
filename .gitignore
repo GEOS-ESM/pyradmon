@@ -109,6 +109,8 @@ offline/timeseries/src/pyradmon-spatial-scrapwork.sh
 offline/timeseries/src/test_config_yaml_path.tmpl.sicohen.*
 offline/timeseries/src/radmon_config_geosit_stream3.yaml
 offline/timeseries/src/pyradmon_img_driver_2.csh
-ToDo/
 archive/
 .venv
+./offline/spatial/run/
+*log
+*.log
