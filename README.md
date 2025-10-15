@@ -52,11 +52,13 @@ After running the venv steps above, from now on use `load_radmon_config.sh` to l
  
 ### Spatial: `python3 pyradmon_driver_offline_spatial_test_driver.py [user_input_yaml]`
 
-# Example user_input_yaml: `config_test_driver.yaml` 
+####  Example user_input_yaml: `config_test_driver.yaml` 
+```
 expver: f5295_fp
 yyyymmdd: '20231201'
 hh: '18'
 pyradmon: '$NOBACKUP/pyradmon'
+```
 
 pyradmon should be the full path to the users local clone of pyradmon: {userid}/.../pyradmon
 
