@@ -42,6 +42,8 @@ python3 -m pip install -r requirements.txt
 
 It is encouraged to use a virtual environment; however, you may choose to not use one. If you do you will have to locate all the references to the *'ACTIVATE_VENV'* variable, which will be explained later, and change them - this will end up being more time consuming. 
 
+After running the venv steps above, from now on use `load_radmon_config.sh` to load and activate the pyradmon virtual environment. It contains the line `source .venv/radmon_sles15_venv/bin/activate.csh` and defines other environment variables that will be used by the pyradmon scripts. There should be no need to edit `load_radmon_config.sh` unless you need to change which `activate` line for your shell.
+
 
 #
 
