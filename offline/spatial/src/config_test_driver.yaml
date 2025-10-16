@@ -1,5 +1,0 @@
-# config for pyradmon_driver_offline_spatial
-expver: f5295_fp
-yyyymmdd: '20231201'
-hh: '18'
-pyradmon: '/discover/nobackup/sicohen/RADMON/develop/pyradmon'
