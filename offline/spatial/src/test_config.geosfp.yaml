@@ -2,8 +2,6 @@
 expver: f5295_fp
 yyyymmdd: '20250301'
 hh: '18'
-# pyradmon: '/discover/nobackup/sicohen/RADMON/develop/pyradmon'
-
 
 # Obs Types Switches (Off = 0, On = 1)
 # ------------------------------------

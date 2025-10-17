@@ -67,7 +67,7 @@ class PyRadmonBase:
         self.expver = config['expver']      # $1
         self.yyyymmdd = config['yyyymmdd']  # $2
         self.hh = config['hh']              # $3
-        self.pyradmon = config['pyradmon']  # $4
+        # self.pyradmon = config['pyradmon']  # $4
 
 
         # Obs Types Switches (Off = 0, On = 1)
@@ -89,8 +89,9 @@ class PyRadmonBase:
 
         try:
             # Load proper FVDAS_Run_Config for $EXPID
+            os.environ['EXPID'] = self.expver #os.environ.get('expver')
             command = 'source /home/dao_ops/$EXPID/run/FVDAS_Run_Config'
-            process = subprocess.run(command, shell=True, executable='/bin/sh')
+            process = subprocess.run(command, shell=True, executable='/bin/csh')
 
             # Get environment variables
             pyradmon = os.environ.get('pyradmon')
@@ -111,14 +112,18 @@ class PyRadmonBase:
             # Copy src code into build
             command = f'cp -r {src_dir}/* {target_dir}/.'
             print(f' command : {command}')
-            process = subprocess.run(command, shell=True, executable='/bin/sh')
+            process = subprocess.run(command, shell=True, executable='/bin/csh')
 
             # Change to the build directory
             os.chdir(target_dir)
+        except Exception as e:
+            error_message = f"Error: {e}"
+            print(error_message)
+            logging.error(error_message)
 
             # ----------------------------------------------------------------------------------------------------------------
 
-            
+        try:
             # Run script if obs type enabled in yaml input
             # --------------------------------------------
 
@@ -164,6 +169,9 @@ class PyRadmonBase:
             # Move output directory to somewhere more accesible
             # -------------------------------------------------
             # Set up paths
+            pyradmon = os.environ.get('pyradmon')
+            expid = os.environ.get('EXPID')
+
             pyradmon_path = Path(pyradmon)
             run_path = pyradmon_path / 'offline' / 'spatial' / 'run' 
             target_dir = run_path / expid

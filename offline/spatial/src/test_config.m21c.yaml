@@ -3,7 +3,6 @@
 expver: e5303_m21c_jan18
 yyyymmdd: '20210301'
 hh: '18'
-pyradmon: '/discover/nobackup/sicohen/RADMON/develop/pyradmon'
 
 # Obs Types Switches (Off = 0, On = 1)
 # ------------------------------------
