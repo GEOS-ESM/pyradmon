@@ -95,6 +95,7 @@ offline/spatial/src/yamls/
 *.log
 .tar
 user_input_yaml.yaml
+READMEv1.md 
 
 # Jupyter NB
 .ipynb_checkpoints
