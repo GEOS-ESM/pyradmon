@@ -49,11 +49,11 @@ This will be for after the feature/dao-ops-pointer branch has been merged to the
 ~~mkdir -p radmon && cd radmon~~
 ~~git clone https://github.com/GEOS-ESM/pyradmon.git pyradmon~~
 ~~cd pyradmon~~ -->
-
+<!-- 
 After running the venv steps above, from now on use `load_radmon_config.sh` to load and activate the pyradmon virtual environment. It contains the line `source .venv/radmon_sles15_venv/bin/activate.csh` and defines other environment variables that will be used by the pyradmon scripts. There should be no need to edit `load_radmon_config.sh` unless you need to change which `activate` line for your shell.
+ -->
 
-
-
+<!-- 
 #### Part 1: virtual environment
 
 1) Switch to your folder where pyradmon is cloned: `cd $NOBACKUP/radmon/pyradmon-dao-ops-pointer`.
@@ -70,9 +70,17 @@ After running the venv steps above, from now on use `load_radmon_config.sh` to l
  
  From now on, in order to load `pyradmon` you must use the appropriate `load_radmon_config.*sh` script. These scripts runs the `source .venv/bin/activate` command for activating your virtual environment and sets environment variables that the `pyradmon` scripts will use.
 
-6) Load with the appropriate `load_radmon_config` script: `source load_radmon_config.csh`
+6) Load with the appropriate `load_radmon_config` script: `source load_radmon_config.csh` -->
 
 <!-- 2) Load all the modules that pyradmon needs: `mod_load_pyradmon` (this is the `bash` function created in the preliminary steps) -->
+
+#### Load pyradmon (virtual environment & environment variables)
+
+ You will no longer need to create or activate your virtual environment directly. 
+ 
+ From now on, in order to load `pyradmon` you must use the appropriate `load_radmon_config.*sh` script. These scripts runs the command for activating loading the `g5_modules` and sets environment variables that the `pyradmon` scripts will use.
+
+0) Load with the appropriate `load_radmon_config` script: `source load_radmon_config.csh` -->
 
 # How to run
 
@@ -85,15 +93,35 @@ python3 pyradmon_driver_spatial.py [user_input_yaml]
 1) Load with the appropriate `load_radmon_config` `source load_radmon_config.csh` this well set $pyradmon 
 2) Change directory: `cd $pyradmon/offline/spatial/src`
 3) Create the `user_input_yaml` by copying the existing example yaml. You may name the yaml file whatever you like: `cp test_config.geosfp.yaml user_input_yaml.yaml`
-4) Open and edit yaml to the experiment and dates you wish to run pyradmon for. 
+4) Open and edit yaml to the experiment and dates you wish to run pyradmon for. Set the Obs Types switches to `1 for ON` and `2 for OFF`
 5) Run pyradmon spatial: `python3 pyradmon_driver_spatial.py user_input_yaml.yaml`
 
 #### Example user_input_yaml: `test_config.geosfp.yaml`:
+
+The example will only run pyradmon spatial for gmi.
+
 ```
-# test_config.geosfp.yaml
+# config for pyradmon_driver_spatial.py 
+# -------------------------------------
 expver: f5295_fp
-yyyymmdd: '20231201'
+yyyymmdd: '20250301'
 hh: '18'
+
+# Obs Types Switches (Off = 0, On = 1)
+# ------------------------------------
+atms: 0
+amsr2: 0
+amsua: 0
+amsua_n15: 0
+avhrr: 0
+gmi: 1
+hirs: 0
+mhs: 0
+seviri: 0
+ssmis: 0
+cris: 0
+airs: 0
+iasi: 0
 ```
 
 pyradmon should be the full path to the users local clone of pyradmon: {userid}/.../pyradmon

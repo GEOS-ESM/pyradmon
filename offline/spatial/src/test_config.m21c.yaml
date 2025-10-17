@@ -1,5 +1,5 @@
-# config for pyradmon_driver_offline_spatial_run_all.py 
-# -----------------------------------------------------
+# config for pyradmon_driver_spatial.py 
+# -------------------------------------
 expver: e5303_m21c_jan18
 yyyymmdd: '20210301'
 hh: '18'

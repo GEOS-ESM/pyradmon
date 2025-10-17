@@ -1,4 +1,5 @@
-# config for pyradmon_driver_offline_spatial_run_all.py 
+# config for pyradmon_driver_spatial.py 
+# -------------------------------------
 expver: f5295_fp
 yyyymmdd: '20250301'
 hh: '18'
