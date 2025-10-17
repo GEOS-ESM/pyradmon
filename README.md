@@ -70,7 +70,7 @@ After running the venv steps above, from now on use `load_radmon_config.sh` to l
  
  From now on, in order to load `pyradmon` you must use the appropriate `load_radmon_config.*sh` script. These scripts runs the `source .venv/bin/activate` command for activating your virtual environment and sets environment variables that the `pyradmon` scripts will use.
 
-6) Load with the appropriate `load_pyradmon_config` script: `source $NOBACKUP/radmon/pyradmon-dao-ops-pointer/load_pyradmon_config.csh`
+6) Load with the appropriate `load_radmon_config` script: `source load_radmon_config.csh`
 
 <!-- 2) Load all the modules that pyradmon needs: `mod_load_pyradmon` (this is the `bash` function created in the preliminary steps) -->
 
@@ -82,8 +82,8 @@ After running the venv steps above, from now on use `load_radmon_config.sh` to l
 python3 pyradmon_driver_spatial.py [user_input_yaml]
 ```
 
-1) Change directory: `cd $NOBACKUP/radmon/pyradmon-dao-ops-pointer/offline/spatial/src`
-2) Load with the appropriate `load_pyradmon_config` `source $NOBACKUP/radmon/pyradmon-dao-ops-pointer/load_pyradmon_config.csh`
+1) Load with the appropriate `load_radmon_config` `source load_radmon_config.csh` this well set $pyradmon 
+2) Change directory: `cd $pyradmon/offline/spatial/src`
 3) Create the `user_input_yaml` by copying the existing example yaml. You may name the yaml file whatever you like: `cp test_config.geosfp.yaml user_input_yaml.yaml`
 4) Open and edit yaml to the experiment and dates you wish to run pyradmon for. 
 5) Run pyradmon spatial: `python3 pyradmon_driver_spatial.py user_input_yaml.yaml`
