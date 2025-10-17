@@ -50,6 +50,8 @@ This will be for after the feature/dao-ops-pointer branch has been merged to the
 ~~git clone https://github.com/GEOS-ESM/pyradmon.git pyradmon~~
 ~~cd pyradmon~~ -->
 
+After running the venv steps above, from now on use `load_radmon_config.sh` to load and activate the pyradmon virtual environment. It contains the line `source .venv/radmon_sles15_venv/bin/activate.csh` and defines other environment variables that will be used by the pyradmon scripts. There should be no need to edit `load_radmon_config.sh` unless you need to change which `activate` line for your shell.
+
 
 
 #### Part 1: virtual environment
@@ -68,6 +70,7 @@ This will be for after the feature/dao-ops-pointer branch has been merged to the
  
  From now on, in order to load `pyradmon` you must use the appropriate `load_radmon_config.*sh` script. These scripts runs the `source .venv/bin/activate` command for activating your virtual environment and sets environment variables that the `pyradmon` scripts will use.
 
+<<<<<<< HEAD
 6) Load with the appropriate `load_pyradmon_config` script: `source $NOBACKUP/radmon/pyradmon-dao-ops-pointer/load_pyradmon_config.csh`
 
 <!-- 2) Load all the modules that pyradmon needs: `mod_load_pyradmon` (this is the `bash` function created in the preliminary steps) -->
@@ -93,6 +96,14 @@ expver: f5295_fp
 yyyymmdd: '20231201'
 hh: '18'
 pyradmon: '$NOBACKUP/radmon/pyradmon-dao-ops-pointer'
+=======
+####  Example user_input_yaml: `config_test_driver.yaml` 
+```
+expver: f5295_fp
+yyyymmdd: '20231201'
+hh: '18'
+pyradmon: '$NOBACKUP/pyradmon'
+>>>>>>> 201df835aed319df931eea7b1febfef94c54fdb6
 ```
 
 pyradmon should be the full path to the users local clone of pyradmon: {userid}/.../pyradmon
