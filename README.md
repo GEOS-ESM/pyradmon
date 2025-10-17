@@ -94,7 +94,6 @@ python3 pyradmon_driver_spatial.py [user_input_yaml]
 expver: f5295_fp
 yyyymmdd: '20231201'
 hh: '18'
-pyradmon: '$NOBACKUP/radmon/pyradmon-dao-ops-pointer'
 ```
 
 pyradmon should be the full path to the users local clone of pyradmon: {userid}/.../pyradmon
