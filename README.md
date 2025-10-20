@@ -14,7 +14,7 @@ The current version of pyradmon (_version number?_):
 - is working for both timeseries and spatial plotting.
 - is a 'pointer' - the python wrappers _point_ to the backend scripts that are in `/home/dao_ops/pyradmon/` NOT the ones that are in the source directories in this repository. 
 
-Further explanation of the _'pointer'_ version and why it was made this way:
+~~Further explanation of the _'pointer'_ version and why it was made this way:~~
 
 More changes are being made to make it more flexible and user friendly. 
 
@@ -80,7 +80,7 @@ After running the venv steps above, from now on use `load_radmon_config.sh` to l
  
  From now on, in order to load `pyradmon` you must use the appropriate `load_radmon_config.*sh` script. These scripts runs the command for activating loading the `g5_modules` and sets environment variables that the `pyradmon` scripts will use.
 
-0) Load with the appropriate `load_radmon_config` script: `source load_radmon_config.csh` -->
+0) Load with the appropriate `load_radmon_config` script: `source load_radmon_config.csh`
 
 # How to run
 
