@@ -93,7 +93,7 @@ python3 pyradmon_driver_spatial.py [user_input_yaml]
 1) Load with the appropriate `load_radmon_config` `source load_radmon_config.csh` this well set $pyradmon 
 2) Change directory: `cd $pyradmon/offline/spatial/src`
 3) Create the `user_input_yaml` by copying the existing example yaml. You may name the yaml file whatever you like: `cp test_config.geosfp.yaml user_input_yaml.yaml`
-4) Open and edit yaml to the experiment and dates you wish to run pyradmon for. Set the Obs Types switches to `1 for ON` and `2 for OFF`
+4) Open and edit yaml to the experiment and dates you wish to run pyradmon for. Set the Obs Types switches to `1 for ON` and `0 for OFF`
 5) Run pyradmon spatial: `python3 pyradmon_driver_spatial.py user_input_yaml.yaml`
 
 #### Example user_input_yaml: `test_config.geosfp.yaml`:
