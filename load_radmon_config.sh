@@ -1,8 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
-source .venv/bin/activate
-export pyradmon=$PWD
-export pyradmon_spatial_src=$pyradmon/offline/spatial/src
-export pyradmon_timeseries_src=$pyradmon/offline/timeseries/src
+# Activate venv and set pyradmon directory environment variable
+source /home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/bin/g5_modules
+export pyradmon="$PWD"
 
-# export run_dir=$PWD/run_dir
+echo '$pyradmon set to:' "$pyradmon"
