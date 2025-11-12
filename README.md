@@ -10,7 +10,7 @@ The Radiance monitoring tool, `pyradmon`, has been overhauled after compatibilit
 
 Returning users can expect the final outputs (plots) pyradmon produces to be the same as it did previously – plots should be formatted in the same style, etc. While pyradmon is running, users should expect to see similar – but different - output in the terminal. The location of the output images and .tar file will be in a different location – the .tar file will have the same structure as it did previously.
 
-The current version of pyradmon: ~~(_version number?_):~~
+The current version of pyradmon: 
 - is working for both timeseries and spatial plotting.
 - is a 'pointer' - the python wrappers _point_ to the backend scripts that are in `/home/dao_ops/pyradmon/` NOT the ones that are in the source directories in this repository. 
 
