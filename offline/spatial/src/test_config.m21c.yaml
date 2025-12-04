@@ -1,0 +1,21 @@
+# config for pyradmon_driver_spatial.py 
+# -------------------------------------
+expver: e5303_m21c_jan18
+yyyymmdd: '20210301'
+hh: '18'
+
+# Obs Types Switches (Off = 0, On = 1)
+# ------------------------------------
+atms: 0
+amsr2: 0
+amsua: 0
+amsua_n15: 0
+avhrr: 0
+gmi: 0
+hirs: 0
+mhs: 0
+seviri: 0
+ssmis: 0
+cris: 0
+airs: 0
+iasi: 0

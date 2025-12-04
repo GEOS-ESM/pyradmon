@@ -1,0 +1,57 @@
+# All values within {}'s must be replaced by the user
+# {YYYYMMDD} ~ 20190530
+# {path_to_pyradmon} ~ Users local clone of pyradmon https://github.com/GEOS-ESM/pyradmon/tree/develop
+# {expid} ~ e5303_m21c_jan18
+# {timeseries_src_dir} ~ the full path to the directory src directory (i.e. $NOBACKUP/pyradmon/offline/timeseries/src/)
+# {expname} ~ can be anything, ex: m21c_radmon
+# yaml file name ~ test_config_yaml_path.yaml
+ 
+
+
+# Section 1: Date Range
+# ---------------------
+startdate: 20230301 000000
+enddate:  20230301 180000
+
+# Section 2: Input Observation Data (directory paths) ~ *will be specific* to m2, geosit, m21c, and the expid (stream)
+# --------------------------------------------------------------------------------------------------------------------
+# GEOSIT Specific
+# ---------------
+expid: d5294_geosit_jan18
+data_dirbase: /home/dao_ops/d5294_geosit_jan18/run/.../archive/obs/ 
+runbase: /home/dao_ops/d5294_geosit_jan18/run/.../
+mstorage: /home/dao_ops/d5294_geosit_jan18/run/mstorage.arc 
+arcbase: /discover/nobackup/projects/gmao/geos-it/dao_ops/archive/
+
+# Section 3: Output Directories
+# -----------------------------
+expbase: /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src/geosit_radmon/
+scratch_dir: /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src/geosit_radmon/scratch/
+output_dir: /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src/geosit_radmon/radmon/
+
+# Section 4: rcfile is the path to this yaml file (the one you have open and are editing that will be used as the [user_input_yaml])
+# ----------------------------------------------------------------------------------------------------------------------------------
+rcfile: /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src/test_config_yaml_path.tmpl.geosit.yaml
+
+# Section 5: (Optional) Specific instruments - one, multiple or all
+# Optional ~ you may leave this commented out if you want to run for all. See the satlist.yaml for instrument list (ex: amsua_n15).
+# ---------------------------------------------------------------------------------------------------------------------------------
+instruments: atms_npp            # run one
+#instruments: amsua_n15,amsua_n16  # run multiple - separate instruments by comma 
+#instruments:                      # run all (leave commented out)
+
+# Section 6: (Optional) Polar
+# ---------------------------
+#rename_date_dir: current
+#scp_userhost: {user_id}@polar
+#scp_path: /www/html/intranet/personnel/{user_id}/{dir}
+
+# Section 7: (No edits) Pyradmon Pointer
+# Section dao_ops version of pyradmon - scripts will point to this rather than the scripts in the locally installed/cloned pyradmon
+# ---------------------------------------------------------------------------------------------------------------------------------
+pyradmon: /home/dao_ops/pyradmon/
+  
+# Section 8: (No edits) Default gsidiag exec and rc file
+# ------------------------------------------------------
+bin2txt_exec: /home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/bin/gsidiag_bin2txt.x
+gsidiagsrc: /home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.rc

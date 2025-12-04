@@ -68,3 +68,35 @@ plots/*
 *.txt~
 [#]*[#]
 
+
+# Environments
+.env
+.venv
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+archive/
+.venvs/
+work*
+run/
+log/
+offline/timeseries/src/archive
+offline/spatial/src/archive
+offline/timeseries/src/geosit_radmon/
+offline/timeseries/src/merra2_radmon/
+offline/timeseries/src/m21c_radmon/
+offline/timeseries/src/yamls/
+offline/spatial/src/yamls/
+*/.DS_Store
+*log
+*.log
+.tar
+user_input_yaml.yaml
+READMEv1.md 
+
+# Jupyter NB
+.ipynb_checkpoints
+
