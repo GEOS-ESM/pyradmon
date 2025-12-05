@@ -35,12 +35,11 @@ Once setup is complete users will use, or interact with, **5 files** when runnin
 ### First time installing pyradmon:
 Clone pyradmon to wherever you want to live, for example:
 
-### Make sure you are cloning/using the *feature/dao-ops-pointer* branch (temporary until merged with main)
 ```sh
 cd $NOBACKUP
 mkdir -p radmon && cd radmon
-git clone -b feature/dao-ops-pointer https://github.com/GEOS-ESM/pyradmon.git pyradmon-dao-ops-pointer
-cd $NOBACKUP/radmon/pyradmon-dao-ops-pointer
+git clone https://github.com/GEOS-ESM/pyradmon.git
+cd $NOBACKUP/radmon/pyradmon
 ```
 <!-- 
 This will be for after the feature/dao-ops-pointer branch has been merged to the main branch
@@ -56,7 +55,7 @@ After running the venv steps above, from now on use `load_radmon_config.sh` to l
 <!-- 
 #### Part 1: virtual environment
 
-1) Switch to your folder where pyradmon is cloned: `cd $NOBACKUP/radmon/pyradmon-dao-ops-pointer`.
+1) Switch to your folder where pyradmon is cloned: `cd $NOBACKUP/radmon/pyradmon`.
 2) Create a Python virtual environment: `python3 -m venv .venv`
 3) Activate the virtual environment - this step will vary depending on the shell you're using. 
   - `source .venv/bin/activate`
@@ -134,8 +133,8 @@ python3 pyradmon_driver_timeseries.py [user_input_yaml]
 ```
 
 
-1) Change directory: `cd $NOBACKUP/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src`
-2) Load with the appropriate `load_pyradmon_config` `source $NOBACKUP/radmon/pyradmon-dao-ops-pointer/load_pyradmon_config.csh`
+1) Change directory: `cd $NOBACKUP/radmon/pyradmon/offline/timeseries/src`
+2) Load with the appropriate `load_pyradmon_config` `source $NOBACKUP/radmon/pyradmon/load_pyradmon_config.csh`
 3) Create the `user_input_yaml` by copying the existing example yaml. You may name the yaml file whatever you like: `cp test_config.geosfp.yaml user_input_yaml.yaml`
 4) Open and edit yaml to manually make the changes described below under _Timeseries yaml instructions_. 
 5) Run pyradmon timeseries: `python3 pyradmon_driver_timeseries.py user_input_yaml.yaml`
@@ -192,13 +191,13 @@ IMPORTANT: The example is running pyradmon timeseries for M21C. _*Section 2: Inp
 
     # Section 3: Output Directories
     # -----------------------------
-    expbase: /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src/m21c_radmon
-    scratch_dir: /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src/m21c_radmon/scratch
-    output_dir: /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src/m21c_radmon/radmon
+    expbase: /discover/nobackup/{user_id}/radmon/pyradmon/offline/timeseries/src/m21c_radmon
+    scratch_dir: /discover/nobackup/{user_id}/radmon/pyradmon/offline/timeseries/src/m21c_radmon/scratch
+    output_dir: /discover/nobackup/{user_id}/radmon/pyradmon/offline/timeseries/src/m21c_radmon/radmon
 
     # Section 4: rcfile is the path to this yaml file (the one you have open and are editing that will be used as the [user_input_yaml])
     # ----------------------------------------------------------------------------------------------------------------------------------
-    rcfile: /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src/user_input_yaml.yaml
+    rcfile: /discover/nobackup/{user_id}/radmon/pyradmon/offline/timeseries/src/user_input_yaml.yaml
 
     # Section 5: (Optional) Specific instruments - one, multiple or all
     # Optional ~ you may leave this commented out if you want to run for all. See the satlist.yaml for instrument list (ex: amsua_n15).
@@ -262,7 +261,7 @@ Aeronautics and Space Administration. All Rights Reserved.
 ```bash
 mod_pyradmon() {
   module purge
-  source $NOBACKUP/radmon/pyradmon-dao-ops-pointer/load_pyradmon_config.sh
+  source $NOBACKUP/radmon/pyradmon/load_pyradmon_config.sh
 }
 ```
 This can be put in `~/.bashrc` to ensure it is always active every time the user logins to Discover or in an alternate location, such as `~/.bash_functions` but the user needs to activate these functions via `source ~/.bash_functions`. -->
@@ -295,7 +294,7 @@ It is encouraged to use a virtual environment; however, you may choose to not us
     {HH} ~ 00
     {path_to_pyradmon} ~ Users local clone of pyradmon 
     {expid} ~ e5303_m21c_jan18
-    {timeseries_src_dir} ~ the full path to the directory src directory (i.e. /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src)
+    {timeseries_src_dir} ~ the full path to the directory src directory (i.e. /discover/nobackup/{user_id}/radmon/pyradmon/offline/timeseries/src)
     yaml file name ~ test_config_yaml_path.yaml
     """
 -->
