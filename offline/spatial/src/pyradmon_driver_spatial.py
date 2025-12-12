@@ -156,7 +156,7 @@ class PyRadmonBase:
 
             # ----------------------------------------------------------------------------------------------------------------
 
-            # Move output directory to somewhere more accesible
+            # Move output directory to somewhere more accessible
             # -------------------------------------------------
             # Set up paths using auto-detected REPO_ROOT
             expid = os.environ.get('EXPID')
@@ -165,11 +165,16 @@ class PyRadmonBase:
             target_dir = run_path / expid
             output_path = self.yyyymmdd 
             
-            # move the completed run for given date to the $EXPID dir
-            destination_path = os.path.join(target_dir, output_path)
-
+            # Move the completed run for given date to the $EXPID dir
+            destination_path = target_dir / output_path
+            
+            # If destination exists, remove it first
+            if destination_path.exists():
+                self.logger.warning(f'Destination {destination_path} already exists, removing it')
+                shutil.rmtree(destination_path)
+            
             # Move the directory
-            shutil.move(output_path, destination_path)
+            shutil.move(output_path, str(destination_path))
             self.logger.info(f'Output files moved to: {destination_path}')
 
         except Exception as e:
