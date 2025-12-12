@@ -6,11 +6,11 @@ import logging
 import sys
 from pathlib import Path
 from logging.handlers import RotatingFileHandler
-from typing import Optional, Union
+from typing import Optional, Union, Dict
 
 
 class PyRadmonLogger:    
-    _loggers: dict[str, logging.Logger] = {}
+    _loggers: Dict[str, logging.Logger] = {}
     _initialized: bool = False
     
     @classmethod

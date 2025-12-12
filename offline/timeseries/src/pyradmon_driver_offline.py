@@ -7,8 +7,12 @@ import shutil
 from pathlib import Path
 import sys
 
-# Add parent directory to path to import utils
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+# Auto-detect repository root (works from any location)
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parent.parent.parent  # Go up to pyradmon/
+
+# Add offline directory to Python path for imports
+sys.path.insert(0, str(REPO_ROOT / 'offline'))
 from utils.logging_config import setup_logging, get_logger
 
 # Global Constants, Modules and Environment Setup

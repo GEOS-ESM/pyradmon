@@ -8,10 +8,14 @@ import shutil
 from pathlib import Path
 import sys
 
-# Add parent directory to path to import utils
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-from utils.logging_config import setup_logging, get_logger
 
+# Auto-detect repository root (works from any location)
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parent.parent.parent  # Go up to pyradmon/
+
+# Add offline directory to Python path for imports
+sys.path.insert(0, str(REPO_ROOT / 'offline'))
+from utils.logging_config import setup_logging, get_logger
 
 # Pyradmon Spatial Basic Form - offline , test_driver.csh
 # -------------------------------------------------------------------------------------------------------------------------------------
@@ -23,14 +27,8 @@ class PyRadmonBase:
         :param config_yaml_path: Path to the YAML configuration file. See PyRadmonBase_template.yaml
         
         """
-        # -------------------------------
-        # Setup centralized logging
-        # -------------------------------
-        pyradmon = os.environ.get('pyradmon')
-        if not pyradmon:
-            raise ValueError("Environment variable 'pyradmon' must be set")
-        
-        log_dir = Path(pyradmon) / 'offline' / 'spatial' / 'log'
+
+        log_dir = REPO_ROOT / 'offline' / 'spatial' / 'log'
         
         try:
             self.logger = setup_logging(
@@ -46,9 +44,7 @@ class PyRadmonBase:
             logging.basicConfig(level=logging.INFO)
             self.logger = logging.getLogger('pyradmon.spatial')
             self.logger.warning(f"Failed to set up file logging: {e}. Using console logging only.")
-
     # --------------------------------------------------------------------------------------------------
-
 
 
         # Input yaml config
@@ -81,22 +77,20 @@ class PyRadmonBase:
 
         try:
             # Load proper FVDAS_Run_Config for $EXPID
-            os.environ['EXPID'] = self.expver #os.environ.get('expver')
+            os.environ['EXPID'] = self.expver
             command = 'source /home/dao_ops/$EXPID/run/FVDAS_Run_Config'
             process = subprocess.run(command, shell=True, executable='/bin/csh')
 
-            # Get environment variables
-            pyradmon = os.environ.get('pyradmon')
+            # Get EXPID from environment (set above)
             expid = os.environ.get('EXPID')
+            
+            if not expid:
+                raise ValueError("Required environment variable 'EXPID' must be set")
 
-            if not pyradmon or not expid:
-                raise ValueError("Required environment variables 'pyradmon' and 'EXPID' must be set")
-
-            # Set up paths
-            pyradmon_path = Path(pyradmon)
-            run_path = pyradmon_path / 'offline' / 'spatial' / 'run' 
+            # Set up paths using auto-detected REPO_ROOT
+            run_path = REPO_ROOT / 'offline' / 'spatial' / 'run' 
             target_dir = run_path / expid / 'build'
-            src_dir = pyradmon_path / 'offline' / 'spatial' / 'src'
+            src_dir = REPO_ROOT / 'offline' / 'spatial' / 'src'
 
             # Create target directory for the build of pyradmon
             target_dir.mkdir(parents=True, exist_ok=True)
@@ -164,12 +158,10 @@ class PyRadmonBase:
 
             # Move output directory to somewhere more accesible
             # -------------------------------------------------
-            # Set up paths
-            pyradmon = os.environ.get('pyradmon')
+            # Set up paths using auto-detected REPO_ROOT
             expid = os.environ.get('EXPID')
-
-            pyradmon_path = Path(pyradmon)
-            run_path = pyradmon_path / 'offline' / 'spatial' / 'run' 
+            
+            run_path = REPO_ROOT / 'offline' / 'spatial' / 'run' 
             target_dir = run_path / expid
             output_path = self.yyyymmdd 
             
