@@ -1,12 +1,16 @@
 # pyradmon spatial driver simplest form
 
-import logging
 import os
 import yaml
 import argparse
 import subprocess
 import shutil
 from pathlib import Path
+import sys
+
+# Add parent directory to path to import utils
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from utils.logging_config import setup_logging, get_logger
 
 
 # Pyradmon Spatial Basic Form - offline , test_driver.csh
@@ -20,40 +24,28 @@ class PyRadmonBase:
         
         """
         # -------------------------------
-        # logger
+        # Setup centralized logging
         # -------------------------------
+        pyradmon = os.environ.get('pyradmon')
+        if not pyradmon:
+            raise ValueError("Environment variable 'pyradmon' must be set")
         
-        # Get with a default value if not found
-        # pyradmon = os.environ['pyradmon']
-        # log_dir= os.path.join(os.environ.get('pyradmon'), 'log')
-        log_dir= os.path.join(os.environ.get('pyradmon'), 'offline/spatial/log')
-        log_filename='pyradmon.spatial.log'
-        level=logging.INFO
+        log_dir = Path(pyradmon) / 'offline' / 'spatial' / 'log'
+        
         try:
-            # Create the log directory if it doesn't exist
-            if not os.path.exists(log_dir):
-                os.makedirs(log_dir)
-            
-            # Create full path to log file
-            log_file = os.path.join(log_dir, log_filename)
-            
-            # Set up logging configuration
-            logging.basicConfig(
-                level=level,
-                filename=log_file,
-                format='%(asctime)s - %(levelname)s - %(message)s',
-                filemode='a'
+            self.logger = setup_logging(
+                log_dir=log_dir,
+                log_filename='pyradmon.spatial.log',
+                level='INFO',
+                component='spatial',
+                console_output=True
             )
-            
-            # Log that logging has been initialized
-            logging.info("Logging initialized successfully")
-            
-            #return True, os.path.abspath(log_file)
-            
         except (OSError, PermissionError) as e:
-            error_msg = f"Failed to set up logging: {e}"
-            print(error_msg)
-            #return False, error_msg
+            # Fallback to console-only logging if file logging fails
+            import logging
+            logging.basicConfig(level=logging.INFO)
+            self.logger = logging.getLogger('pyradmon.spatial')
+            self.logger.warning(f"Failed to set up file logging: {e}. Using console logging only.")
 
     # --------------------------------------------------------------------------------------------------
 
@@ -111,18 +103,22 @@ class PyRadmonBase:
             
             # Copy src code into build
             command = f'cp -r {src_dir}/* {target_dir}/.'
-            print(f' command : {command}')
+            self.logger.info(f'Copying source files: {command}')
             process = subprocess.run(command, shell=True, executable='/bin/csh')
+            
+            if process.returncode != 0:
+                self.logger.warning(f'Copy command returned non-zero exit code: {process.returncode}')
 
             # Change to the build directory
             os.chdir(target_dir)
+            self.logger.info(f'Changed to build directory: {target_dir}')
         except Exception as e:
-            error_message = f"Error: {e}"
-            print(error_message)
-            logging.error(error_message)
+            error_message = f"Error during setup: {e}"
+            self.logger.error(error_message, exc_info=True)
+            raise
 
             # ----------------------------------------------------------------------------------------------------------------
-
+        # TODO: add logging to the subprocess.run
         try:
             # Run script if obs type enabled in yaml input
             # --------------------------------------------
@@ -182,13 +178,13 @@ class PyRadmonBase:
 
             # Move the directory
             shutil.move(output_path, destination_path)
-            print(f'Output files moved to:  {destination_path}  ')
+            self.logger.info(f'Output files moved to: {destination_path}')
 
         except Exception as e:
-            error_message = f"Error: {e}"
-            print(error_message)
-            logging.error(error_message)
-            print(f'FAILED: exec_spatial_driver   ------------------------------------------------------------------')
+            error_message = f"Error in exec_spatial_driver: {e}"
+            self.logger.error(error_message, exc_info=True)
+            self.logger.error('FAILED: exec_spatial_driver')
+            raise
         
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
