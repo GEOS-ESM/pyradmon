@@ -13,9 +13,16 @@ set yyyy = `echo $yyyymmdd | cut -c1-4`
 set mm = `echo $yyyymmdd | cut -c5-6`
 set dd = `echo $yyyymmdd | cut -c7-8`
 
+
 foreach synop_hr ($hh)
-   set archive = /home/dao_ops/${expver}/run/.../scratch/obs/Y${yyyy}/M${mm}/D${dd}/H${synop_hr}
-   foreach sat (metop-a metop-b metop-c n19)
+  if ($expver =~ *_fp*) then
+    set archive = /home/dao_ops/${expver}/run/.../scratch/obs/Y${yyyy}/M${mm}/D${dd}/H${synop_hr}
+  else if ($expver =~ e5303_m21c_jan*) then
+    set archive = /home/dao_ops/${expver}/run/.../archive/obs/Y${yyyy}/M${mm}/D${dd}/H${synop_hr} 
+  else
+    set archive = /home/dao_ops/${expver}/run/.../obs/Y${yyyy}/M${mm}/D${dd}/H${synop_hr} 
+  endif
+  foreach sat (metop-a metop-b metop-c n19)
     ./ln_s ${archive}/${expver}.diag_mhs_${sat}_anl.${yyyymmdd}_${synop_hr}z.nc4
     ./pyradmon_spatial_driver_oma.py ${expver}.diag_mhs_${sat}_anl.${yyyymmdd}_${synop_hr}z.nc4
 

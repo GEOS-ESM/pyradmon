@@ -7,7 +7,7 @@ hh: '18'
 # Obs Types Switches (Off = 0, On = 1)
 # ------------------------------------
 atms: 0
-amsr2: 0
+amsr2: 1
 amsua: 0
 amsua_n15: 0
 avhrr: 0
