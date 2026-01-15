@@ -7,12 +7,9 @@ import subprocess
 import shutil
 
 # Global Constants, Modules and Environment Setup
+# --------------------------------------------------------
+ESMADIR = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/' 
 
-# source radmon_process.config equivalent
-#########################################
-ESMADIR = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/' # from radmon_process.conf
-
-# Creaking symlink ~ REQUIRED DEPENDENCY
 subprocess.run(['ln','-sf','/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install-SLES15/bin/ndate_r4i4.x', './ndate'])
 
 
@@ -23,8 +20,8 @@ command = 'source $ESMADIR/install/bin/g5_modules'
 process = subprocess.run(command, shell=True, executable='/bin/bash')
 print(f'g5_modules loaded  ------------------------------------------------------------------')
 
-# m21c.current.rc.tmpl equivalent 
-#################################
+# 
+# --------------------------------------------------------
 class PyRadmonBase:
     def __init__(self, config_yaml_path): 
         """
@@ -67,80 +64,34 @@ class PyRadmonBase:
 
         with open(config_yaml_path, 'r') as file:
             config = yaml.safe_load(file)
-        
-        """
-        pyradmon: str | pyradmon top lvl dir | /home/dao_ops/pyradmon/
-        expid: str \ path| experiment id | e5303_m21c_jan18
-        expbase: str \ path | working dir (local experiment dir)? | /discover/nobackup/projects/gmao/r21c/aelakkra/TBR/radmon/time_series/m21c_radmon/
-        arcbase: str \ path | /home/dao_ops/m21c/archive/
-        data_dirbase: str \ path | /home/dao_ops/m21c/archive/e5303_m21c_jan18/obs
-        startdate: 20190530 000000
-        enddate:  20190531 180000
 
-        scratch_dir: /discover/nobackup/projects/gmao/r21c/aelakkra/TBR/radmon/time_series/m21c_radmon/scratch
-        output_dir: /discover/nobackup/projects/gmao/r21c/aelakkra/TBR/radmon/time_series/m21c_radmon/radmon
-
-        #optional:
-        mstorage: 
-        #instruments: 
-        bin2txt_exec: 
-        bin2txt_nl: 
-        #rename_date_dir: current
-        #scp_userhost: aelakkra@polar
-        #scp_path: /www/html/intranet/personnel/aelakkra/m21c/radmon_data/
-        """
-        # m21c.current.rc.tmpl equivalent
-        #################################
-        self.startdate = config['startdate'] # 20190530 000000
-        self.enddate = config['enddate'] # 20190531 180000
-        #
+        self.startdate = config['startdate'] 
+        self.enddate = config['enddate'] 
         self.pyradmon = config['pyradmon'] 
         self.pyradmon_local_dir = config['expbase'].split('offline/')[0]
         self.pyradmon_run_dir = self.pyradmon_local_dir + 'run/'
-        #
-        self.expid = config['expid'] #e5303_m21c_jan18
-        self.data_dirbase = config['data_dirbase'] #os.path.join(self.arcbase, self.expid) #, 'obs') #config['data_dirbase'] #/home/dao_ops/m21c/archive/e5303_m21c_jan18/obs
-        self.runbase = config['runbase'] # /home/dao_ops/e5303_m21c_jan18/run/
-        self.mstorage = config['mstorage'] #
-        self.arcbase = config['arcbase'] #/home/dao_ops/m21c/archive/
-        #
-        self.expbase = config['expbase'] #/discover/nobackup/projects/gmao/r21c/aelakkra/TBR/radmon/time_series/m21c_radmon/
-        self.scratch_dir = config['scratch_dir'] # os.path.join(self.expbase, 'scratch') #config['scratch_dir']
-        self.output_dir = config['output_dir']  #os.path.join(self.expbase, 'radmon') #config['output_dir'] 
+        
+        self.expid = config['expid'] 
+        self.data_dirbase = config['data_dirbase'] 
+        self.runbase = config['runbase']
+        self.mstorage = config['mstorage'] 
+        self.arcbase = config['arcbase'] 
+        
+        self.expbase = config['expbase'] 
+        self.scratch_dir = config['scratch_dir'] 
+        self.output_dir = config['output_dir'] 
 
-        # Defaults ~ user should not need to change these values
-        ## Executables and Code and .rc files
         self.gsidiagsrc = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.rc'
 
-        ## Exisitng (master?) .rc files
-        ## These are just a copy of th confing_input_yaml. Should be changed.
-        self.exprc = config_yaml_path #config['rcfile'] 
-        self.rcfile = config_yaml_path #config['rcfile'] 
+        self.exprc = config_yaml_path
+        self.rcfile = config_yaml_path 
 
-        #optional
-
-        #########
-        #self.mstorage = config['mstorage'] #
-        #self.instruments = config['instruments'] #
-        #self.bin2txt_exec = config['bin2txt_exec'] #
-        #self.bin2txt_nl = config['bin2txt_nl'] #
-        #self.rename_date_dir = config['rename_date_dir'] #
-
-       
-        ## Existing Data Files
-        ### created from: self.arcbase = config['arcbase'] #/home/dao_ops/m21c/archive/
-
-        ## User working directories (created and deleted during main process later)
-        ### created from: self.expbase = config['expbase'] 
-        #elf.expid = config['expid'] # os.path.join(self.expbase, self.expid) #config['output_dir'] 
-        #self.expid_dir = config['output_dir']  # os.path.join(self.expbase, self.expid) #
-        
         # Set Environment variables
         ###########################
 
         # radmon_process.config equivalent
-        os.environ['ESMADIR'] = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/' #self.pyradmon
-        os.environ['FVROOT'] = '/home/dao_ops/GEOSadas-5_29_5/GEOSadas/install' #self.pyradmon
+        os.environ['ESMADIR'] = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/'
+        os.environ['FVROOT'] = '/home/dao_ops/GEOSadas-5_29_5/GEOSadas/install' 
 
         # config_yaml (m21c.current.rc) equivalent
         os.environ['expid'] = self.expid
@@ -203,65 +154,15 @@ class PyRadmonBase:
             # pyradmon/run
             directory_setup_base(self.pyradmon_run_dir)
 
-        # Execute the directory setup
-        #exec_directory_setup(self)
-
-        """
-        ## Logs
-        # Generate log file name with date
-        log_dir = os.path.join(self.expbase, 'log')
-        log_filename = os.path.join(self.expbase, f"log_pyradmon_driver_offline_{datetime.now().strftime('%Y-%m-%d')}.log")
-        
-        # Setup logging
-        logging.basicConfig(filename=log_filename, level=logging.INFO, 
-                            format='%(asctime)s - %(levelname)s - %(message)s')
-        
-        # Log initialization details
-        log_message = f"Initialized PYRADMON-OFFLINE with configuration from {config_yaml_path}"
-        logging.info(log_message)
-        #print(log_message)
-    
-    def _setup_logging(self):
-        if not self.logger.handlers:
-            # Console output
-            console_handler = logging.StreamHandler()
-            console_handler.setFormatter(logging.Formatter('%(name)s - %(levelname)s - %(message)s'))
-            
-            # File output - creates 'app.log' in current directory
-            file_handler = logging.FileHandler('.log/app.log')
-            file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-            
-            self.logger.addHandler(console_handler)
-            self.logger.addHandler(file_handler)
-            self.logger.setLevel(logging.INFO)
-                    """
-
-    # m21c_radmon.csh equivalent
-    ############################
+    # --------------------------------------------------------
     def exec_m21c_radmon() -> None:
         print(f'Running NRT Radmon for MERRA21C')
         os.environ['FVROOT'] = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/'
         os.environ['M2BASE'] = '/home/dao_ops/m21c/archive/'
-
-        # changing directory ------ !!! -------
-        #os.chdir('/discover/nobackup/sicohen/RADMON/offline/work/r21c/TBR/radmon/time_series/')
-
-        """    
-        # Is any of this needed?:     
-        days_back=1 # number of days to plot in realtime MERRA-2 monitoring
-        set enddate=2019053118
-        set obsdir=$M2BASE/e5303_m21c_jan18/obs/
-        set eyyyy=`echo $enddate |cut -b1-4`
-        set emm=`echo $enddate   |cut -b5-6`
-        set edd=`echo $enddate   |cut -b7-8`
-        set ehh=`echo $enddate   |cut -b9-10`
-        set enddate=$eyyyy$emm$edd\18
-        set enddate_not_found=1
-        """        
         print(f'exec_m21c_radmon finished  ------------------------------------------------------------------')
 
     # pyradmon_bin2txt_driver.csh equivalent
-    ########################################
+    # --------------------------------------------------------
     def exec_bin2txt_driver(self) -> None:
         """        
         execute pyradmon_bin2txt_driver.csh
@@ -275,14 +176,9 @@ class PyRadmonBase:
 
 
         try:
-            # Self contained version ~ branch: develop
-            # -----------------------
-            #self.pyradmon_bin2txt_driver = os.path.join(self.pyradmon, 'offline/timeseries/src/pyradmon_bin2txt_driver.csh')
-            #subprocess.run([self.pyradmon_bin2txt_driver, self.exprc]) #'test_config_yaml_path.yaml']) #exprc])
-            
             # Pointer version ~ hard coded ~ branch: feature/dao-ops-pointer
-            # -----------------------
-            subprocess.run(['./pyradmon_bin2txt_driver.csh', self.exprc]) #exprc])
+            # -------------------------------------------------------------
+            subprocess.run(['./pyradmon_bin2txt_driver.csh', self.exprc])
         except Exception as e:
             error_message = f"Error: {e}"
             print(error_message)
@@ -292,7 +188,7 @@ class PyRadmonBase:
         print(f'finished: exec_bin2txt_driver   ------------------------------------------------------------------')
 
     # pyradmon_img_driver.csh equivalent
-    ####################################
+    # --------------------------------------------------------
     def exec_img_driver(self):
         """
         execute pyradmon_img_driver.csh
@@ -300,14 +196,8 @@ class PyRadmonBase:
         print(f'Now running: execute pyradmon_img_driver.csh')
 
         try:
-
-            # Self contained version  ~ branch: develop
-            # -----------------------
-            #self.pyradmon_img_driver = os.path.join(self.pyradmon, 'offline/timeseries/src/pyradmon_img_driver.csh')
-            #subprocess.run([self.pyradmon_img_driver, self.exprc]) # 'test_config_yaml_path.yaml'])
-
             # Pointer version ~ hard coded ~ branch: feature/dao-ops-pointer
-            # -----------------------
+            # -------------------------------------------------------------
             subprocess.run(['./pyradmon_img_driver.csh', self.exprc]) #exprc])
         except Exception as e:
             error_message = f"Error: {e}"
