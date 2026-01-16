@@ -91,7 +91,7 @@ class PyRadmonBase:
             # Load proper FVDAS_Run_Config for $EXPID
             os.environ['EXPID'] = self.expver #os.environ.get('expver')
             command = 'source /home/dao_ops/$EXPID/run/FVDAS_Run_Config'
-            process = subprocess.run(command, shell=True, executable='/bin/csh')
+            process = subprocess.run(command, shell=True, executable='/bin/csh -f')
 
             # Get environment variables
             pyradmon = os.environ.get('pyradmon')
@@ -112,7 +112,7 @@ class PyRadmonBase:
             # Copy src code into build
             command = f'cp -r {src_dir}/* {target_dir}/.'
             print(f' command : {command}')
-            process = subprocess.run(command, shell=True, executable='/bin/csh')
+            process = subprocess.run(command, shell=True, executable='/bin/csh -f')
 
             # Change to the build directory
             os.chdir(target_dir)
