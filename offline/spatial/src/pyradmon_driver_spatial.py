@@ -1,13 +1,21 @@
 # pyradmon spatial driver simplest form
 
-import logging
 import os
 import yaml
 import argparse
 import subprocess
 import shutil
 from pathlib import Path
+import sys
 
+
+# Auto-detect repository root (works from any location)
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parent.parent.parent  # Go up to pyradmon/
+
+# Add offline directory to Python path for imports
+sys.path.insert(0, str(REPO_ROOT / 'offline'))
+from utils.logging_config import setup_logging, get_logger
 
 # Pyradmon Spatial Basic Form - offline , test_driver.csh
 # -------------------------------------------------------------------------------------------------------------------------------------
@@ -19,44 +27,24 @@ class PyRadmonBase:
         :param config_yaml_path: Path to the YAML configuration file. See PyRadmonBase_template.yaml
         
         """
-        # -------------------------------
-        # logger
-        # -------------------------------
+
+        log_dir = REPO_ROOT / 'offline' / 'spatial' / 'log'
         
-        # Get with a default value if not found
-        # pyradmon = os.environ['pyradmon']
-        # log_dir= os.path.join(os.environ.get('pyradmon'), 'log')
-        log_dir= os.path.join(os.environ.get('pyradmon'), 'offline/spatial/log')
-        log_filename='pyradmon.spatial.log'
-        level=logging.INFO
         try:
-            # Create the log directory if it doesn't exist
-            if not os.path.exists(log_dir):
-                os.makedirs(log_dir)
-            
-            # Create full path to log file
-            log_file = os.path.join(log_dir, log_filename)
-            
-            # Set up logging configuration
-            logging.basicConfig(
-                level=level,
-                filename=log_file,
-                format='%(asctime)s - %(levelname)s - %(message)s',
-                filemode='a'
+            self.logger = setup_logging(
+                log_dir=log_dir,
+                log_filename='pyradmon.spatial.log',
+                level='INFO',
+                component='spatial',
+                console_output=True
             )
-            
-            # Log that logging has been initialized
-            logging.info("Logging initialized successfully")
-            
-            #return True, os.path.abspath(log_file)
-            
         except (OSError, PermissionError) as e:
-            error_msg = f"Failed to set up logging: {e}"
-            print(error_msg)
-            #return False, error_msg
-
+            # Fallback to console-only logging if file logging fails
+            import logging
+            logging.basicConfig(level=logging.INFO)
+            self.logger = logging.getLogger('pyradmon.spatial')
+            self.logger.warning(f"Failed to set up file logging: {e}. Using console logging only.")
     # --------------------------------------------------------------------------------------------------
-
 
 
         # Input yaml config
@@ -89,40 +77,42 @@ class PyRadmonBase:
 
         try:
             # Load proper FVDAS_Run_Config for $EXPID
-            os.environ['EXPID'] = self.expver #os.environ.get('expver')
+            os.environ['EXPID'] = self.expver
             command = 'source /home/dao_ops/$EXPID/run/FVDAS_Run_Config'
             process = subprocess.run(command, shell=True, executable='/bin/csh')
 
-            # Get environment variables
-            pyradmon = os.environ.get('pyradmon')
+            # Get EXPID from environment (set above)
             expid = os.environ.get('EXPID')
+            
+            if not expid:
+                raise ValueError("Required environment variable 'EXPID' must be set")
 
-            if not pyradmon or not expid:
-                raise ValueError("Required environment variables 'pyradmon' and 'EXPID' must be set")
-
-            # Set up paths
-            pyradmon_path = Path(pyradmon)
-            run_path = pyradmon_path / 'offline' / 'spatial' / 'run' 
+            # Set up paths using auto-detected REPO_ROOT
+            run_path = REPO_ROOT / 'offline' / 'spatial' / 'run' 
             target_dir = run_path / expid / 'build'
-            src_dir = pyradmon_path / 'offline' / 'spatial' / 'src'
+            src_dir = REPO_ROOT / 'offline' / 'spatial' / 'src'
 
             # Create target directory for the build of pyradmon
             target_dir.mkdir(parents=True, exist_ok=True)
             
             # Copy src code into build
             command = f'cp -r {src_dir}/* {target_dir}/.'
-            print(f' command : {command}')
+            self.logger.info(f'Copying source files: {command}')
             process = subprocess.run(command, shell=True, executable='/bin/csh')
+            
+            if process.returncode != 0:
+                self.logger.warning(f'Copy command returned non-zero exit code: {process.returncode}')
 
             # Change to the build directory
             os.chdir(target_dir)
+            self.logger.info(f'Changed to build directory: {target_dir}')
         except Exception as e:
-            error_message = f"Error: {e}"
-            print(error_message)
-            logging.error(error_message)
+            error_message = f"Error during setup: {e}"
+            self.logger.error(error_message, exc_info=True)
+            raise
 
             # ----------------------------------------------------------------------------------------------------------------
-
+        # TODO: add logging to the subprocess.run
         try:
             # Run script if obs type enabled in yaml input
             # --------------------------------------------
@@ -166,29 +156,32 @@ class PyRadmonBase:
 
             # ----------------------------------------------------------------------------------------------------------------
 
-            # Move output directory to somewhere more accesible
+            # Move output directory to somewhere more accessible
             # -------------------------------------------------
-            # Set up paths
-            pyradmon = os.environ.get('pyradmon')
+            # Set up paths using auto-detected REPO_ROOT
             expid = os.environ.get('EXPID')
-
-            pyradmon_path = Path(pyradmon)
-            run_path = pyradmon_path / 'offline' / 'spatial' / 'run' 
+            
+            run_path = REPO_ROOT / 'offline' / 'spatial' / 'run' 
             target_dir = run_path / expid
             output_path = self.yyyymmdd 
             
-            # move the completed run for given date to the $EXPID dir
-            destination_path = os.path.join(target_dir, output_path)
-
+            # Move the completed run for given date to the $EXPID dir
+            destination_path = target_dir / output_path
+            
+            # If destination exists, remove it first
+            if destination_path.exists():
+                self.logger.warning(f'Destination {destination_path} already exists, removing it')
+                shutil.rmtree(destination_path)
+            
             # Move the directory
-            shutil.move(output_path, destination_path)
-            print(f'Output files moved to:  {destination_path}  ')
+            shutil.move(output_path, str(destination_path))
+            self.logger.info(f'Output files moved to: {destination_path}')
 
         except Exception as e:
-            error_message = f"Error: {e}"
-            print(error_message)
-            logging.error(error_message)
-            print(f'FAILED: exec_spatial_driver   ------------------------------------------------------------------')
+            error_message = f"Error in exec_spatial_driver: {e}"
+            self.logger.error(error_message, exc_info=True)
+            self.logger.error('FAILED: exec_spatial_driver')
+            raise
         
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
