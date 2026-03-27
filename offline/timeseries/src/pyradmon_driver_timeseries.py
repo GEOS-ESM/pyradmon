@@ -74,9 +74,9 @@ class PyRadmonBase:
         self.mstorage = config['mstorage'] 
         self.arcbase = config['arcbase'] 
         
-        self.expbase = config['expbase'] 
-        self.scratch_dir = config['scratch_dir'] 
-        self.output_dir = config['output_dir'] 
+        self.expbase = config['expbase'].rstrip('/') + '/'
+        self.scratch_dir = config['scratch_dir'].rstrip('/') + '/'
+        self.output_dir = config['output_dir'].rstrip('/')  + '/'
 
         self.gsidiagsrc = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/install/etc/gsidiags.rc'
 
