@@ -168,13 +168,17 @@ class PyRadmonBase:
             # Move the completed run for given date to the $EXPID dir
             destination_path = target_dir / output_path
             
-            # If destination exists, remove it first
+            # If destination exists, rename to avoid collision
             if destination_path.exists():
-                self.logger.warning(f'Destination {destination_path} already exists, removing it')
-                shutil.rmtree(destination_path)
-            
-            # Move the directory
-            shutil.move(output_path, str(destination_path))
+                self.logger.warning(f'Destination {destination_path} already exists, changing new output directory name.')
+                
+                n = 1
+                while (target_dir / f'{output_path}_rerun{n}').exists():
+                    n += 1
+                destination_path = target_dir / f'{output_path}_rerun{n}'
+
+            # Move the directory (runs regardless)
+            shutil.move(str(output_path), str(destination_path))
             self.logger.info(f'Output files moved to: {destination_path}')
 
         except Exception as e:
@@ -182,7 +186,6 @@ class PyRadmonBase:
             self.logger.error(error_message, exc_info=True)
             self.logger.error('FAILED: exec_spatial_driver')
             raise
-        
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
