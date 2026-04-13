@@ -4,7 +4,6 @@ import os
 import yaml
 import argparse
 import subprocess
-import shutil
 from pathlib import Path
 import sys
 
@@ -16,6 +15,7 @@ REPO_ROOT = SCRIPT_DIR.parent.parent.parent  # Go up to pyradmon/
 # Add offline directory to Python path for imports
 sys.path.insert(0, str(REPO_ROOT / 'offline'))
 from utils.logging_config import setup_logging, get_logger
+from utils.output_config import move_output
 
 # Pyradmon Spatial Basic Form - offline , test_driver.csh
 # -------------------------------------------------------------------------------------------------------------------------------------
@@ -156,30 +156,16 @@ class PyRadmonBase:
 
             # ----------------------------------------------------------------------------------------------------------------
 
-            # Move output directory to somewhere more accessible
-            # -------------------------------------------------
-            # Set up paths using auto-detected REPO_ROOT
-            expid = os.environ.get('EXPID')
-            
-            run_path = REPO_ROOT / 'offline' / 'spatial' / 'run' 
-            target_dir = run_path / expid
-            output_path = self.yyyymmdd 
-            
-            # Move the completed run for given date to the $EXPID dir
-            destination_path = target_dir / output_path
-            
-            # If destination exists, rename to avoid collision
-            if destination_path.exists():
-                self.logger.warning(f'Destination {destination_path} already exists, changing new output directory name.')
-                
-                n = 1
-                while (target_dir / f'{output_path}_rerun{n}').exists():
-                    n += 1
-                destination_path = target_dir / f'{output_path}_rerun{n}'
-
-            # Move the directory (runs regardless)
-            shutil.move(str(output_path), str(destination_path))
-            self.logger.info(f'Output files moved to: {destination_path}')
+            # Move output directory to centralized run location
+            # --------------------------------------------------
+            # Destination: offline/run/spatial/<EXPID>/<yyyymmdd>/
+            move_output(
+                source=self.yyyymmdd,
+                component='spatial',
+                expid=expid,
+                date_tag=self.yyyymmdd,
+                logger=self.logger
+            )
 
         except Exception as e:
             error_message = f"Error in exec_spatial_driver: {e}"

@@ -4,7 +4,15 @@ import yaml
 import argparse
 from datetime import datetime, timedelta
 import subprocess
-import shutil
+import sys
+from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parent.parent.parent
+
+sys.path.insert(0, str(REPO_ROOT / 'offline'))
+from utils.logging_config import setup_logging, get_logger
+from utils.output_config import move_output
 
 # Global Constants, Modules and Environment Setup
 # --------------------------------------------------------
@@ -30,34 +38,20 @@ class PyRadmonBase:
         
         """
 
-        log_dir='.log'
-        log_filename='app.log'
-        level=logging.INFO
+        log_dir = REPO_ROOT / 'offline' / 'timeseries' / 'log'
+
         try:
-            # Create the log directory if it doesn't exist
-            if not os.path.exists(log_dir):
-                os.makedirs(log_dir)
-            
-            # Create full path to log file
-            log_file = os.path.join(log_dir, log_filename)
-            
-            # Set up logging configuration
-            logging.basicConfig(
-                level=level,
-                filename=log_file,
-                format='%(asctime)s - %(levelname)s - %(message)s',
-                filemode='a'
+            self.logger = setup_logging(
+                log_dir=log_dir,
+                log_filename='pyradmon.timeseries.log',
+                level='INFO',
+                component='timeseries',
+                console_output=True
             )
-            
-            # Log that logging has been initialized
-            logging.info("Logging initialized successfully")
-            
-            #return True, os.path.abspath(log_file)
-            
         except (OSError, PermissionError) as e:
-            error_msg = f"Failed to set up logging: {e}"
-            print(error_msg)
-            #return False, error_msg
+            logging.basicConfig(level=logging.INFO)
+            self.logger = logging.getLogger('pyradmon.timeseries')
+            self.logger.warning(f"Failed to set up file logging: {e}. Using console logging only.")
 
         with open(config_yaml_path, 'r') as file:
             config = yaml.safe_load(file)
@@ -117,20 +111,16 @@ class PyRadmonBase:
                 ./pyradmon_bin2txt_driver.csh $exprc
         """
     
-        logging.info(f'Now running: execute exec_bin2txt_driver.csh')
-
+        self.logger.info('Now running: exec_bin2txt_driver.csh')
 
         try:
             # Pointer version ~ hard coded ~ branch: feature/dao-ops-pointer
             # -------------------------------------------------------------
             subprocess.run(['./pyradmon_bin2txt_driver.csh', self.exprc])
         except Exception as e:
-            error_message = f"Error: {e}"
-            print(error_message)
-            logging.error(error_message)
-   
+            self.logger.error(f"Error in exec_bin2txt_driver: {e}", exc_info=True)
 
-        print(f'finished: exec_bin2txt_driver   ------------------------------------------------------------------')
+        self.logger.info('Finished: exec_bin2txt_driver')
 
     # pyradmon_img_driver.csh equivalent
     # --------------------------------------------------------
@@ -138,29 +128,33 @@ class PyRadmonBase:
         """
         execute pyradmon_img_driver.csh
         """
-        print(f'Now running: execute pyradmon_img_driver.csh')
+        self.logger.info('Now running: exec_img_driver.csh')
   
         try:
             # Pointer version ~ hard coded ~ branch: feature/dao-ops-pointer
             # -------------------------------------------------------------
-            subprocess.run(['./pyradmon_img_driver.csh', self.exprc]) #exprc])
+            subprocess.run(['./pyradmon_img_driver.csh', self.exprc])
         except Exception as e:
-            error_message = f"Error: {e}"
-            print(error_message)
-            logging.error(error_message)
-        print(f'finished: exec_img_driver   ------------------------------------------------------------------')
+            self.logger.error(f"Error in exec_img_driver: {e}", exc_info=True)
+
+        self.logger.info('Finished: exec_img_driver')
 
     def move_files(self) -> None:
-        src_dir = self.output_dir
-        dst_dir = self.pyradmon_run_dir +'/.'
+        """
+        Move output directory to the centralized run location.
+        """
+        date_tag = os.path.basename(self.output_dir.rstrip('/'))
 
         try:
-            logging.info(f' Copying  file(s) from:  {src_dir}')
-            logging.info(f' Copying  file(s) to: {dst_dir}')
-            shutil.copy(src_dir, dst_dir)
-
-        except Exception:
-            logging.info(f'Copying  failed, see if source files exist {src_dir} to {dst_dir}')
+            move_output(
+                source=self.output_dir,
+                component='timeseries',
+                expid=self.expid,
+                date_tag=date_tag,
+                logger=self.logger
+            )
+        except Exception as e:
+            self.logger.error(f'move_files failed: {e}', exc_info=True)
  
 
 # python script.py config.yaml
