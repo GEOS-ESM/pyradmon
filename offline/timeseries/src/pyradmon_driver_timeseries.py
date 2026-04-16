@@ -55,8 +55,10 @@ class PyRadmonBase:
             self.logger = logging.getLogger('pyradmon.timeseries')
             self.logger.warning(f"Failed to set up file logging: {e}. Using console logging only.")
 
+        user_id = os.environ.get('USER', os.environ.get('LOGNAME', ''))
         with open(config_yaml_path, 'r') as file:
-            config = yaml.safe_load(file)
+            raw = file.read().replace('{user_id}', user_id)
+        config = yaml.safe_load(raw)
 
         self.startdate = config['startdate'] 
         self.enddate = config['enddate'] 
