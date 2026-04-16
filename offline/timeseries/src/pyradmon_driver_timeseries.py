@@ -7,9 +7,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Auto-detect repository root (works from any location)
 SCRIPT_DIR = Path(__file__).resolve().parent
-REPO_ROOT = SCRIPT_DIR.parent.parent.parent
+REPO_ROOT = SCRIPT_DIR.parent.parent.parent  # timeseries/src/ -> timeseries/ -> offline/ -> pyradmon/
 
+# Add offline directory to Python path for shared utilities
 sys.path.insert(0, str(REPO_ROOT / 'offline'))
 from utils.logging_config import setup_logging, get_logger
 from utils.output_config import move_output
@@ -116,7 +118,7 @@ class PyRadmonBase:
         try:
             # Pointer version ~ hard coded ~ branch: feature/dao-ops-pointer
             # -------------------------------------------------------------
-            subprocess.run(['./pyradmon_bin2txt_driver.csh', self.exprc])
+            subprocess.run(['./pyradmon_bin2txt_driver.csh', self.exprc], cwd=SCRIPT_DIR)
         except Exception as e:
             self.logger.error(f"Error in exec_bin2txt_driver: {e}", exc_info=True)
 
@@ -133,7 +135,7 @@ class PyRadmonBase:
         try:
             # Pointer version ~ hard coded ~ branch: feature/dao-ops-pointer
             # -------------------------------------------------------------
-            subprocess.run(['./pyradmon_img_driver.csh', self.exprc])
+            subprocess.run(['./pyradmon_img_driver.csh', self.exprc], cwd=SCRIPT_DIR)
         except Exception as e:
             self.logger.error(f"Error in exec_img_driver: {e}", exc_info=True)
 
@@ -142,6 +144,7 @@ class PyRadmonBase:
     def move_files(self) -> None:
         """
         Move output directory to the centralized run location.
+        Destination: offline/run/timeseries/<expid>/<date_tag>/
         """
         date_tag = os.path.basename(self.output_dir.rstrip('/'))
 
