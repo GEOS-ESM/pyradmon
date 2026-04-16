@@ -1,5 +1,6 @@
 import logging
 import os
+import tempfile
 import yaml
 import argparse
 from datetime import datetime, timedelta
@@ -62,6 +63,16 @@ class PyRadmonBase:
             raw = file.read().replace('{user_id}', user_id)
         config = yaml.safe_load(raw)
 
+        # Write a resolved copy of the config (with {user_id} substituted) for
+        # the shell scripts, which read the file directly via echorc.x.
+        tmp = tempfile.NamedTemporaryFile(
+            mode='w', suffix='.yaml', delete=False,
+            dir=SCRIPT_DIR, prefix='.resolved_config_'
+        )
+        tmp.write(raw)
+        tmp.close()
+        self._resolved_config_path = tmp.name
+
         self.startdate = config['startdate'] 
         self.enddate = config['enddate'] 
         self.pyradmon = config['pyradmon'] 
@@ -122,7 +133,7 @@ class PyRadmonBase:
         try:
             # Pointer version ~ hard coded ~ branch: feature/dao-ops-pointer
             # -------------------------------------------------------------
-            subprocess.run(['./pyradmon_bin2txt_driver.csh', self.exprc], cwd=SCRIPT_DIR)
+            subprocess.run(['./pyradmon_bin2txt_driver.csh', self._resolved_config_path], cwd=SCRIPT_DIR)
         except Exception as e:
             self.logger.error(f"Error in exec_bin2txt_driver: {e}", exc_info=True)
 
@@ -139,7 +150,7 @@ class PyRadmonBase:
         try:
             # Pointer version ~ hard coded ~ branch: feature/dao-ops-pointer
             # -------------------------------------------------------------
-            subprocess.run(['./pyradmon_img_driver.csh', self.exprc], cwd=SCRIPT_DIR)
+            subprocess.run(['./pyradmon_img_driver.csh', self._resolved_config_path], cwd=SCRIPT_DIR)
         except Exception as e:
             self.logger.error(f"Error in exec_img_driver: {e}", exc_info=True)
 
@@ -179,10 +190,10 @@ if __name__ == "__main__":
 
     # Run Pyradmon
     PyRadmonConfig = PyRadmonBase(args.config)
-    PyRadmonConfig.exec_bin2txt_driver()
-    PyRadmonConfig.exec_img_driver()
-    PyRadmonConfig.move_files()
-
-    # move output files to the run directory
-    #move_files(PyRadmonConfig.output_dir, PyRadmonConfig.pyradmon_run_dir)
+    try:
+        PyRadmonConfig.exec_bin2txt_driver()
+        PyRadmonConfig.exec_img_driver()
+        PyRadmonConfig.move_files()
+    finally:
+        os.unlink(PyRadmonConfig._resolved_config_path)
 
