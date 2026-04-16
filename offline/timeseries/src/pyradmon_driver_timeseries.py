@@ -40,6 +40,8 @@ class PyRadmonBase:
         
         """
 
+        config_yaml_path = str(Path(config_yaml_path).resolve())
+
         log_dir = REPO_ROOT / 'offline' / 'timeseries' / 'log'
 
         try:
@@ -149,6 +151,13 @@ class PyRadmonBase:
         Destination: offline/run/timeseries/<expid>/<date_tag>/
         """
         date_tag = os.path.basename(self.output_dir.rstrip('/'))
+
+        if not os.path.exists(self.output_dir.rstrip('/')):
+            self.logger.warning(
+                f'Output directory does not exist, skipping move: {self.output_dir} '
+                f'(scripts may have failed to produce output)'
+            )
+            return
 
         try:
             move_output(
