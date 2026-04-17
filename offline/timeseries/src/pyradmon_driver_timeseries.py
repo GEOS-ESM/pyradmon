@@ -108,8 +108,8 @@ class PyRadmonBase:
         os.environ['startdate'] = self.startdate
         os.environ['enddate'] = self.enddate
         os.environ['pyradmon'] = self.pyradmon
-        os.environ['exprc'] = self.exprc
-        os.environ['rcfile'] = self.rcfile
+        os.environ['exprc'] = self._resolved_config_path
+        os.environ['rcfile'] = self._resolved_config_path
 
     # --------------------------------------------------------
     def exec_m21c_radmon() -> None:
