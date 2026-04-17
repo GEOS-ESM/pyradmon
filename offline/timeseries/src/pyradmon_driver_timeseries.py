@@ -1,10 +1,21 @@
 import logging
 import os
+import tempfile
 import yaml
 import argparse
 from datetime import datetime, timedelta
 import subprocess
-import shutil
+import sys
+from pathlib import Path
+
+# Auto-detect repository root (works from any location)
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parent.parent.parent  # timeseries/src/ -> timeseries/ -> offline/ -> pyradmon/
+
+# Add offline directory to Python path for shared utilities
+sys.path.insert(0, str(REPO_ROOT / 'offline'))
+from utils.logging_config import setup_logging, get_logger
+from utils.output_config import move_output
 
 # Global Constants, Modules and Environment Setup
 # --------------------------------------------------------
@@ -19,6 +30,7 @@ os.environ['ESMADIR'] = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/'
 command = 'source $ESMADIR/install/bin/g5_modules'
 process = subprocess.run(command, shell=True, executable='/bin/bash')
 print(f'g5_modules loaded  ------------------------------------------------------------------')
+os.environ['PATH'] = '/usr/local/other/GEOSpyD/24.4.0-0_py3.11/2024-06-11/bin:' + os.environ.get('PATH', '')
 
 # 
 # --------------------------------------------------------
@@ -30,37 +42,37 @@ class PyRadmonBase:
         
         """
 
-        log_dir='.log'
-        log_filename='app.log'
-        level=logging.INFO
-        try:
-            # Create the log directory if it doesn't exist
-            if not os.path.exists(log_dir):
-                os.makedirs(log_dir)
-            
-            # Create full path to log file
-            log_file = os.path.join(log_dir, log_filename)
-            
-            # Set up logging configuration
-            logging.basicConfig(
-                level=level,
-                filename=log_file,
-                format='%(asctime)s - %(levelname)s - %(message)s',
-                filemode='a'
-            )
-            
-            # Log that logging has been initialized
-            logging.info("Logging initialized successfully")
-            
-            #return True, os.path.abspath(log_file)
-            
-        except (OSError, PermissionError) as e:
-            error_msg = f"Failed to set up logging: {e}"
-            print(error_msg)
-            #return False, error_msg
+        config_yaml_path = str(Path(config_yaml_path).resolve())
 
+        log_dir = REPO_ROOT / 'offline' / 'timeseries' / 'log'
+
+        try:
+            self.logger = setup_logging(
+                log_dir=log_dir,
+                log_filename='pyradmon.timeseries.log',
+                level='INFO',
+                component='timeseries',
+                console_output=True
+            )
+        except (OSError, PermissionError) as e:
+            logging.basicConfig(level=logging.INFO)
+            self.logger = logging.getLogger('pyradmon.timeseries')
+            self.logger.warning(f"Failed to set up file logging: {e}. Using console logging only.")
+
+        user_id = os.environ.get('USER', os.environ.get('LOGNAME', ''))
         with open(config_yaml_path, 'r') as file:
-            config = yaml.safe_load(file)
+            raw = file.read().replace('{user_id}', user_id)
+        config = yaml.safe_load(raw)
+
+        # Write a resolved copy of the config (with {user_id} substituted) for
+        # the shell scripts, which read the file directly via echorc.x.
+        tmp = tempfile.NamedTemporaryFile(
+            mode='w', suffix='.yaml', delete=False,
+            dir=SCRIPT_DIR, prefix='.resolved_config_'
+        )
+        tmp.write(raw)
+        tmp.close()
+        self._resolved_config_path = tmp.name
 
         self.startdate = config['startdate'] 
         self.enddate = config['enddate'] 
@@ -97,8 +109,8 @@ class PyRadmonBase:
         os.environ['startdate'] = self.startdate
         os.environ['enddate'] = self.enddate
         os.environ['pyradmon'] = self.pyradmon
-        os.environ['exprc'] = self.exprc
-        os.environ['rcfile'] = self.rcfile
+        os.environ['exprc'] = self._resolved_config_path
+        os.environ['rcfile'] = self._resolved_config_path
 
     # --------------------------------------------------------
     def exec_m21c_radmon() -> None:
@@ -117,20 +129,16 @@ class PyRadmonBase:
                 ./pyradmon_bin2txt_driver.csh $exprc
         """
     
-        logging.info(f'Now running: execute exec_bin2txt_driver.csh')
-
+        self.logger.info('Now running: exec_bin2txt_driver.csh')
 
         try:
             # Pointer version ~ hard coded ~ branch: feature/dao-ops-pointer
             # -------------------------------------------------------------
-            subprocess.run(['./pyradmon_bin2txt_driver.csh', self.exprc])
+            subprocess.run(['./pyradmon_bin2txt_driver.csh', self._resolved_config_path], cwd=SCRIPT_DIR)
         except Exception as e:
-            error_message = f"Error: {e}"
-            print(error_message)
-            logging.error(error_message)
-   
+            self.logger.error(f"Error in exec_bin2txt_driver: {e}", exc_info=True)
 
-        print(f'finished: exec_bin2txt_driver   ------------------------------------------------------------------')
+        self.logger.info('Finished: exec_bin2txt_driver')
 
     # pyradmon_img_driver.csh equivalent
     # --------------------------------------------------------
@@ -138,29 +146,41 @@ class PyRadmonBase:
         """
         execute pyradmon_img_driver.csh
         """
-        print(f'Now running: execute pyradmon_img_driver.csh')
+        self.logger.info('Now running: exec_img_driver.csh')
   
         try:
             # Pointer version ~ hard coded ~ branch: feature/dao-ops-pointer
             # -------------------------------------------------------------
-            subprocess.run(['./pyradmon_img_driver.csh', self.exprc]) #exprc])
+            subprocess.run(['./pyradmon_img_driver.csh', self._resolved_config_path], cwd=SCRIPT_DIR)
         except Exception as e:
-            error_message = f"Error: {e}"
-            print(error_message)
-            logging.error(error_message)
-        print(f'finished: exec_img_driver   ------------------------------------------------------------------')
+            self.logger.error(f"Error in exec_img_driver: {e}", exc_info=True)
+
+        self.logger.info('Finished: exec_img_driver')
 
     def move_files(self) -> None:
-        src_dir = self.output_dir
-        dst_dir = self.pyradmon_run_dir +'/.'
+        """
+        Move output directory to the centralized run location.
+        Destination: offline/run/timeseries/<expid>/<date_tag>/
+        """
+        date_tag = os.path.basename(self.output_dir.rstrip('/'))
+
+        if not os.path.exists(self.output_dir.rstrip('/')):
+            self.logger.warning(
+                f'Output directory does not exist, skipping move: {self.output_dir} '
+                f'(scripts may have failed to produce output)'
+            )
+            return
 
         try:
-            logging.info(f' Copying  file(s) from:  {src_dir}')
-            logging.info(f' Copying  file(s) to: {dst_dir}')
-            shutil.copy(src_dir, dst_dir)
-
-        except Exception:
-            logging.info(f'Copying  failed, see if source files exist {src_dir} to {dst_dir}')
+            move_output(
+                source=self.output_dir,
+                component='timeseries',
+                expid=self.expid,
+                date_tag=date_tag,
+                logger=self.logger
+            )
+        except Exception as e:
+            self.logger.error(f'move_files failed: {e}', exc_info=True)
  
 
 # python script.py config.yaml
@@ -171,10 +191,10 @@ if __name__ == "__main__":
 
     # Run Pyradmon
     PyRadmonConfig = PyRadmonBase(args.config)
-    PyRadmonConfig.exec_bin2txt_driver()
-    PyRadmonConfig.exec_img_driver()
-    PyRadmonConfig.move_files()
-
-    # move output files to the run directory
-    #move_files(PyRadmonConfig.output_dir, PyRadmonConfig.pyradmon_run_dir)
+    try:
+        PyRadmonConfig.exec_bin2txt_driver()
+        PyRadmonConfig.exec_img_driver()
+        PyRadmonConfig.move_files()
+    finally:
+        os.unlink(PyRadmonConfig._resolved_config_path)
 
