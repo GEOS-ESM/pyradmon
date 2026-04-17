@@ -30,7 +30,7 @@ os.environ['ESMADIR'] = '/home/dao_ops/GEOSadas-5_29_5_SLES15/GEOSadas/'
 command = 'source $ESMADIR/install/bin/g5_modules'
 process = subprocess.run(command, shell=True, executable='/bin/bash')
 print(f'g5_modules loaded  ------------------------------------------------------------------')
-subprocess.run('module load python/GEOSpyD/Min24.4.0-0_py3.11', shell=True, executable='/bin/bash')
+os.environ['PATH'] = '/usr/local/other/GEOSpyD/24.4.0-0_py3.11/2024-06-11/bin:' + os.environ.get('PATH', '')
 
 # 
 # --------------------------------------------------------
