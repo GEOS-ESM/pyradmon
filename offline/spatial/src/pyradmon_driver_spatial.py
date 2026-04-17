@@ -114,45 +114,51 @@ class PyRadmonBase:
             # ----------------------------------------------------------------------------------------------------------------
         # TODO: add logging to the subprocess.run
         try:
+            # Make sure subprocesses (do_*.csh -> pyradmon_spatial_driver_*.py) use
+            # the same Python that launched this driver, so venv packages like
+            # cartopy are available regardless of what g5_modules does to PATH.
+            _env = os.environ.copy()
+            _env['PATH'] = str(Path(sys.executable).parent) + ':' + _env.get('PATH', '')
+
             # Run script if obs type enabled in yaml input
             # --------------------------------------------
 
             # atms
             if self.atms == 1 or str(self.atms).lower() == 'on':
-                subprocess.run(['./do_atms.csh', self.expver, self.yyyymmdd, self.hh]) 
+                subprocess.run(['./do_atms.csh', self.expver, self.yyyymmdd, self.hh], env=_env) 
             # amsr2
             if self.amsr2 == 1 or str(self.amsr2).lower() == 'on':
-                subprocess.run(['./do_amsr2.csh', self.expver, self.yyyymmdd, self.hh]) 
+                subprocess.run(['./do_amsr2.csh', self.expver, self.yyyymmdd, self.hh], env=_env) 
             # amsua
             if self.amsua == 1 or str(self.amsua).lower() == 'on':
-                subprocess.run(['./do_amsua.csh', self.expver, self.yyyymmdd, self.hh]) 
+                subprocess.run(['./do_amsua.csh', self.expver, self.yyyymmdd, self.hh], env=_env) 
             # avhrr
             if self.avhrr == 1 or str(self.avhrr).lower() == 'on':
-                subprocess.run(['./do_avhrr.csh', self.expver, self.yyyymmdd, self.hh]) 
+                subprocess.run(['./do_avhrr.csh', self.expver, self.yyyymmdd, self.hh], env=_env) 
             # gmi
             if self.gmi == 1 or str(self.gmi).lower() == 'on':
-                subprocess.run(['./do_gmi.csh', self.expver, self.yyyymmdd, self.hh]) 
+                subprocess.run(['./do_gmi.csh', self.expver, self.yyyymmdd, self.hh], env=_env) 
             # hirs
             if self.hirs == 1 or str(self.hirs).lower() == 'on':
-                subprocess.run(['./do_hirs.csh', self.expver, self.yyyymmdd, self.hh]) 
+                subprocess.run(['./do_hirs.csh', self.expver, self.yyyymmdd, self.hh], env=_env) 
             # mhs
             if self.mhs == 1 or str(self.mhs).lower() == 'on':
-                subprocess.run(['./do_mhs.csh', self.expver, self.yyyymmdd, self.hh]) 
+                subprocess.run(['./do_mhs.csh', self.expver, self.yyyymmdd, self.hh], env=_env) 
             # seviri
             if self.seviri == 1 or str(self.seviri).lower() == 'on':
-                subprocess.run(['./do_seviri.csh', self.expver, self.yyyymmdd, self.hh]) 
+                subprocess.run(['./do_seviri.csh', self.expver, self.yyyymmdd, self.hh], env=_env) 
             # ssmis
             if self.ssmis == 1 or str(self.ssmis).lower() == 'on':
-                subprocess.run(['./do_gmi.csh', self.expver, self.yyyymmdd, self.hh]) 
+                subprocess.run(['./do_gmi.csh', self.expver, self.yyyymmdd, self.hh], env=_env) 
             # cris
             if self.cris == 1 or str(self.cris).lower() == 'on':
-                subprocess.run(['./do_cris.csh', self.expver, self.yyyymmdd, self.hh]) 
+                subprocess.run(['./do_cris.csh', self.expver, self.yyyymmdd, self.hh], env=_env) 
             # airs
             if self.airs == 1 or str(self.airs).lower() == 'on':
-                subprocess.run(['./do_airs.csh', self.expver, self.yyyymmdd, self.hh]) 
+                subprocess.run(['./do_airs.csh', self.expver, self.yyyymmdd, self.hh], env=_env) 
             # iasi
             if self.iasi == 1 or str(self.iasi).lower() == 'on':
-                subprocess.run(['./do_iasi.csh', self.expver, self.yyyymmdd, self.hh]) 
+                subprocess.run(['./do_iasi.csh', self.expver, self.yyyymmdd, self.hh], env=_env) 
 
             # ----------------------------------------------------------------------------------------------------------------
 
