@@ -52,8 +52,8 @@ echo "Determining instruments for $expid from $startdate to $enddate.  This "
 echo "  may take a while..."
 set insts=`$ESMADIR/install/bin/echorc.x -rc $rcfile instruments`
 if ($status != 0) then
-   set insts=`$pyradmon_path/offline/timeseries/src/scripts/determine_inst.csh $data_dirbase $startdate $enddate`
-   echo $pyradmon_path/offline/timeseries/src/scripts/determine_inst.csh $data_dirbase $startdate $enddate
+   set insts=`$pyradmon_path/scripts/determine_inst.csh $data_dirbase $startdate $enddate`
+   echo $pyradmon_path/scripts/determine_inst.csh $data_dirbase $startdate $enddate
 endif
 
 echo $insts
@@ -72,12 +72,12 @@ set pyr_enddate="$eyyyy-$emm-$edd $ehh"
 
 foreach inst ($insts) 
   echo $inst  
-  if (-e $pyradmon_path/offline/timeseries/src/config/radiance_plots.$inst.yaml.tmpl) then
+  if (-e $pyradmon_path/config/radiance_plots.$inst.yaml.tmpl) then
 #    set configtmpl="$pyradmon_path/config/radiance_plots_emissbc.$inst.yaml.tmpl"
-    set configtmpl="$pyradmon_path/offline/timeseries/src/config/radiance_plots.$inst.yaml.tmpl"
+    set configtmpl="$pyradmon_path/config/radiance_plots.$inst.yaml.tmpl"
   else
 #    set configtmpl="$pyradmon_path/config/radiance_plots_emissbc.yaml.tmpl"
-    set configtmpl="$pyradmon_path/offline/timeseries/src/config/radiance_plots.yaml.tmpl"
+    set configtmpl="$pyradmon_path/config/radiance_plots.yaml.tmpl"
   endif
 
   set configfile="$scratch_dir/$inst.$expid.$startdate.$enddate.plot.yaml"
@@ -92,8 +92,8 @@ foreach inst ($insts)
 
   echo "Running PyRadMon for $inst from $pyr_startdate to $pyr_enddate"
   echo $configfile 
-  echo $pyradmon_path/offline/timeseries/src/pyradmon.py
-  $pyradmon_path/offline/timeseries/src/pyradmon.py --config-file $configfile plot --data-instrument-sat $inst
+  echo $pyradmon_path/pyradmon.py
+  $pyradmon_path/pyradmon.py --config-file $configfile plot --data-instrument-sat $inst
 end
 
 #echo '----------------------------------'
@@ -104,15 +104,27 @@ echo '----------------------------------'
 
 if ($rename_date_dir != '/dev/null') mv $expid/$startdate-$enddate $expid/$rename_date_dir
 
-tar cvf $expid.tar $expid/
+
+echo "--------- saving .png's in $expid.tar  "
+#echo $PWD
+#echo $expbase
+#echo $expid
+
+# output_dir: /discover/nobackup/sicohen/RADMON/develop/pyradmon/offline/timeseries/src/m21c_radmon/radmon/e5303_m21c_jan98/
+#      ...../e5303_m21c_jan98/19990901-19990901/amsua_n15/*.png
+
+cd $output_dir 
+tar cvf $expid.tar $expid/ ;
 
 
-echo '----------------------------------'
-echo $expid
-rm -rf $expid/
-echo '----------------------------------'
+echo "--------- removing img directory (contains loose .png's): ----  $expid"
+rm -rf $output_dir/$expid/
 
-if ($scp_userhost != '/dev/null' && $scp_path != '/dev/null') then 
+echo '--------------- checking for polar option -------------------'
+
+if ($scp_userhost != '/dev/null' && $scp_path != '/dev/null') then
+   echo $scp_userhost 
+   echo $scp_path 
    scp $expid.tar $scp_userhost\:$scp_path
    ssh $scp_userhost "cd $scp_path ; tar xvf $expid.tar"
 endif
