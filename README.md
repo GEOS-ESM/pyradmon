@@ -134,7 +134,7 @@ python3 pyradmon_driver_timeseries.py [user_input_yaml]
 
 
 1) Change directory: `cd $NOBACKUP/radmon/pyradmon/offline/timeseries/src`
-2) Load with the appropriate `load_pyradmon_config` `source $NOBACKUP/radmon/pyradmon/load_pyradmon_config.csh`
+<!-- 2) Load with the appropriate `load_pyradmon_config` `source $NOBACKUP/radmon/pyradmon/load_pyradmon_config.csh` -->
 3) Create the `user_input_yaml` by copying the existing example yaml. You may name the yaml file whatever you like: `cp test_config.geosfp.yaml user_input_yaml.yaml`
 4) Open and edit yaml to manually make the changes described below under _Timeseries yaml instructions_. 
 5) Run pyradmon timeseries: `python3 pyradmon_driver_timeseries.py user_input_yaml.yaml`
