@@ -192,17 +192,34 @@ def title_output_replace(input_title_output, metadata_dict, data_dict, rel_chann
         replaced if they do not exist, or certain conditions are not 
         met.
     """
+    # # Replace experiment ID variable
+    # input_title_output = input_title_output.replace("%EXPERIMENT_ID%", metadata_dict["experiment_id"])
+    
+    # # Capitalize %INSTRUMENT_SAT% if we're using it in a title.
+    # if is_title:
+    #     input_title_output = input_title_output.replace("%INSTRUMENT_SAT%", metadata_dict["instrument_sat"].upper())
+    # else:
+    #     input_title_output = input_title_output.replace("%INSTRUMENT_SAT%", metadata_dict["instrument_sat"])
     # Replace experiment ID variable
     input_title_output = input_title_output.replace("%EXPERIMENT_ID%", metadata_dict["experiment_id"])
-    
+
     # Capitalize %INSTRUMENT_SAT% if we're using it in a title.
     if is_title:
-        input_title_output = input_title_output.replace("%INSTRUMENT_SAT%", metadata_dict["instrument_sat"].upper())
+        instrument_sat_bold = r'$\mathbf{' + metadata_dict["instrument_sat"].upper().replace('_', r'\_') + r'}$'
+        input_title_output = input_title_output.replace("%INSTRUMENT_SAT%", instrument_sat_bold)
     else:
         input_title_output = input_title_output.replace("%INSTRUMENT_SAT%", metadata_dict["instrument_sat"])
-    
+
     # Replace data channel variable
-    input_title_output = input_title_output.replace("%CHANNEL%", str(metadata_dict["channel"]))
+    # input_title_output = input_title_output.replace("%CHANNEL%", str(metadata_dict["channel"]))
+    # Replace data channel variable
+    if is_title:
+        input_title_output = input_title_output.replace("%CHANNEL%", r'$\mathbf{' + str(metadata_dict["channel"]) + r'}$')
+    else:
+        input_title_output = input_title_output.replace("%CHANNEL%", str(metadata_dict["channel"]))
+    # Make the word "Channel" bold in titles    
+    if is_title:
+        input_title_output = input_title_output.replace("Channel", r"$\mathbf{Channel}$")
     
     # Reverse the channel map
     # Original: rel_channel -> actual data channel
@@ -217,7 +234,7 @@ def title_output_replace(input_title_output, metadata_dict, data_dict, rel_chann
     
     # Replace assimilation status placeholder... only if it's a title.
     if is_title:
-        input_title_output = input_title_output.replace("%ASSIMILATION_STATUS%", "    .......................")
+        input_title_output = input_title_output.replace("%ASSIMILATION_STATUS%", "          .......................")
     
     # Replace date variables
     input_title_output = input_title_output.replace("%START_DATE%", str(metadata_dict['start_year']).zfill(4) + str(metadata_dict['start_month']).zfill(2) + str(metadata_dict['start_day']).zfill(2))
@@ -486,13 +503,13 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
                     
                     # Now check the last element - if -1, it's not assimilated!
                     if iuse_state == -1:
-                        fig.text(0.67, 0.948, "Not Assimilated", ha="center", va="bottom", size="x-large",color="red")
+                        fig.text(0.70, 0.93, "Not Assimilated", ha="center", va="bottom", size="x-large",color="red", weight="bold")
                     else:
-                        fig.text(0.67, 0.948, "Assimilated", ha="center", va="bottom", size="x-large",color="green")
+                        fig.text(0.70, 0.93, "Assimilated", ha="center", va="bottom", size="x-large",color="green", weight="bold")
                 else:
                     # No iuse, so we can't figure out assimilation...
                     warn("Unable to determine assimilation!")
-                    fig.text(0.67, 0.948, "Unknown (??)", ha="center", va="bottom", size="x-large",color="orange")
+                    fig.text(0.70, 0.93, "Unknown (??)", ha="center", va="bottom", size="x-large",color="orange", weight="bold")
         
         # Add the plot title to the plot
         fig.suptitle(plot_title, fontsize=18)
@@ -502,8 +519,9 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
         #            between subplots
         #   left - the left side of the subplots of the figure
         #   top - the top of the subplots of the figure
-        plt.subplots_adjust(hspace = 1.2, left=0.15, top=0.88)
-        
+        plt.subplots_adjust(hspace = 1.2, left=0.15, top=0.86)
+        # plt.subplots_adjust(hspace=0.6, left=0.22, right=0.95, top=0.92, bottom=0.05)
+
         # Loop through subplot indexes
         for subplotIndex in range(0, len(plot["plots"])):
             # Add a subplot - select position of subplot based on index
@@ -673,7 +691,14 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
                                         replaced_y = [ np.nan if y <= -9999 else y for y in y_dat ]
                                         y_dat = replaced_y
                                         break
-                            
+                            # ------------------------------------------------------
+                            # # Add line styles to distinguish overlapping lines
+                            # line_styles = ['-', '--', (0, (2, 1))]  # solid, dashed, densely dotted
+                            # if y_id < len(line_styles):
+                            #     plot_kwargs["linestyle"] = line_styles[y_id]
+                            # else:
+                            #     plot_kwargs["linestyle"] = line_styles[y_id % len(line_styles)]
+                                
                             # Check for a labels attribute...
                             if isset("labels", subplot["data"]):
                                 # If the label is a string, convert it
@@ -752,14 +777,19 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
                 # bbox_to_anchor - the "bounding box" where the legend will anchor to
                 # borderaxespad - the pad between the axes and legend border
                 # handlelength - the length of the legend handles
-                legend = axe.legend(loc='center left', bbox_to_anchor=(-0.3, 0.5), borderaxespad=1., handlelength=3, **legend_kwargs)
-                
+                legend = axe.legend(loc='center left', bbox_to_anchor=(-0.35, 0.5), borderaxespad=1., handlelength=3, **legend_kwargs)
+
+                # Make legend text bold
+                if legend:
+                    for text in legend.get_texts():
+                        text.set_weight('bold')
+
                 # Make the legend title large!
                 # (But only if the legend actually exists - if there's
                 # no data, it goes *poof*...)
                 if legend:
-                    plt.setp(legend.get_title(),fontsize='large')
-                
+                    plt.setp(legend.get_title(),fontsize='large', weight='bold')
+
                 # If there is no data, things tend to be weird... no
                 # legend will be displayed. If that's the case, let's
                 # make a fake legend!
@@ -782,7 +812,7 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
             
             # If there's a subplot title, make one!
             if isset("title", subplot):
-                axe.set_title(subplot["title"], fontsize='large')
+                axe.set_title(subplot["title"], fontsize='large', weight='bold')
             
             # Set the date format!
             axe.xaxis.set_major_formatter(mdates.DateFormatter('%d%b\n%Y'))
