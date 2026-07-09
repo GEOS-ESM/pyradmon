@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - old formatting for instrument names, channel numbers, assimilation status, subplot titles, and legends
 - Fix LaTeX subscript issue in instrument names by escaping underscores (e.g., ATMS_NPP)
 - Adjust title spacing and assimilation status text positioning for improved layout
+- Automted installation process and creation of timeseries yamls. Updated README instructions.
 
 ### Fixed
 
