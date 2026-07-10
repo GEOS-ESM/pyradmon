@@ -27,13 +27,13 @@ arcbase: /home/dao_ops/m21c/archive/
 
 # Section 3: Output Directories
 # -----------------------------
-expbase: /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src/m21c_radmon
-scratch_dir: /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src/m21c_radmon/scratch
-output_dir: /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src/m21c_radmon/radmon
+expbase: {PYRADMON_TIMESERIES}/m21c_radmon
+scratch_dir: {PYRADMON_TIMESERIES}/m21c_radmon/scratch
+output_dir: {PYRADMON_TIMESERIES}/m21c_radmon/radmon
 
 # Section 4: rcfile is the path to this yaml file (the one you have open and are editing that will be used as the [user_input_yaml])
 # ----------------------------------------------------------------------------------------------------------------------------------
-rcfile: /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/timeseries/src/user_input_yaml.yaml
+rcfile: {PYRADMON_TIMESERIES}/test_config_yaml_path.skeleton.yaml
 
 # Section 5: (Optional) Specific instruments - one, multiple or all
 # Optional ~ you may leave this commented out if you want to run for all. See the satlist.yaml for instrument list (ex: amsua_n15).
@@ -51,7 +51,7 @@ rcfile: /discover/nobackup/{user_id}/radmon/pyradmon-dao-ops-pointer/offline/tim
 # Section 7: (No edits) Pyradmon Pointer
 # Section dao_ops version of pyradmon - scripts will point to this rather than the scripts in the locally installed/cloned pyradmon
 # ---------------------------------------------------------------------------------------------------------------------------------
-pyradmon: /home/dao_ops/pyradmon/
+pyradmon: {PYRADMON_TIMESERIES}
 
   
 # Section 8: (No edits) Default gsidiag exec and rc file
