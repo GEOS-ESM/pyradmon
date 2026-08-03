@@ -503,13 +503,13 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
                     
                     # Now check the last element - if -1, it's not assimilated!
                     if iuse_state == -1:
-                        fig.text(0.70, 0.93, "Not Assimilated", ha="center", va="bottom", size="x-large",color="red", weight="bold")
+                        fig.text(0.67, 0.948, "Not Assimilated", ha="center", va="bottom", size="x-large",color="red", weight="bold")
                     else:
-                        fig.text(0.70, 0.93, "Assimilated", ha="center", va="bottom", size="x-large",color="green", weight="bold")
+                        fig.text(0.67, 0.948, "Assimilated", ha="center", va="bottom", size="x-large",color="green", weight="bold")
                 else:
                     # No iuse, so we can't figure out assimilation...
                     warn("Unable to determine assimilation!")
-                    fig.text(0.70, 0.93, "Unknown (??)", ha="center", va="bottom", size="x-large",color="orange", weight="bold")
+                    fig.text(0.67, 0.948, "Unknown (??)", ha="center", va="bottom", size="x-large",color="orange", weight="bold")
         
         # Add the plot title to the plot
         fig.suptitle(plot_title, fontsize=18)
@@ -519,7 +519,9 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
         #            between subplots
         #   left - the left side of the subplots of the figure
         #   top - the top of the subplots of the figure
-        plt.subplots_adjust(hspace = 1.2, left=0.15, top=0.86)
+        #plt.subplots_adjust(hspace = 1.2, left=0.15, top=0.86) # broken
+        # plt.subplots_adjust(hspace = 1.5, left=0.15, top=0.88) # original
+        plt.subplots_adjust(hspace = 0.8, left=0.15, top=0.88) # original
         # plt.subplots_adjust(hspace=0.6, left=0.22, right=0.95, top=0.92, bottom=0.05)
 
         # Loop through subplot indexes
@@ -527,6 +529,9 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
             # Add a subplot - select position of subplot based on index
             axe = fig.add_subplot(total_plots, 1, subplotIndex + 1)
             
+            # Grid lines
+            axe.grid(True, linestyle='--', alpha=0.7)
+
             # Grab the correct subplot ID (aka the key)
             subplotIDKey = fetch_key_from_subplot_dict(plot["plots"][subplotIndex])
             
@@ -777,7 +782,7 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
                 # bbox_to_anchor - the "bounding box" where the legend will anchor to
                 # borderaxespad - the pad between the axes and legend border
                 # handlelength - the length of the legend handles
-                legend = axe.legend(loc='center left', bbox_to_anchor=(-0.35, 0.5), borderaxespad=1., handlelength=3, **legend_kwargs)
+                legend = axe.legend(loc='center left', bbox_to_anchor=(-0.3, 0.5), borderaxespad=1., handlelength=3, **legend_kwargs)
 
                 # Make legend text bold
                 if legend:
@@ -815,8 +820,9 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
                 axe.set_title(subplot["title"], fontsize='large', weight='bold')
             
             # Set the date format!
-            axe.xaxis.set_major_formatter(mdates.DateFormatter('%d%b\n%Y'))
-        
+            # axe.xaxis.set_major_formatter(mdates.DateFormatter('%d%b\n%Y'))   # "01 Mar 2020"
+            axe.xaxis.set_major_formatter(mdates.DateFormatter('%d-%m-%Y'))     # "01-03-2020"
+                    
         # Change the default gray background to white
         fig.patch.set_facecolor('white')
         
@@ -845,7 +851,8 @@ def plot(plot_dict, data_dict, metadata_dict, rel_channels_dict, custom_vars = N
             plot_output = "magical_plot_please_specify_output_path_next_time.png"
         
         # Make and save the plot!
-        plt.savefig(plot_output, facecolor=fig.get_facecolor(), edgecolor='none', dpi = plot_dpi)
+        # plt.savefig(plot_output, facecolor=fig.get_facecolor(), edgecolor='none', dpi = plot_dpi)
+        plt.savefig(plot_output, facecolor=fig.get_facecolor(), edgecolor='none', dpi=300, bbox_inches='tight')        
         
         # Free it all!
         plt.close()
