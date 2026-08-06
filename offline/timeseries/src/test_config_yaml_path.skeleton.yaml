@@ -7,9 +7,7 @@
 # {HH} ~ 00
 # {path_to_pyradmon} ~ Users local clone of pyradmon 
 # {expid} ~ e5303_m21c_jan18
-# yaml file name ~ test_config_yaml_path.yaml
 # --------------------------------
-
 
 
 # Section 1: Date Range
@@ -39,13 +37,13 @@ rcfile: {PYRADMON_TIMESERIES}/test_config_yaml_path.skeleton.yaml
 # Optional ~ you may leave this commented out if you want to run for all. See the satlist.yaml for instrument list (ex: amsua_n15).
 # ---------------------------------------------------------------------------------------------------------------------------------
 #instruments: amsua_n15            # run one
-#instruments: amsua_n15,amsua_n16  # run multiple - separate instruments by comma 
+#instruments: amsua_n15 amsua_n16  # run multiple - separate instruments by space 
 #instruments:                      # run all (leave commented out)
 
 # Section 6: (Optional) Polar
 # ---------------------------
 #rename_date_dir: current
-#scp_userhost: {user_id}@polar
+#scp_userhost: {user_id}@gs6101-polar # {user_id}@polar 
 #scp_path: /www/html/intranet/personnel/{user_id}/{dir}
 
 # Section 7: (No edits) Pyradmon Pointer

@@ -200,7 +200,7 @@ def add_plot_args(parser, inherit = False):
             'action'    : 'append',
             'metavar'   : 'SETTINGS',
             'dest'      : 'plot_define_settings',
-            'help'      : 'Define the settings for the plot. Uses the key-value pair system, specified by "plot1:target_size=3200x3000,dpi=300;...".',
+            'help'      : 'Define the settings for the plot. Uses the key-value pair system, specified by "plot1:target_size=3570x4620,dpi=300;...".',
         }
     opts['--plot-define-custom-vars'] = \
         {
@@ -563,7 +563,7 @@ def make_argparser():
                 Define the output plot DPI.
             
             Example (using above info):
-              "plot1:target_size=3200x3000,dpi=300"
+              "plot1target_size=3570x4620,dpi=300"
           --plot-define-custom-vars
             Key-value pairs of custom variables to be used in the plot
             title and output file name. Variables are case insensitive.
@@ -1143,12 +1143,12 @@ def parse_to_config(parse):
                 # Done!
         
         if isset_obj("plot_define_settings", parse):
-            # "plot1:target_size=3200x3000,dpi=300"
+            # "plot1:target_size=3570x4620,dpi=300"
             settings_def = ";".join(parse.plot_define_settings).split(";")
             # Cleanup
             settings_def = [x.strip() for x in settings_def]
             for settings_def in settings_def:
-                # Chunk: plot1:target_size=3200x3000,dpi=300
+                # Chunk: plot1:target_size=3570x4620,dpi=300
                 settings_def_split = settings_def.split(":")
                 settings_def_split = [x.strip() for x in settings_def_split]
                 

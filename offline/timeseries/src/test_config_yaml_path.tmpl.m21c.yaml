@@ -12,9 +12,6 @@
 startdate: 20200301 000000
 enddate:  20200301 180000
 
-
-
-
 # Section 2: Input Observation Data (directory paths) ~ *will be specific* to m2, geosit, m21c, and the expid (stream)
 # --------------------------------------------------------------------------------------------------------------------
 # M21C Specific
@@ -39,13 +36,13 @@ rcfile: {PYRADMON_TIMESERIES}/test_config_yaml_path.tmpl.m21c.yaml
 # Optional ~ you may leave this commented out if you want to run for all. See the satlist.yaml for instrument list (ex: amsua_n15).
 # ---------------------------------------------------------------------------------------------------------------------------------
 instruments: atms_npp              # run one
-#instruments: amsua_n15,amsua_n16  # run multiple - separate instruments by comma 
+#instruments: amsua_n15 amsua_n16  # run multiple - separate instruments by space 
 #instruments:                      # run all (leave commented out)
 
 # Section 6: (Optional) Polar
 # ---------------------------
 #rename_date_dir: current
-#scp_userhost: {user_id}@polar
+#scp_userhost: {user_id}@gs6101-polar # {user_id}@polar 
 #scp_path: /www/html/intranet/personnel/{user_id}/{dir}
 
 # Section 7: (No edits) Pyradmon Pointer
