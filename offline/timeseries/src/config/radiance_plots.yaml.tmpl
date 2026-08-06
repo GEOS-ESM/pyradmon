@@ -4,7 +4,7 @@ config:
   data_start_date: >>>STARTDATE<<<
   data_end_date: >>>ENDDATE<<<
   experiment_id: >>>EXPID<<<
-  data_instrument_sat: ssmi_f08
+  # data_instrument_sat: >>>INSTRUMENT_SAT<<<
   data_channels: 1-999
   data_all_channels: true
   make_dirs: true
@@ -13,7 +13,7 @@ plot1:
   output: >>>OUTPUT_DIR<<</%EXPERIMENT_ID%/%START_DATE%-%END_DATE%/%INSTRUMENT_SAT%/%INSTRUMENT_SAT%_bcor_ch%RELCHANNEL%.png
   settings:
     dpi: 50
-    target_size: [595, 770]
+    target_size: [1000, 770]
   title: '%INSTRUMENT_SAT%   %START_DATE%-%END_DATE%
 
     Channel %CHANNEL%  %FREQUENCY%       %ASSIMILATION_STATUS%
@@ -129,7 +129,7 @@ plot2:
   output: >>>OUTPUT_DIR<<</%EXPERIMENT_ID%/%START_DATE%-%END_DATE%/%INSTRUMENT_SAT%/%INSTRUMENT_SAT%_anl_ch%RELCHANNEL%.png
   settings:
     dpi: 50
-    target_size: [595, 770]
+    target_size: [1000, 770]
   title: '%INSTRUMENT_SAT%   %START_DATE%-%END_DATE%
 
     Channel %CHANNEL%  %FREQUENCY%       %ASSIMILATION_STATUS%
@@ -218,7 +218,7 @@ plot3:
   output: >>>OUTPUT_DIR<<</%EXPERIMENT_ID%/%START_DATE%-%END_DATE%/%INSTRUMENT_SAT%/%INSTRUMENT_SAT%_bkg_ch%RELCHANNEL%.png
   settings:
     dpi: 50
-    target_size: [595, 770]
+    target_size: [1000, 770]
   title: '%INSTRUMENT_SAT%   %START_DATE%-%END_DATE%
 
     Channel %CHANNEL%  %FREQUENCY%       %ASSIMILATION_STATUS%

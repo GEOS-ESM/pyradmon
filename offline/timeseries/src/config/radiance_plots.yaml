@@ -11,7 +11,7 @@ plot1:
   output: plots/test_plot_1_ch%CHANNEL%.png
   settings:
     dpi: 50
-    target_size: [595, 770]
+    target_size: [1000, 770]
   title: '%INSTRUMENT_SAT%   %START_DATE%-%END_DATE%
 
     Channel %CHANNEL%  %FREQUENCY%       %ASSIMILATION_STATUS%
@@ -157,7 +157,7 @@ plot2:
   output: plots/test_plot_2_ch%CHANNEL%.png
   settings:
     dpi: 50
-    target_size: [595, 770]
+    target_size: [1000, 770]
   title: '%INSTRUMENT_SAT%   %START_DATE%-%END_DATE%
 
     Channel %CHANNEL%  %FREQUENCY%       %ASSIMILATION_STATUS%
@@ -246,7 +246,7 @@ plot3:
   output: plots/test_plot_3_ch%CHANNEL%.png
   settings:
     dpi: 50
-    target_size: [595, 770]
+    target_size: [1000, 770]
   title: '%INSTRUMENT_SAT%   %START_DATE%-%END_DATE%
 
     Channel %CHANNEL%  %FREQUENCY%       %ASSIMILATION_STATUS%

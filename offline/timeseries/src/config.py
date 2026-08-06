@@ -72,8 +72,8 @@ def save(config_file, pyradmon_config, config_dict):
         return False
     return True
 
-base_directory    = "MERRA2/"
-experiment_id     = "d5124_m2_jan91"
+# base_directory    = "MERRA2/"
+# experiment_id     = "d5124_m2_jan91"
 
 # datestr_to_int converts a pyradmon format timestamp (YYYY-MM-DD HHz) to four integers, returning
 # (year, mon, day, hour)
