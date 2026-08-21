@@ -8,7 +8,7 @@ if ( $#argv > 1 || $#argv < 1 ) then
     exit 99
 endif
 
-#set rcfile=$argv[1]
+set rcfile=$argv[1]
 
 unset argv
 setenv argv
@@ -70,7 +70,40 @@ set ehh   = "18z"
 set pyr_startdate="$syyyy-$smm-$sdd $shh"
 set pyr_enddate="$eyyyy-$emm-$edd $ehh"
 
-foreach inst ($insts) 
+# ---------------------------------------------------------------------------
+# Sanity check: confirm --data-instrument-sat filtering actually reaches file
+# discovery, instead of silently falling back to a hardcoded default (e.g.
+# the ssmi_f08 default baked into enumerate.py / the sample yaml configs).
+# Doing this by asking for a deliberately fake instrument and confirming
+# pyradmon correctly reports "no data found" for it. If it instead reports
+# files, instrument filtering is broken.
+#
+# Uses --data-path-format etc. directly on the CLI (no config file needed)
+# since the check only needs list's file-discovery path, not a plot config.
+# ---------------------------------------------------------------------------
+set fake_inst = "zzz_not_a_real_instrument"
+set data_path_format = "$expbase/%EXPERIMENT_ID%/obs/Y%YEAR4%/M%MONTH2%/D%DAY2%/H%HOUR2%/%EXPERIMENT_ID%.diag_%INSTRUMENT_SAT%_%DATA_TYPE%.%YEAR4%%MONTH2%%DAY2%_%HOUR2%z.txt"
+set check_outfile = "$scratch_dir/$fake_inst.check.out"
+
+$pyradmon_path/pyradmon.py list --data-path-format "$data_path_format" --data-experiment-id $expid --data-start-date "$pyr_startdate" --data-end-date "$pyr_enddate" --data-step "anl|ges" --data-instrument-sat $fake_inst >& $check_outfile
+set check_status = $status
+
+grep -qi "No data found for specified criteria" $check_outfile
+set check_grep_status = $status
+
+if ($check_status != 0 && $check_grep_status == 0) then
+  echo "SANITY CHECK OK: instrument/sat filtering is working (fake instrument correctly found no data)."
+else
+  echo "WARNING: instrument/sat filtering sanity check FAILED!"
+  echo "WARNING: fake instrument '$fake_inst' did not report 'No data found' as expected (exit=$check_status)."
+  echo "WARNING: this may mean --data-instrument-sat is not reaching file discovery - verify results carefully."
+  cat $check_outfile
+endif
+
+rm -f $check_outfile
+# ---------------------------------------------------------------------------
+
+foreach inst ($insts)
   echo $inst  
   if (-e $pyradmon_path/config/radiance_plots.$inst.yaml.tmpl) then
 #    set configtmpl="$pyradmon_path/config/radiance_plots_emissbc.$inst.yaml.tmpl"
