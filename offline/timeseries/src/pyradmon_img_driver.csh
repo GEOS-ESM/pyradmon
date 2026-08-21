@@ -8,7 +8,7 @@ if ( $#argv > 1 || $#argv < 1 ) then
     exit 99
 endif
 
-#set rcfile=$argv[1]
+set rcfile=$argv[1]
 
 unset argv
 setenv argv
