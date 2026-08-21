@@ -85,13 +85,7 @@ set fake_inst = "zzz_not_a_real_instrument"
 set data_path_format = "$expbase/%EXPERIMENT_ID%/obs/Y%YEAR4%/M%MONTH2%/D%DAY2%/H%HOUR2%/%EXPERIMENT_ID%.diag_%INSTRUMENT_SAT%_%DATA_TYPE%.%YEAR4%%MONTH2%%DAY2%_%HOUR2%z.txt"
 set check_outfile = "$scratch_dir/$fake_inst.check.out"
 
-$pyradmon_path/pyradmon.py list \
-  --data-path-format "$data_path_format" \
-  --data-experiment-id $expid \
-  --data-start-date "$pyr_startdate" \
-  --data-end-date "$pyr_enddate" \
-  --data-step "anl|ges" \
-  --data-instrument-sat $fake_inst >& $check_outfile
+$pyradmon_path/pyradmon.py list --data-path-format "$data_path_format" --data-experiment-id $expid --data-start-date "$pyr_startdate" --data-end-date "$pyr_enddate" --data-step "anl|ges" --data-instrument-sat $fake_inst >& $check_outfile
 set check_status = $status
 
 grep -qi "No data found for specified criteria" $check_outfile
