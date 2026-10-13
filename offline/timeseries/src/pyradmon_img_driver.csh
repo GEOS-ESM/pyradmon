@@ -28,6 +28,11 @@ set output_dir=`$ESMADIR/install/bin/echorc.x -rc $rcfile output_dir`
 set pyradmon_path=`$ESMADIR/install/bin/echorc.x -rc $rcfile pyradmon`
 set startdate=`$ESMADIR/install/bin/echorc.x -rc $rcfile startdate`
 set enddate=`$ESMADIR/install/bin/echorc.x -rc $rcfile enddate`
+set enddate=`$ESMADIR/install/bin/echorc.x -rc $rcfile enddate`
+set instruments=`$ESMADIR/install/bin/echorc.x -rc $rcfile instruments`
+
+
+
 
 set rename_date_dir=`$ESMADIR/install/bin/echorc.x -rc $rcfile rename_date_dir`
 if ($status != 0) set rename_date_dir=/dev/null
@@ -71,6 +76,7 @@ set pyr_startdate="$syyyy-$smm-$sdd $shh"
 set pyr_enddate="$eyyyy-$emm-$edd $ehh"
 
 foreach inst ($insts) 
+  # echo " --- inst -------- !#4dfkj"
   echo $inst  
   if (-e $pyradmon_path/config/radiance_plots.$inst.yaml.tmpl) then
 #    set configtmpl="$pyradmon_path/config/radiance_plots_emissbc.$inst.yaml.tmpl"
@@ -82,6 +88,8 @@ foreach inst ($insts)
 
   set configfile="$scratch_dir/$inst.$expid.$startdate.$enddate.plot.yaml"
 
+  # echo "configtmpl:  $configtmpl -------------------------"
+  # cat $configtmpl
   cp $configtmpl $configfile
 
   sed -i "s@>>>DATA_DIRBASE<<<@$expbase@g" $configfile
@@ -90,8 +98,8 @@ foreach inst ($insts)
   sed -i "s/>>>EXPID<<</$expid/g" $configfile 
   sed -i "s@>>>OUTPUT_DIR<<<@$output_dir@g" $configfile 
 
-  echo "Running PyRadMon for $inst from $pyr_startdate to $pyr_enddate"
-  echo $configfile 
+  echo "Running PyRadMon for $expid for $inst from $pyr_startdate to $pyr_enddate"
+  # echo "configfile: $configfile "
   echo $pyradmon_path/pyradmon.py
   $pyradmon_path/pyradmon.py --config-file $configfile plot --data-instrument-sat $inst
 end
